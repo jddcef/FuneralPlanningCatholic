@@ -1,69 +1,96 @@
-body {
-  font-family: system-ui, sans-serif;
-  margin: 0;
-  background: #f9f9fa;
-  color: #222;
+/* Custom styles to complement Tailwind CSS */
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
 }
-header, footer {
-  background: #333;
-  color: #fff;
-  padding: 1em;
-  text-align: center;
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
 }
-main {
-  max-width: 700px;
-  margin: 2em auto;
-  background: #fff;
-  padding: 2em;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px #0001;
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
-h1 {
-  margin-top: 0;
-}
-section {
-  margin-bottom: 2em;
-}
-ul {
-  list-style: none;
-  padding: 0;
-}
-li {
-  margin-bottom: 0.5em;
-}
-label {
-  font-weight: 500;
-}
-input[type="radio"], input[type="checkbox"] {
-  margin-right: 0.5em;
-}
-button {
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  padding: 0.7em 1.5em;
-  font-size: 1.1em;
+
+::-webkit-scrollbar-thumb {
+  background: #1e3a8a;
   border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.15s;
 }
-button:hover {
-  background: #0d47a1;
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1e40af;
 }
-#pdf-status {
-  margin-top: 1em;
-  color: #388e3c;
+
+/* Enhanced focus states for accessibility */
+.nav-link:focus,
+button:focus,
+input:focus,
+select:focus {
+  outline: 2px solid #1e40af;
+  outline-offset: 2px;
 }
-#reset-app {
-  opacity: 0.6;
-  font-size: 0.97em;
-  transition: opacity 0.15s;
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-#reset-app:hover {
-  opacity: 1;
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
 }
-@media (max-width: 800px) {
+
+/* Enhanced hover effects for cards */
+.reading-group label:hover,
+#hymn-list > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Custom button animations */
+#generate-pdf:active {
+  transform: scale(0.98);
+}
+
+/* Enhanced video modal */
+#video-modal {
+  backdrop-filter: blur(4px);
+}
+
+/* Responsive text sizing */
+@media (max-width: 640px) {
+  .text-4xl {
+    font-size: 2rem;
+  }
+  .text-6xl {
+    font-size: 3rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  nav, #video-modal, button, .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
   main {
-    padding: 1em;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
   }
 }
