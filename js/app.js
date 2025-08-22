@@ -228,4 +228,4 @@ window.addEventListener("DOMContentLoaded", () => {
   attachResetListener();
 
   document.getElementById("generate-pdf").addEventListener("click", generatePDF);
-}
+});
