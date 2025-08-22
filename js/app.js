@@ -70,7 +70,7 @@ function renderHymns(saved) {
   window.hymns.forEach((hymn, i) => {
     const checked = saved && saved.hymns && saved.hymns.includes(i);
     const hymnHtml = `
-      <div class="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+      <label class="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
         <input type="checkbox" name="hymn" value="${i}" ${checked ? "checked" : ""} class="mt-1">
         <div class="flex-1">
           <div class="font-medium text-gray-900">${hymn.title}</div>
@@ -86,7 +86,7 @@ function renderHymns(saved) {
             </a>
           </div>
         </div>
-      </div>
+      </label>
     `;
     $list.append(hymnHtml);
   });
@@ -2179,6 +2179,32 @@ function generateFullPlanningBookletDOCX() {
     }
   });
   
+  // Download button hover functionality
+  $('.download-btn').each(function() {
+    const $button = $(this);
+    const $dropdown = $button.closest('.flex').find('.relative');
+    
+    $dropdown.on('mouseenter', function() {
+      $(this).find('.absolute').removeClass('hidden');
+    });
+    
+    $dropdown.on('mouseleave', function() {
+      $(this).find('.absolute').addClass('hidden');
+    });
+  });
+  
+  // Update download button text when format changes
+  $(document).on('click', '.download-btn', function() {
+    const format = $(this).data('format');
+    const $mainButton = $(this).closest('.flex').find('.download-btn').first();
+    
+    if (format === 'pdf') {
+      $mainButton.html('Download <span class="font-bold">PDF</span>');
+    } else if (format === 'docx') {
+      $mainButton.html('Download <span class="font-bold">DOCX</span>');
+    }
+  });
+  
   urlGenButton.on('click', function() {
     const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
     const churchName = $('#church-name').val();
@@ -2317,6 +2343,13 @@ $(document).ready(function() {
     renderReadings($(this).val(), currentSelections);
     // Re-attach listeners after re-rendering
     attachReadingListeners();
+    // Mark current selections as checked
+    currentSelections.readings.forEach(reading => {
+      const checkbox = $(`input[data-reading-id="${reading.id}"]`);
+      if (checkbox.length) {
+        checkbox.prop('checked', true);
+      }
+    });
   });
   
   // Initialize with semantic theme analysis if compromise.js is available
