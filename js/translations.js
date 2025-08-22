@@ -45,11 +45,17 @@ window.translations = {
     
     // Planning Tools
     "planning_title": "Planning Tools",
+    "church_information": "Church Information",
+    "church_name": "Church Name",
+    "church_name_help": "This will appear on your planning booklet cover",
+    "cover_image": "Cover Image",
+    "change_image": "Change Image",
+    "change_image_help": "Click to upload custom image",
     "hymn_selection": "Hymn Selection",
     "reading_selection": "Reading Selection",
     "theme_filter": "Filter by theme:",
     "all_themes": "All Themes",
-    "generate_pdf": "Generate PDF",
+    "download_full_booklet": "📖 Download Full Planning Booklet",
     "reset_app": "Reset/Start Over",
     
     // Downloads
@@ -68,7 +74,9 @@ window.translations = {
     "costs_title": "Potential Costs & Fees",
     "church_ministry": "Church & Ministry",
     "priest_deacon": "Priest or Deacon",
-    "priest_deacon_cost": "Tithe suggested (10% of funeral budget)",
+    "priest_deacon_cost": "At own discretion",
+    "stole_fee": "Stole fee",
+    "stole_fee_cost": "Towards the church",
     "organist": "Organist",
     "organist_cost": "R500 - R1,500",
     "altar_servers": "Altar servers",
@@ -85,7 +93,7 @@ window.translations = {
     "headstone": "Headstone/marker",
     "headstone_cost": "R3,000 - R15,000",
     "biblical_guidance": "Biblical Guidance on Church Contributions",
-    "tithing_principle": "Tithing Principle: The biblical practice of giving 10% of one's resources to God's work. For funeral services, consider allocating approximately 10% of your total funeral budget to the church.",
+    "church_contributions": "Church Contributions: The biblical practice of giving to God's work. For funeral services, contributions to the church are at the family's discretion, considering their means and relationship with the parish community.",
     "regular_contributors": "Regular Contributors: Families who regularly support the church may receive reduced fees or be asked for a smaller donation, as they are already contributing to the parish community.",
     "costs_note": "Note: Costs vary significantly by location and specific requirements. Contact your parish office for current local rates and donation guidelines.",
     
@@ -116,7 +124,13 @@ window.translations = {
     "flow_step2": "Funeral Service",
     "flow_step2_time": "Main ceremony",
     "flow_step3": "Burial / Interment",
-    "flow_step3_time": "Final resting place"
+    "flow_step3_time": "Final resting place",
+    
+    // Reading Types
+    "first_reading": "First Reading",
+    "psalm": "Psalm",
+    "second_reading": "Second Reading",
+    "gospel": "Gospel"
   },
   
   "af": {
@@ -162,11 +176,17 @@ window.translations = {
     
     // Planning Tools
     "planning_title": "Beplanningsgereedskap",
+    "church_information": "Kerk Inligting",
+    "church_name": "Kerk Naam",
+    "church_name_help": "Dit sal op jou beplanningsboekie voorblad verskyn",
+    "cover_image": "Voorblad Prent",
+    "change_image": "Verander Prent",
+    "change_image_help": "Klik om persoonlike prent op te laai",
     "hymn_selection": "Liedkeuse",
     "reading_selection": "Leesstukke Keuse",
     "theme_filter": "Filtreer volgens tema:",
     "all_themes": "Alle Temas",
-    "generate_pdf": "Genereer PDF",
+    "download_full_booklet": "📖 Aflaai Volledige Beplanningsboekie",
     "reset_app": "Herstel/Begin Oor",
     
     // Downloads
@@ -185,7 +205,9 @@ window.translations = {
     "costs_title": "Potensiële Koste & Fooie",
     "church_ministry": "Kerk & Bediening",
     "priest_deacon": "Priester of Diaken",
-    "priest_deacon_cost": "Tiende voorgestel (10% van begrafnisbegroting)",
+    "priest_deacon_cost": "Na eie goeddunke",
+    "stole_fee": "Stola fooi",
+    "stole_fee_cost": "Na die kerk toe",
     "organist": "Orrelis",
     "organist_cost": "R500 - R1,500",
     "altar_servers": "Altaar bedieners",
@@ -202,7 +224,7 @@ window.translations = {
     "headstone": "Grafsteen/merker",
     "headstone_cost": "R3,000 - R15,000",
     "biblical_guidance": "Bybelse Leiding oor Kerk Bydraes",
-    "tithing_principle": "Tiende Beginsel: Die Bybelse praktyk om 10% van 'n mens se hulpbronne aan God se werk te gee. Vir begrafnisdienste, oorweeg om ongeveer 10% van jou totale begrafnisbegroting aan die kerk toe te ken.",
+    "church_contributions": "Kerk Bydraes: Die Bybelse praktyk om aan God se werk te gee. Vir begrafnisdienste, bydraes aan die kerk is na die gesin se goeddunke, met inagneming van hul vermoëns en verhouding met die parogie gemeenskap.",
     "regular_contributors": "Gereelde Bydraers: Gesinne wat gereeld die kerk ondersteun mag verminderde fooie ontvang of gevra word vir 'n kleiner skenking, aangesien hulle reeds bydra tot die parogie gemeenskap.",
     "costs_note": "Nota: Koste wissel aansienlik volgens ligging en spesifieke vereistes. Kontak jou parogie kantoor vir huidige plaaslike tariewe en skenkingsriglyne.",
     
@@ -233,7 +255,13 @@ window.translations = {
     "flow_step2": "Begrafnisdiens",
     "flow_step2_time": "Hoof seremonie",
     "flow_step3": "Begrafnis / Teraardebestelling",
-    "flow_step3_time": "Finale rusplek"
+    "flow_step3_time": "Finale rusplek",
+    
+    // Reading Types
+    "first_reading": "Eerste Leesstuk",
+    "psalm": "Psalm",
+    "second_reading": "Tweede Leesstuk",
+    "gospel": "Evangelie"
   },
   
   "xh": {
@@ -279,11 +307,17 @@ window.translations = {
     
     // Planning Tools
     "planning_title": "Amathuluzi Okucwangcisa",
+    "church_information": "Inkcukacha Zebandla",
+    "church_name": "Igama Lebandla",
+    "church_name_help": "Oku kuya kubonakala kwisiciko sebhuku lokucwangcisa",
+    "cover_image": "Umfanekiso Wesiciko",
+    "change_image": "Tshintsha Umfanekiso",
+    "change_image_help": "Cofa ukulayisha umfanekiso owakho",
     "hymn_selection": "Ukukhetha Iingoma",
     "reading_selection": "Ukukhetha Ukufundwa",
     "theme_filter": "Hlenga ngokwemixholo:",
     "all_themes": "Yonke Imixholo",
-    "generate_pdf": "Yenza iPdf",
+    "download_full_booklet": "📖 Khuphela Ibhuku Lokucwangcisa Ngokupheleleyo",
     "reset_app": "Buyisela/Qala Kwakhona",
     
     // Downloads
@@ -302,7 +336,9 @@ window.translations = {
     "costs_title": "Iindleko Neefowu Ezinokubakho",
     "church_ministry": "IBandla & Ubugcisa",
     "priest_deacon": "Umfundisi okanye uMfundisi Omncinci",
-    "priest_deacon_cost": "Kukhuthazelwa ukunikela (10% yebhajethi yengcwaba)",
+    "priest_deacon_cost": "Ngokwamathanda akho",
+    "stole_fee": "Ifowu yestole",
+    "stole_fee_cost": "Iya kwibandla",
     "organist": "Umvumi we-organ",
     "organist_cost": "R500 - R1,500",
     "altar_servers": "Abasebenzi be-altare",
@@ -319,7 +355,7 @@ window.translations = {
     "headstone": "Itye lokungcwaba/umqondiso",
     "headstone_cost": "R3,000 - R15,000",
     "biblical_guidance": "Inkqubo YeBhayibhile Ngokunikelwa Kwibandla",
-    "tithing_principle": "Inkqubo Yokunikela: Inqubo yeBhayibhile yokunikela 10% yezinto zakho emsebenzini kaThixo. Kwinkonzo yengcwaba, cinga ukunikelela malunga ne-10% yebhajethi yakho yengcwaba ibandleni.",
+    "church_contributions": "Iinkonzo Zokunikelwa Kwibandla: Inqubo yeBhayibhile yokunikela emsebenzini kaThixo. Kwinkonzo yengcwaba, iinkonzo zokunikelwa kwibandla zingokwamathanda omndeni, ngokucatshulwa kwemali yabo nokuhlobana kwabo nebandla labantu.",
     "regular_contributors": "Abanikeli Ngokubanzi: Imindeni enikela ngokubanzi ibandla inokufumana iifowu eziphantsi okanye kucelwe inikelo elincinci, njengokuba sele benikela kwibandla labantu.",
     "costs_note": "Qaphela: Iindleko ziyahluka ngokubanzi ngokwendawo nokufuneka okukhethekileyo. Qhagamshelana ne-ofisi yebandla yakho ngezixabiso zangoku zendawo nokukhuthazelwa kokunikela.",
     
@@ -350,7 +386,13 @@ window.translations = {
     "flow_step2": "Inkonzo Yengcwaba",
     "flow_step2_time": "Umkhosi ophambili",
     "flow_step3": "Ukungcwaba / Ukungcwatyelwa",
-    "flow_step3_time": "Indawo yokuhlala yokugqibela"
+    "flow_step3_time": "Indawo yokuhlala yokugqibela",
+    
+    // Reading Types
+    "first_reading": "Ukuqala Ukufundwa",
+    "psalm": "Indumiso",
+    "second_reading": "Isibini Sokufundwa",
+    "gospel": "Iindaba Ezilungileyo"
   }
 };
 
@@ -388,6 +430,23 @@ function updatePageLanguage() {
   $('.flow-step2 p').text(t('flow_step2_time'));
   $('.flow-step3 h3').text(t('flow_step3'));
   $('.flow-step3 p').text(t('flow_step3_time'));
+  
+  // Update section headings
+  $('#understanding h2').text(t('understanding_title'));
+  $('#planning h2').text(t('planning_title'));
+  $('#downloads h2').text(t('downloads_title'));
+  $('#costs h2').text(t('costs_title'));
+  $('#faq h2').text(t('faq_title'));
+  $('#contact h2').text(t('contact_title'));
+  
+  // Update planning tools section headings
+  $('#planning .reading-group h4').each(function() {
+    const type = $(this).text();
+    if (type === 'First Reading') $(this).text(t('first_reading'));
+    else if (type === 'Psalm') $(this).text(t('psalm'));
+    else if (type === 'Second Reading') $(this).text(t('second_reading'));
+    else if (type === 'Gospel') $(this).text(t('gospel'));
+  });
 }
 
 // Initialize language system

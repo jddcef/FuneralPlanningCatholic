@@ -198,25 +198,25 @@
       
       <!-- Church Customization -->
       <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h3 class="text-xl font-semibold text-catholic-blue mb-4">Church Information</h3>
+        <h3 class="text-xl font-semibold text-catholic-blue mb-4" data-translate="church_information">Church Information</h3>
         <div class="grid md:grid-cols-2 gap-6">
           <div>
-            <label for="church-name" class="block text-sm font-medium text-gray-700 mb-2">Church Name</label>
+            <label for="church-name" class="block text-sm font-medium text-gray-700 mb-2" data-translate="church_name">Church Name</label>
             <input type="text" id="church-name" value="Catholic Church" 
                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue">
-            <p class="text-xs text-gray-500 mt-1">This will appear on your planning booklet cover</p>
+            <p class="text-xs text-gray-500 mt-1" data-translate="church_name_help">This will appear on your planning booklet cover</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Cover Image</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="cover_image">Cover Image</label>
             <div class="flex items-center space-x-4">
               <div id="cover-image-preview" class="w-20 h-20 bg-gradient-to-br from-catholic-blue to-catholic-purple rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
                 <span class="text-white text-2xl">⛪</span>
               </div>
               <div>
-                <button id="change-cover-image" class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition-colors">
+                <button id="change-cover-image" class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition-colors" data-translate="change_image">
                   Change Image
                 </button>
-                <p class="text-xs text-gray-500 mt-1">Click to upload custom image</p>
+                <p class="text-xs text-gray-500 mt-1" data-translate="change_image_help">Click to upload custom image</p>
               </div>
             </div>
             <input type="file" id="cover-image-input" accept="image/*" class="hidden">
@@ -247,7 +247,7 @@
 
       <!-- Action Buttons -->
       <div class="text-center space-y-4 mt-8">
-        <button id="generate-planning-booklet" class="bg-gradient-to-r from-catholic-blue to-catholic-purple hover:from-blue-800 hover:to-purple-800 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+        <button id="generate-planning-booklet" class="bg-gradient-to-r from-catholic-blue to-catholic-purple hover:from-blue-800 hover:to-purple-800 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105" data-translate="download_full_booklet">
           📖 Download Full Planning Booklet
         </button>
         <div class="flex justify-center space-x-4">
@@ -326,63 +326,64 @@
       <div class="bg-white p-6 rounded-lg shadow-md">
         <div class="grid md:grid-cols-2 gap-8">
           <div>
-            <h3 class="text-xl font-semibold text-catholic-purple mb-4">Church & Ministry</h3>
+            <h3 class="text-xl font-semibold text-catholic-purple mb-4" data-translate="church_ministry">Church & Ministry</h3>
             <ul class="space-y-3 text-gray-700">
               <li class="flex justify-between">
-                <span>Priest or Deacon</span>
-                <span class="text-catholic-purple font-medium">Tithe suggested (10% of funeral budget)</span>
+                <span data-translate="priest_deacon">Priest or Deacon</span>
+                <span class="text-catholic-purple font-medium" data-translate="priest_deacon_cost">At own discretion</span>
               </li>
               <li class="flex justify-between">
-                <span>Stole fee</span>
-                <span class="text-catholic-purple font-medium">Towards the church</span>
+                <span data-translate="stole_fee">Stole fee</span>
+                <span class="text-catholic-purple font-medium" data-translate="stole_fee_cost">Towards the church</span>
               </li>
               <li class="flex justify-between">
-                <span>Organist</span>
-                <span class="text-catholic-purple font-medium">R500 - R1,500</span>
+                <span data-translate="organist">Organist</span>
+                <span class="text-catholic-purple font-medium" data-translate="organist_cost">R500 - R1,500</span>
               </li>
               <li class="flex justify-between">
-                <span>Altar servers</span>
-                <span class="text-catholic-purple font-medium">R100 - R300 each</span>
+                <span data-translate="altar_servers">Altar servers</span>
+                <span class="text-catholic-purple font-medium" data-translate="altar_servers_cost">R100 - R300 each</span>
               </li>
               <li class="flex justify-between">
-                <span>Church hall rental</span>
-                <span class="text-catholic-purple font-medium">R500 - R1,500</span>
+                <span data-translate="church_hall">Church hall rental</span>
+                <span class="text-catholic-purple font-medium" data-translate="church_hall_cost">R500 - R1,500</span>
               </li>
             </ul>
           </div>
           <div>
-            <h3 class="text-xl font-semibold text-catholic-purple mb-4">Additional Services</h3>
+            <h3 class="text-xl font-semibold text-catholic-purple mb-4" data-translate="additional_services">Additional Services</h3>
             <ul class="space-y-3 text-gray-700">
               <li class="flex justify-between">
-                <span>Tea/refreshments in hall</span>
-                <span class="text-catholic-purple font-medium">Optional</span>
+                <span data-translate="tea_refreshments">Tea/refreshments in hall</span>
+                <span class="text-catholic-purple font-medium" data-translate="tea_refreshments_cost">Optional</span>
               </li>
               <li class="flex justify-between">
-                <span>Funeral home services</span>
-                <span class="text-catholic-purple font-medium">R15,000 - R45,000</span>
+                <span data-translate="funeral_home">Funeral home services</span>
+                <span class="text-catholic-purple font-medium" data-translate="funeral_home_cost">R15,000 - R45,000</span>
+              </li>
+                             <li class="flex justify-between">
+                <span data-translate="cemetery_plot">Cemetery plot</span>
+                <span class="text-catholic-purple font-medium" data-translate="cemetery_plot_cost">R8,000 - R25,000</span>
               </li>
               <li class="flex justify-between">
-                <span>Cemetery plot</span>
-                <span class="text-catholic-purple font-medium">R8,000 - R25,000</span>
-              </li>
-              <li class="flex justify-between">
-                <span>Headstone/marker</span>
-                <span class="text-catholic-purple font-medium">R3,000 - R15,000</span>
+                <span data-translate="headstone">Headstone/marker</span>
+                <span class="text-catholic-purple font-medium" data-translate="headstone_cost">R3,000 - R15,000</span>
               </li>
             </ul>
           </div>
         </div>
         <div class="mt-6 p-4 bg-purple-50 rounded-lg">
-          <h4 class="font-semibold text-catholic-purple mb-2">Biblical Guidance on Church Contributions</h4>
-          <p class="text-sm text-gray-700 mb-3">
-            <strong>Tithing Principle:</strong> The biblical practice of giving 10% of one's resources to God's work. 
-            For funeral services, consider allocating approximately 10% of your total funeral budget to the church.
+          <h4 class="font-semibold text-catholic-purple mb-2" data-translate="biblical_guidance">Biblical Guidance on Church Contributions</h4>
+          <p class="text-sm text-gray-700 mb-3" data-translate="church_contributions">
+            <strong>Church Contributions:</strong> The biblical practice of giving to God's work. 
+            For funeral services, contributions to the church are at the family's discretion, 
+            considering their means and relationship with the parish community.
           </p>
-          <p class="text-sm text-gray-700 mb-3">
+          <p class="text-sm text-gray-700 mb-3" data-translate="regular_contributors">
             <strong>Regular Contributors:</strong> Families who regularly support the church may receive reduced fees or 
             be asked for a smaller donation, as they are already contributing to the parish community.
           </p>
-          <p class="text-sm text-gray-700 text-center">
+          <p class="text-sm text-gray-700 text-center" data-translate="costs_note">
             <strong>Note:</strong> Costs vary significantly by location and specific requirements. 
             Contact your parish office for current local rates and donation guidelines.
           </p>

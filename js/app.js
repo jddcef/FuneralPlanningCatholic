@@ -946,7 +946,8 @@ $(document).ready(function() {
   
   // Theme filter change
   $('#theme-filter').on('change', function() {
-    renderReadings($(this).val(), getSavedSelections());
+    const currentSelections = getSavedSelections();
+    renderReadings($(this).val(), currentSelections);
     attachReadingListeners();
   });
   
