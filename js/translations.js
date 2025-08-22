@@ -195,6 +195,13 @@ window.translations = {
     "cover_image": "Voorblad Prent",
     "change_image": "Verander Prent",
     "change_image_help": "Klik om persoonlike prent op te laai",
+    
+    // Order of Service Section
+    "order_of_service_title": "Orde van Diens",
+    "funeral_mass_title": "Begrafnis Mis (Volle Diens)",
+    "funeral_service_title": "Begrafnis Diens (Sonder Eucharistie)",
+    "vigil_title": "Waak Diens (Aand Voor)",
+    
     "hymn_selection": "Liedkeuse",
     "reading_selection": "Leesstukke Keuse",
     "theme_filter": "Filtreer volgens tema:",
@@ -339,6 +346,13 @@ window.translations = {
     "cover_image": "Umfanekiso Wesiciko",
     "change_image": "Tshintsha Umfanekiso",
     "change_image_help": "Cofa ukulayisha umfanekiso owakho",
+    
+    // Order of Service Section
+    "order_of_service_title": "I-Order yoNkonzo",
+    "funeral_mass_title": "Inkonzo yoNgcwaba (Inkonzo Epheleleyo)",
+    "funeral_service_title": "Inkonzo yoNgcwaba (Ngaphandle kwe-Eucharist)",
+    "vigil_title": "Inkonzo yoKulala (Ubusuku Obungaphambili)",
+    
     "hymn_selection": "Ukukhetha Iingoma",
     "reading_selection": "Ukukhetha Ukufundwa",
     "theme_filter": "Hlenga ngokwemixholo:",

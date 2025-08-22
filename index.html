@@ -35,6 +35,7 @@
           <a href="#home" class="nav-link hover:text-catholic-gold transition-colors">Home</a>
           <a href="#understanding" class="nav-link hover:text-catholic-gold transition-colors">Understanding</a>
           <a href="#planning" class="nav-link hover:text-catholic-gold transition-colors">Planning Tools</a>
+          <a href="#order-of-service" class="nav-link hover:text-catholic-gold transition-colors">Order of Service</a>
           <a href="#downloads" class="nav-link hover:text-catholic-gold transition-colors">Downloads</a>
           <a href="#costs" class="nav-link hover:text-catholic-gold transition-colors">Costs</a>
           <a href="#faq" class="nav-link hover:text-catholic-gold transition-colors">FAQ</a>
@@ -60,6 +61,7 @@
           <a href="#home" class="block py-2 hover:text-catholic-gold">Home</a>
           <a href="#understanding" class="block py-2 hover:text-catholic-gold">Understanding</a>
           <a href="#planning" class="block py-2 hover:text-catholic-gold">Planning Tools</a>
+          <a href="#order-of-service" class="block py-2 hover:text-catholic-gold">Order of Service</a>
           <a href="#downloads" class="block py-2 hover:text-catholic-gold">Downloads</a>
           <a href="#costs" class="block py-2 hover:text-catholic-gold">Costs</a>
           <a href="#faq" class="block py-2 hover:text-catholic-gold">FAQ</a>
@@ -266,6 +268,95 @@
           <a id="reset-app" href="#" class="text-gray-600 hover:text-gray-800 underline">Reset/Start Over</a>
         </div>
         <div id="pdf-status" class="text-green-600 font-medium"></div>
+      </div>
+    </section>
+
+    <!-- Order of Service Section -->
+    <section id="order-of-service" class="mb-16">
+      <h2 class="text-2xl font-bold text-catholic-blue mb-8 text-center" data-translate="order_of_service_title">Order of Service</h2>
+      
+      <!-- Service Type Selector -->
+      <div class="flex justify-center mb-6">
+        <div class="bg-white p-2 rounded-lg shadow-md">
+          <div class="flex space-x-1">
+            <button id="funeral-mass-btn" class="service-type-btn bg-catholic-blue text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" data-service="funeral-mass">
+              Funeral Mass
+            </button>
+            <button id="funeral-service-btn" class="service-type-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors" data-service="funeral-service">
+              Funeral Service
+            </button>
+            <button id="vigil-btn" class="service-type-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors" data-service="vigil">
+              Vigil
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Service Details -->
+      <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Funeral Mass -->
+        <div id="funeral-mass-details" class="service-details bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg font-semibold text-catholic-blue mb-4" data-translate="funeral_mass_title">Funeral Mass (Full Service)</h3>
+          <ol class="space-y-2 text-sm text-gray-700">
+            <li><strong>1.</strong> Reception of the Body/Ashes</li>
+            <li><strong>2.</strong> Opening Prayer</li>
+            <li><strong>3.</strong> Liturgy of the Word
+              <ul class="ml-4 mt-1 space-y-1 text-gray-600">
+                <li>• First Reading</li>
+                <li>• Responsorial Psalm</li>
+                <li>• Second Reading</li>
+                <li>• Gospel Acclamation</li>
+                <li>• Gospel Reading</li>
+                <li>• Homily</li>
+              </ul>
+            </li>
+            <li><strong>4.</strong> Liturgy of the Eucharist
+              <ul class="ml-4 mt-1 space-y-1 text-gray-600">
+                <li>• Preparation of the Gifts</li>
+                <li>• Eucharistic Prayer</li>
+                <li>• Communion</li>
+              </ul>
+            </li>
+            <li><strong>5.</strong> Final Commendation</li>
+            <li><strong>6.</strong> Procession to Place of Committal</li>
+          </ol>
+        </div>
+        
+        <!-- Funeral Service -->
+        <div id="funeral-service-details" class="service-details bg-white p-6 rounded-lg shadow-md hidden">
+          <h3 class="text-lg font-semibold text-catholic-blue mb-4" data-translate="funeral_service_title">Funeral Service (Without Eucharist)</h3>
+          <ol class="space-y-2 text-sm text-gray-700">
+            <li><strong>1.</strong> Reception of the Body/Ashes</li>
+            <li><strong>2.</strong> Opening Prayer</li>
+            <li><strong>3.</strong> Liturgy of the Word
+              <ul class="ml-4 mt-1 space-y-1 text-gray-600">
+                <li>• First Reading</li>
+                <li>• Responsorial Psalm</li>
+                <li>• Second Reading</li>
+                <li>• Gospel Acclamation</li>
+                <li>• Gospel Reading</li>
+                <li>• Homily</li>
+              </ul>
+            </li>
+            <li><strong>4.</strong> Final Commendation</li>
+            <li><strong>5.</strong> Procession to Place of Committal</li>
+          </ol>
+        </div>
+        
+        <!-- Vigil -->
+        <div id="vigil-details" class="service-details bg-white p-6 rounded-lg shadow-md hidden">
+          <h3 class="text-lg font-semibold text-catholic-blue mb-4" data-translate="vigil_title">Vigil Service (Evening Before)</h3>
+          <ol class="space-y-2 text-sm text-gray-700">
+            <li><strong>1.</strong> Opening Prayer</li>
+            <li><strong>2.</strong> Scripture Reading</li>
+            <li><strong>3.</strong> Responsorial Psalm</li>
+            <li><strong>4.</strong> Gospel Reading</li>
+            <li><strong>5.</strong> Homily or Reflection</li>
+            <li><strong>6.</strong> Intercessions</li>
+            <li><strong>7.</strong> Lord's Prayer</li>
+            <li><strong>8.</strong> Final Blessing</li>
+          </ol>
+        </div>
       </div>
     </section>
 

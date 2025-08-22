@@ -736,11 +736,47 @@ function generateFullPlanningBooklet() {
   doc.setFont('helvetica', 'normal');
   doc.text("A comprehensive guide for Catholic funeral planning", 105, 110, { align: "center" });
   
+  // Contact Information on cover page
+  const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+  if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
+    y = 140;
+    doc.setFillColor(124, 58, 237); // Catholic purple
+    doc.rect(20, y-5, 170, 8, 'F');
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text("Contact Information", 25, y);
+    y += 12;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    
+    if (contactInfo.phone) {
+      doc.text(`📞 Phone: ${contactInfo.phone}`, 25, y);
+      y += 5;
+    }
+    if (contactInfo.email) {
+      doc.text(`✉️ Email: ${contactInfo.email}`, 25, y);
+      y += 5;
+    }
+    if (contactInfo.address) {
+      doc.text(`📍 Address: ${contactInfo.address}`, 25, y);
+      y += 5;
+    }
+    if (contactInfo.hours) {
+      doc.text(`🕒 Office Hours: ${contactInfo.hours}`, 25, y);
+      y += 5;
+    }
+    
+    y += 10;
+  }
+  
   // Date
   doc.setFontSize(12);
   doc.setTextColor(128, 128, 128);
   const today = new Date().toLocaleDateString();
-  doc.text(`Generated on: ${today}`, 105, 140, { align: "center" });
+  doc.text(`Generated on: ${today}`, 105, y, { align: "center" });
   
   // Add new page for content
   doc.addPage();
@@ -799,6 +835,120 @@ function generateFullPlanningBooklet() {
     
     y += 8;
   }
+
+  // Order of Service Section
+  doc.setFillColor(124, 58, 237); // Catholic purple
+  doc.rect(10, y-8, 190, 10, 'F');
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(255, 255, 255);
+  doc.text("Order of Service", 15, y);
+  y += 12;
+  
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0, 0, 0);
+  
+  // Funeral Mass Order
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 58, 138);
+  doc.text("Funeral Mass (Full Service)", 15, y);
+  y += 8;
+  
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0, 0, 0);
+  doc.text("1. Reception of the Body/Ashes", 20, y);
+  y += 5;
+  doc.text("2. Opening Prayer", 20, y);
+  y += 5;
+  doc.text("3. Liturgy of the Word", 20, y);
+  y += 5;
+  doc.text("   • First Reading", 25, y);
+  y += 5;
+  doc.text("   • Responsorial Psalm", 25, y);
+  y += 5;
+  doc.text("   • Second Reading", 25, y);
+  y += 5;
+  doc.text("   • Gospel Acclamation", 25, y);
+  y += 5;
+  doc.text("   • Gospel Reading", 25, y);
+  y += 5;
+  doc.text("   • Homily", 25, y);
+  y += 5;
+  doc.text("4. Liturgy of the Eucharist", 20, y);
+  y += 5;
+  doc.text("   • Preparation of the Gifts", 25, y);
+  y += 5;
+  doc.text("   • Eucharistic Prayer", 25, y);
+  y += 5;
+  doc.text("   • Communion", 25, y);
+  y += 5;
+  doc.text("5. Final Commendation", 20, y);
+  y += 5;
+  doc.text("6. Procession to Place of Committal", 20, y);
+  y += 8;
+  
+  // Funeral Service Order (without Eucharist)
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 58, 138);
+  doc.text("Funeral Service (Without Eucharist)", 15, y);
+  y += 8;
+  
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0, 0, 0);
+  doc.text("1. Reception of the Body/Ashes", 20, y);
+  y += 5;
+  doc.text("2. Opening Prayer", 20, y);
+  y += 5;
+  doc.text("3. Liturgy of the Word", 20, y);
+  y += 5;
+  doc.text("   • First Reading", 25, y);
+  y += 5;
+  doc.text("   • Responsorial Psalm", 25, y);
+  y += 5;
+  doc.text("   • Second Reading", 25, y);
+  y += 5;
+  doc.text("   • Gospel Acclamation", 25, y);
+  y += 5;
+  doc.text("   • Gospel Reading", 25, y);
+  y += 5;
+  doc.text("   • Homily", 25, y);
+  y += 5;
+  doc.text("4. Final Commendation", 20, y);
+  y += 5;
+  doc.text("5. Procession to Place of Committal", 20, y);
+  y += 8;
+  
+  // Vigil Order
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 58, 138);
+  doc.text("Vigil Service (Evening Before)", 15, y);
+  y += 8;
+  
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0, 0, 0);
+  doc.text("1. Opening Prayer", 20, y);
+  y += 5;
+  doc.text("2. Scripture Reading", 20, y);
+  y += 5;
+  doc.text("3. Responsorial Psalm", 20, y);
+  y += 5;
+  doc.text("4. Gospel Reading", 20, y);
+  y += 5;
+  doc.text("5. Homily or Reflection", 20, y);
+  y += 5;
+  doc.text("6. Intercessions", 20, y);
+  y += 5;
+  doc.text("7. Lord's Prayer", 20, y);
+  y += 5;
+  doc.text("8. Final Blessing", 20, y);
+  y += 8;
 
   // Hymns section with beautiful styling
   doc.setFillColor(124, 58, 237); // Catholic purple
@@ -1544,6 +1694,368 @@ function generateFullPlanningBookletDOCX() {
     }
   }
   
+  // Order of Service Section
+  children.push(
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "Order of Service",
+          bold: true,
+          size: 32
+        })
+      ],
+      spacing: { after: 200, before: 400 }
+    })
+  );
+  
+  // Funeral Mass Order
+  children.push(
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "Funeral Mass (Full Service)",
+          bold: true,
+          size: 28
+        })
+      ],
+      spacing: { after: 150 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "1. Reception of the Body/Ashes",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "2. Opening Prayer",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "3. Liturgy of the Word",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • First Reading",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Responsorial Psalm",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Second Reading",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Gospel Acclamation",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Gospel Reading",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Homily",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "4. Liturgy of the Eucharist",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Preparation of the Gifts",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Eucharistic Prayer",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Communion",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "5. Final Commendation",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "6. Procession to Place of Committal",
+          size: 24
+        })
+      ],
+      spacing: { after: 150 }
+    })
+  );
+  
+  // Funeral Service Order (without Eucharist)
+  children.push(
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "Funeral Service (Without Eucharist)",
+          bold: true,
+          size: 28
+        })
+      ],
+      spacing: { after: 150 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "1. Reception of the Body/Ashes",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "2. Opening Prayer",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "3. Liturgy of the Word",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • First Reading",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Responsorial Psalm",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Second Reading",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Gospel Acclamation",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Gospel Reading",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "   • Homily",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "4. Final Commendation",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "5. Procession to Place of Committal",
+          size: 24
+        })
+      ],
+      spacing: { after: 150 }
+    })
+  );
+  
+  // Vigil Order
+  children.push(
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "Vigil Service (Evening Before)",
+          bold: true,
+          size: 28
+        })
+      ],
+      spacing: { after: 150 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "1. Opening Prayer",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "2. Scripture Reading",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "3. Responsorial Psalm",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "4. Gospel Reading",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "5. Homily or Reflection",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "6. Intercessions",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "7. Lord's Prayer",
+          size: 24
+        })
+      ],
+      spacing: { after: 100 }
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "8. Final Blessing",
+          size: 24
+        })
+      ],
+      spacing: { after: 150 }
+    })
+  );
+  
   // Hymns section
   if (hymns.length > 0) {
     children.push(
@@ -1645,6 +2157,27 @@ function generateFullPlanningBookletDOCX() {
   // Add URL generation button
   const urlGenButton = $('<button class="bg-catholic-purple hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors ml-2">' + t('generate_url') + '</button>');
   $('#toggle-contact-edit').after(urlGenButton);
+  
+  // Order of Service toggle functionality
+  $('.service-type-btn').on('click', function() {
+    const serviceType = $(this).data('service');
+    
+    // Update button styles
+    $('.service-type-btn').removeClass('bg-catholic-blue text-white').addClass('bg-gray-200 text-gray-700');
+    $(this).removeClass('bg-gray-200 text-gray-700').addClass('bg-catholic-blue text-white');
+    
+    // Hide all service details
+    $('.service-details').addClass('hidden');
+    
+    // Show selected service details
+    if (serviceType === 'funeral-mass') {
+      $('#funeral-mass-details').removeClass('hidden');
+    } else if (serviceType === 'funeral-service') {
+      $('#funeral-service-details').removeClass('hidden');
+    } else if (serviceType === 'vigil') {
+      $('#vigil-details').removeClass('hidden');
+    }
+  });
   
   urlGenButton.on('click', function() {
     const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
