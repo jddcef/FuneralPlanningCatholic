@@ -1056,6 +1056,12 @@ function generateDOCX() {
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || 'Catholic Church';
   
+  // Check if docx library is available
+  if (!window.docx || !window.docx.Document) {
+    alert('DOCX generation is not available. Please try the PDF option instead.');
+    return;
+  }
+  
   // Create a new document
   const doc = new window.docx.Document({
     sections: [{
@@ -1252,6 +1258,160 @@ function attachChurchCustomizationListeners() {
   if (savedChurchName) {
     $('#church-name').val(savedChurchName);
   }
+  
+  // Check URL parameters for church customization
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlChurchName = urlParams.get('church_name');
+  if (urlChurchName) {
+    $('#church-name').val(urlChurchName);
+    localStorage.setItem('church-name', urlChurchName);
+  }
+}
+
+// Contact customization functionality
+function attachContactCustomizationListeners() {
+  // Toggle edit mode
+  $('#toggle-contact-edit').on('click', function() {
+    $('#contact-view-mode').addClass('hidden');
+    $('#contact-edit-mode').removeClass('hidden');
+    $(this).text(t('editing'));
+  });
+  
+  // Cancel edit
+  $('#cancel-contact-edit').on('click', function() {
+    $('#contact-edit-mode').addClass('hidden');
+    $('#contact-view-mode').removeClass('hidden');
+    $('#toggle-contact-edit').text(t('customize'));
+    // Reset form to current values
+    loadContactInfo();
+  });
+  
+  // Save contact info
+  $('#save-contact-info').on('click', function() {
+    const contactInfo = {
+      description: $('#contact-description-input').val(),
+      phone: $('#contact-phone-input').val(),
+      email: $('#contact-email-input').val(),
+      address: $('#contact-address-input').val(),
+      hours: $('#contact-hours-input').val()
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('contact-info', JSON.stringify(contactInfo));
+    
+    // Update view mode
+    updateContactDisplay(contactInfo);
+    
+    // Switch back to view mode
+    $('#contact-edit-mode').addClass('hidden');
+    $('#contact-view-mode').removeClass('hidden');
+    $('#toggle-contact-edit').text(t('customize'));
+    
+    // Show success message
+    $('#pdf-status').text(t('contact_updated')).fadeIn();
+    setTimeout(() => {
+      $('#pdf-status').fadeOut();
+    }, 2000);
+  });
+  
+  // Load saved contact info
+  loadContactInfo();
+  
+  // Add URL generation button
+  const urlGenButton = $('<button class="bg-catholic-purple hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors ml-2">🔗 Generate URL</button>');
+  $('#toggle-contact-edit').after(urlGenButton);
+  
+  urlGenButton.on('click', function() {
+    const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+    const churchName = $('#church-name').val();
+    
+    let customUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams();
+    
+    if (churchName && churchName !== 'Catholic Church') {
+      params.append('church_name', churchName);
+    }
+    
+    if (contactInfo.description && contactInfo.description !== 'For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.') {
+      params.append('contact_desc', contactInfo.description);
+    }
+    if (contactInfo.phone) params.append('contact_phone', contactInfo.phone);
+    if (contactInfo.email) params.append('contact_email', contactInfo.email);
+    if (contactInfo.address) params.append('contact_address', contactInfo.address);
+    if (contactInfo.hours) params.append('contact_hours', contactInfo.hours);
+    
+    if (params.toString()) {
+      customUrl += '?' + params.toString();
+    }
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(customUrl).then(() => {
+      $('#pdf-status').text(t('url_copied')).fadeIn();
+      setTimeout(() => {
+        $('#pdf-status').fadeOut();
+      }, 3000);
+    }).catch(() => {
+      // Fallback: show URL in alert
+      alert('Custom URL:\n' + customUrl);
+    });
+  });
+}
+
+// Load contact information from localStorage or URL parameters
+function loadContactInfo() {
+  let contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+  
+  // Check URL parameters for contact info
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlContactInfo = {
+    description: urlParams.get('contact_desc'),
+    phone: urlParams.get('contact_phone'),
+    email: urlParams.get('contact_email'),
+    address: urlParams.get('contact_address'),
+    hours: urlParams.get('contact_hours')
+  };
+  
+  // Merge URL parameters with saved info (URL takes precedence)
+  contactInfo = { ...contactInfo, ...urlContactInfo };
+  
+  // Set form values
+  $('#contact-description-input').val(contactInfo.description || 'For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.');
+  $('#contact-phone-input').val(contactInfo.phone || '');
+  $('#contact-email-input').val(contactInfo.email || '');
+  $('#contact-address-input').val(contactInfo.address || '');
+  $('#contact-hours-input').val(contactInfo.hours || '');
+  
+  // Update display
+  updateContactDisplay(contactInfo);
+}
+
+// Update contact display
+function updateContactDisplay(contactInfo) {
+  $('#contact-description').text(contactInfo.description || 'For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.');
+  
+  if (contactInfo.phone) {
+    $('#contact-phone').html(`📞 <a href="tel:${contactInfo.phone}" class="hover:text-blue-800">${contactInfo.phone}</a>`);
+  } else {
+    $('#contact-phone').html('');
+  }
+  
+  if (contactInfo.email) {
+    $('#contact-email').html(`✉️ <a href="mailto:${contactInfo.email}" class="hover:text-blue-800">${contactInfo.email}</a>`);
+  } else {
+    $('#contact-email').html('');
+  }
+  
+  if (contactInfo.address) {
+    $('#contact-address').html(`📍 ${contactInfo.address}`);
+  } else {
+    $('#contact-address').html('');
+  }
+  
+  if (contactInfo.hours) {
+    $('#contact-hours').html(`🕒 ${contactInfo.hours}`);
+  } else {
+    $('#contact-hours').html('');
+  }
 }
 
 // Smooth scrolling navigation
@@ -1287,6 +1447,7 @@ $(document).ready(function() {
   attachNavigationListeners();
   attachDocumentListeners();
   attachChurchCustomizationListeners();
+  attachContactCustomizationListeners();
 
   $('#generate-planning-booklet').on('click', generateFullPlanningBooklet);
   $('#download-pdf').on('click', generatePDF);
