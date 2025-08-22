@@ -521,12 +521,15 @@ const documentContents = {
 function attachDocumentListeners() {
   $(document).on('click', '.download-btn', function() {
     const type = $(this).data('type');
+    const format = $(this).data('format');
     const document = documentContents[type];
     
     if (document) {
-      $('#document-title').text(document.title);
-      $('#document-content').html(document.content);
-      $('#document-modal').removeClass('hidden');
+      if (format === 'pdf') {
+        generateDocumentPDF(type);
+      } else if (format === 'docx') {
+        generateDocumentDOCX(type);
+      }
     }
   });
   
@@ -761,6 +764,41 @@ function generateFullPlanningBooklet() {
   // Reset text color for content
   doc.setTextColor(0, 0, 0);
   y = 50;
+  
+  // Contact Information Section
+  const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+  if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
+    doc.setFillColor(30, 58, 138); // Catholic blue
+    doc.rect(10, y-8, 190, 10, 'F');
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text("Contact Information", 15, y);
+    y += 12;
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    
+    if (contactInfo.phone) {
+      doc.text(`📞 Phone: ${contactInfo.phone}`, 20, y);
+      y += 6;
+    }
+    if (contactInfo.email) {
+      doc.text(`✉️ Email: ${contactInfo.email}`, 20, y);
+      y += 6;
+    }
+    if (contactInfo.address) {
+      doc.text(`📍 Address: ${contactInfo.address}`, 20, y);
+      y += 6;
+    }
+    if (contactInfo.hours) {
+      doc.text(`🕒 Office Hours: ${contactInfo.hours}`, 20, y);
+      y += 6;
+    }
+    
+    y += 8;
+  }
 
   // Hymns section with beautiful styling
   doc.setFillColor(124, 58, 237); // Catholic purple
@@ -1051,14 +1089,24 @@ function generatePDF() {
   }, 2500);
 }
 
-// Generate DOCX document
+// Generate DOCX document for selected hymns and readings
 function generateDOCX() {
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || 'Catholic Church';
   
   // Check if docx library is available
   if (!window.docx || !window.docx.Document) {
-    alert('DOCX generation is not available. Please try the PDF option instead.');
+    // Try to load the library dynamically
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/docx@8.5.0/build/index.js';
+    script.onload = function() {
+      // Retry after library loads
+      setTimeout(() => generateDOCX(), 100);
+    };
+    script.onerror = function() {
+      alert('DOCX generation is not available. Please try the PDF option instead.');
+    };
+    document.head.appendChild(script);
     return;
   }
   
@@ -1313,12 +1361,289 @@ function attachContactCustomizationListeners() {
       $('#pdf-status').fadeOut();
     }, 2000);
   });
+}
+
+// Generate DOCX for individual documents
+function generateDocumentDOCX(type) {
+  // Check if docx library is available
+  if (!window.docx || !window.docx.Document) {
+    // Try to load the library dynamically
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/docx@8.5.0/build/index.js';
+    script.onload = function() {
+      // Retry after library loads
+      setTimeout(() => generateDocumentDOCX(type), 100);
+    };
+    script.onerror = function() {
+      alert('DOCX generation is not available. Please try the PDF option instead.');
+    };
+    document.head.appendChild(script);
+    return;
+  }
+  
+  const content = documentContents[type];
+  if (!content) {
+    alert('Document content not found.');
+    return;
+  }
+  
+  // Create a new document
+  const doc = new window.docx.Document({
+    sections: [{
+      properties: {},
+      children: [
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: content.title,
+              bold: true,
+              size: 32
+            })
+          ],
+          spacing: { after: 400 }
+        }),
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: content.content.replace(/<[^>]*>/g, ''), // Remove HTML tags
+              size: 24
+            })
+          ]
+        })
+      ]
+    }]
+  });
+  
+  // Generate and save the document
+  window.docx.Packer.toBlob(doc).then(blob => {
+    const fileName = `${type}_document.docx`;
+    saveAs(blob, fileName);
+  });
+}
+
+// Generate DOCX for full planning booklet
+function generateFullPlanningBookletDOCX() {
+  const { hymns, readings } = getSelections();
+  const churchName = $('#church-name').val() || 'Catholic Church';
+  
+  // Check if docx library is available
+  if (!window.docx || !window.docx.Document) {
+    // Try to load the library dynamically
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/docx@8.5.0/build/index.js';
+    script.onload = function() {
+      // Retry after library loads
+      setTimeout(() => generateFullPlanningBookletDOCX(), 100);
+    };
+    script.onerror = function() {
+      alert('DOCX generation is not available. Please try the PDF option instead.');
+    };
+    document.head.appendChild(script);
+    return;
+  }
+  
+  // Create document sections
+  const children = [];
+  
+  // Title page
+  children.push(
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: "Catholic Funeral Planning Booklet",
+          bold: true,
+          size: 48
+        })
+      ],
+      spacing: { after: 400, before: 200 },
+      alignment: window.docx.AlignmentType.CENTER
+    }),
+    new window.docx.Paragraph({
+      children: [
+        new window.docx.TextRun({
+          text: churchName,
+          bold: true,
+          size: 36
+        })
+      ],
+      spacing: { after: 600 },
+      alignment: window.docx.AlignmentType.CENTER
+    })
+  );
+  
+  // Contact Information
+  const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+  if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
+    children.push(
+      new window.docx.Paragraph({
+        children: [
+          new window.docx.TextRun({
+            text: "Contact Information",
+            bold: true,
+            size: 32
+          })
+        ],
+        spacing: { after: 200, before: 400 }
+      })
+    );
+    
+    if (contactInfo.phone) {
+      children.push(
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: `📞 Phone: ${contactInfo.phone}`,
+              size: 24
+            })
+          ],
+          spacing: { after: 100 }
+        })
+      );
+    }
+    
+    if (contactInfo.email) {
+      children.push(
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: `✉️ Email: ${contactInfo.email}`,
+              size: 24
+            })
+          ],
+          spacing: { after: 100 }
+        })
+      );
+    }
+    
+    if (contactInfo.address) {
+      children.push(
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: `📍 Address: ${contactInfo.address}`,
+              size: 24
+            })
+          ],
+          spacing: { after: 100 }
+        })
+      );
+    }
+    
+    if (contactInfo.hours) {
+      children.push(
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: `🕒 Office Hours: ${contactInfo.hours}`,
+              size: 24
+            })
+          ],
+          spacing: { after: 200 }
+        })
+      );
+    }
+  }
+  
+  // Hymns section
+  if (hymns.length > 0) {
+    children.push(
+      new window.docx.Paragraph({
+        children: [
+          new window.docx.TextRun({
+            text: "Selected Hymns",
+            bold: true,
+            size: 32
+          })
+        ],
+        spacing: { after: 200, before: 400 }
+      })
+    );
+    
+    hymns.forEach(hymn => {
+      children.push(
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: hymn.title,
+              bold: true,
+              size: 28
+            })
+          ],
+          spacing: { after: 100 }
+        }),
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: hymn.description,
+              size: 24
+            })
+          ],
+          spacing: { after: 100 }
+        })
+      );
+    });
+  }
+  
+  // Readings section
+  if (readings.length > 0) {
+    children.push(
+      new window.docx.Paragraph({
+        children: [
+          new window.docx.TextRun({
+            text: "Selected Readings",
+            bold: true,
+            size: 32
+          })
+        ],
+        spacing: { after: 200, before: 400 }
+      })
+    );
+    
+    readings.forEach(reading => {
+      children.push(
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: `${reading.type}: ${reading.title}`,
+              bold: true,
+              size: 28
+            })
+          ],
+          spacing: { after: 100 }
+        }),
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: reading.reference,
+              size: 24
+            })
+          ],
+          spacing: { after: 100 }
+        })
+      );
+    });
+  }
+  
+  // Create the document
+  const doc = new window.docx.Document({
+    sections: [{
+      properties: {},
+      children: children
+    }]
+  });
+  
+  // Generate and save the document
+  window.docx.Packer.toBlob(doc).then(blob => {
+    const fileName = `funeral_planning_booklet_${churchName.replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
+    saveAs(blob, fileName);
+  });
+}
   
   // Load saved contact info
   loadContactInfo();
   
   // Add URL generation button
-  const urlGenButton = $('<button class="bg-catholic-purple hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors ml-2">🔗 Generate URL</button>');
+  const urlGenButton = $('<button class="bg-catholic-purple hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors ml-2">' + t('generate_url') + '</button>');
   $('#toggle-contact-edit').after(urlGenButton);
   
   urlGenButton.on('click', function() {
@@ -1451,7 +1776,7 @@ $(document).ready(function() {
 
   $('#generate-planning-booklet').on('click', generateFullPlanningBooklet);
   $('#download-pdf').on('click', generatePDF);
-  $('#download-docx').on('click', generateDOCX);
+  $('#download-docx').on('click', generateFullPlanningBookletDOCX);
   
   // Theme filter change
   $('#theme-filter').on('change', function() {
