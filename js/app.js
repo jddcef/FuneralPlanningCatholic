@@ -549,29 +549,35 @@ function attachDocumentListeners() {
   });
 }
 
-// Generate beautiful PDF for specific documents
+// Generate beautiful PDF for specific documents with rich formatting
 function generateDocumentPDF(title, content) {
   const doc = new window.jspdf.jsPDF();
   let y = 20;
   
-  // Header with styling
+  // Header with beautiful styling
   doc.setFillColor(30, 58, 138); // Catholic blue
-  doc.rect(0, 0, 210, 30, 'F');
+  doc.rect(0, 0, 210, 35, 'F');
+  
+  // Add subtle pattern to header
+  doc.setFillColor(255, 255, 255);
+  doc.rect(5, 5, 200, 25, 'F');
+  doc.setFillColor(30, 58, 138);
+  doc.rect(0, 0, 210, 35, 'F');
   
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(20);
+  doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
-  doc.text(title, 105, 18, { align: "center" });
+  doc.text(title, 105, 22, { align: "center" });
   
   // Reset text color for content
   doc.setTextColor(0, 0, 0);
-  y = 40;
+  y = 45;
   
-  // Convert HTML content to formatted text
+  // Convert HTML content to beautifully formatted text
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = content;
   
-  // Process headings and content
+  // Process headings and content with rich formatting
   const processContent = (element, level = 0) => {
     if (element.nodeType === Node.TEXT_NODE) {
       return element.textContent;
@@ -579,19 +585,39 @@ function generateDocumentPDF(title, content) {
     
     let text = '';
     if (element.tagName === 'H2') {
-      doc.setFontSize(16);
+      // Main section heading
+      doc.setFillColor(124, 58, 237); // Catholic purple
+      doc.rect(10, y-5, 190, 8, 'F');
+      doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(30, 58, 138);
+      doc.setTextColor(255, 255, 255);
       if (y > 250) {
         doc.addPage();
         y = 20;
       }
       doc.text(element.textContent, 15, y);
-      y += 8;
+      y += 12;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
     } else if (element.tagName === 'H3') {
+      // Subsection heading
+      doc.setFillColor(30, 58, 138); // Catholic blue
+      doc.rect(15, y-3, 180, 6, 'F');
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(element.textContent, 20, y);
+      y += 8;
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+    } else if (element.tagName === 'H4') {
+      // Minor heading
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(30, 58, 138);
@@ -599,45 +625,41 @@ function generateDocumentPDF(title, content) {
         doc.addPage();
         y = 20;
       }
-      doc.text(element.textContent, 15, y);
+      doc.text(element.textContent, 20, y);
       y += 6;
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-    } else if (element.tagName === 'H4') {
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-      doc.text(element.textContent, 15, y);
-      y += 5;
       doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
     } else if (element.tagName === 'UL') {
-      y += 2;
+      // Bullet points with styling
+      y += 3;
       element.querySelectorAll('li').forEach((li, index) => {
         if (y > 250) {
           doc.addPage();
           y = 20;
         }
-        doc.text(`• ${li.textContent}`, 20, y);
-        y += 5;
+        // Add colored bullet
+        doc.setFillColor(217, 119, 6); // Catholic gold
+        doc.circle(22, y-1, 1.5, 'F');
+        doc.setTextColor(0, 0, 0);
+        doc.text(li.textContent, 28, y);
+        y += 6;
       });
-      y += 2;
+      y += 3;
     } else if (element.tagName === 'P') {
+      // Paragraphs with proper spacing
       if (y > 250) {
         doc.addPage();
         y = 20;
       }
-      const lines = doc.splitTextToSize(element.textContent, 180);
+      const lines = doc.splitTextToSize(element.textContent, 170);
       lines.forEach(line => {
-        doc.text(line, 15, y);
+        doc.text(line, 20, y);
         y += 5;
       });
-      y += 2;
+      y += 3;
     } else if (element.tagName === 'DIV') {
+      // Process child elements
       element.childNodes.forEach(child => {
         processContent(child, level + 1);
       });
@@ -646,13 +668,25 @@ function generateDocumentPDF(title, content) {
   
   processContent(tempDiv);
   
-  // Footer
+  // Add beautiful footer with page numbers
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
+    
+    // Footer line
+    doc.setDrawColor(124, 58, 237);
+    doc.setLineWidth(0.5);
+    doc.line(20, 280, 190, 280);
+    
+    // Page numbers with styling
+    doc.setFontSize(10);
+    doc.setTextColor(124, 58, 237);
     doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: "center" });
+    
+    // Add subtle watermark
+    doc.setTextColor(240, 240, 240);
+    doc.setFontSize(8);
+    doc.text("Catholic Funeral Planner", 105, 295, { align: "center" });
   }
   
   doc.save(`${title.toLowerCase().replace(/\s+/g, '-')}.pdf`);
@@ -665,31 +699,39 @@ function generateDocumentPDF(title, content) {
   }, 3000);
 }
 
-// Generate beautiful PDF with jsPDF
+// Generate beautiful PDF with jsPDF - enhanced version
 function generatePDF() {
   const { hymns, readings } = getSelections();
   const doc = new window.jspdf.jsPDF();
   let y = 20;
   
-  // Header with styling
+  // Beautiful header with gradient effect
   doc.setFillColor(30, 58, 138); // Catholic blue
-  doc.rect(0, 0, 210, 30, 'F');
+  doc.rect(0, 0, 210, 40, 'F');
+  
+  // Add white overlay for text
+  doc.setFillColor(255, 255, 255);
+  doc.rect(5, 5, 200, 30, 'F');
+  doc.setFillColor(30, 58, 138);
+  doc.rect(0, 0, 210, 40, 'F');
   
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(20);
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.text("Catholic Funeral Plan", 105, 18, { align: "center" });
+  doc.text("Catholic Funeral Plan", 105, 25, { align: "center" });
   
   // Reset text color for content
   doc.setTextColor(0, 0, 0);
-  y = 40;
+  y = 50;
 
-  // Hymns section
-  doc.setFontSize(16);
+  // Hymns section with beautiful styling
+  doc.setFillColor(124, 58, 237); // Catholic purple
+  doc.rect(10, y-8, 190, 10, 'F');
+  doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(30, 58, 138);
+  doc.setTextColor(255, 255, 255);
   doc.text("Selected Hymns", 15, y);
-  y += 8;
+  y += 12;
   
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
@@ -704,27 +746,41 @@ function generatePDF() {
         doc.addPage();
         y = 20;
       }
+      
+      // Hymn title with styling
+      doc.setFillColor(217, 119, 6); // Catholic gold
+      doc.rect(15, y-3, 180, 6, 'F');
       doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
       doc.text(`${index + 1}. ${hymn.title}`, 20, y);
-      y += 5;
+      y += 8;
+      
+      // Hymn description
       doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
       doc.text(`   ${hymn.description}`, 20, y);
-      y += 5;
+      y += 6;
+      
+      // YouTube link with subtle styling
       doc.setTextColor(128, 128, 128);
+      doc.setFontSize(10);
       doc.text(`   YouTube: ${hymn.youtube}`, 20, y);
-      y += 7;
+      y += 8;
+      doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
     });
   }
   
-  y += 5;
-  
-  // Readings section
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(30, 58, 138);
-  doc.text("Selected Readings", 15, y);
   y += 8;
+  
+  // Readings section with beautiful styling
+  doc.setFillColor(30, 58, 138); // Catholic blue
+  doc.rect(10, y-8, 190, 10, 'F');
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(255, 255, 255);
+  doc.text("Selected Readings", 15, y);
+  y += 12;
   
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
@@ -736,13 +792,22 @@ function generatePDF() {
         doc.addPage();
         y = 20;
       }
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${type}:`, 15, y);
-      y += 5;
-      doc.setFont('helvetica', 'normal');
-      doc.text(`   ${readings[type].title} (${readings[type].ref})`, 20, y);
-      y += 5;
       
+      // Reading type with colored background
+      doc.setFillColor(124, 58, 237); // Catholic purple
+      doc.rect(15, y-3, 180, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${type}:`, 20, y);
+      y += 8;
+      
+      // Reading details
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text(`   ${readings[type].title} (${readings[type].ref})`, 20, y);
+      y += 6;
+      
+      // Reading text with proper formatting
       const lines = doc.splitTextToSize(readings[type].text, 170);
       lines.forEach(line => {
         if (y > 250) {
@@ -752,7 +817,7 @@ function generatePDF() {
         doc.text(line, 20, y);
         y += 5;
       });
-      y += 3;
+      y += 4;
     } else {
       if (y > 250) {
         doc.addPage();
@@ -763,13 +828,25 @@ function generatePDF() {
     }
   });
 
-  // Footer
+  // Beautiful footer with page numbers
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
+    
+    // Footer line
+    doc.setDrawColor(124, 58, 237);
+    doc.setLineWidth(0.5);
+    doc.line(20, 280, 190, 280);
+    
+    // Page numbers
+    doc.setFontSize(10);
+    doc.setTextColor(124, 58, 237);
     doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: "center" });
+    
+    // Watermark
+    doc.setTextColor(240, 240, 240);
+    doc.setFontSize(8);
+    doc.text("Catholic Funeral Planner", 105, 295, { align: "center" });
   }
 
   doc.save("funeral-plan.pdf");
