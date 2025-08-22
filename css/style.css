@@ -137,6 +137,42 @@ select:focus {
   border-color: #1e3a8a;
 }
 
+/* Catholic purple color definitions */
+.bg-catholic-purple {
+  background-color: #7c3aed;
+}
+
+.text-catholic-purple {
+  color: #7c3aed;
+}
+
+.border-catholic-purple {
+  border-color: #7c3aed;
+}
+
+/* Flow diagram styling */
+.flow-step {
+  transition: all 0.3s ease;
+}
+
+.flow-step:hover {
+  transform: scale(1.05);
+}
+
+/* Enhanced gradient backgrounds */
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.from-catholic-blue {
+  --tw-gradient-from: #1e3a8a;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(30, 58, 138, 0));
+}
+
+.to-catholic-purple {
+  --tw-gradient-to: #7c3aed;
+}
+
 /* Print styles */
 @media print {
   nav, #video-modal, #document-modal, button, .no-print {
@@ -201,4 +237,53 @@ select:focus {
   border-radius: 0.25rem;
   font-size: 0.75rem;
   font-weight: 500;
+}
+
+/* Costs section styling */
+#costs li {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+#costs li:last-child {
+  border-bottom: none;
+}
+
+/* Enhanced button hover effects */
+.bg-gradient-to-r:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+}
+
+/* Flow diagram arrow animations */
+.flow-arrow {
+  transition: all 0.3s ease;
+}
+
+.flow-arrow:hover {
+  transform: scale(1.1);
+  color: #d97706;
+}
+
+/* Enhanced card borders */
+.border-l-4.border-catholic-blue,
+.border-l-4.border-catholic-purple,
+.border-l-4.border-catholic-red {
+  border-left-width: 4px;
+  transition: all 0.3s ease;
+}
+
+.border-l-4.border-catholic-blue:hover,
+.border-l-4.border-catholic-purple:hover,
+.border-l-4.border-catholic-red:hover {
+  transform: translateX(4px);
+}
+
+/* Purple gradient backgrounds */
+.bg-gradient-to-r.from-purple-50.to-blue-50 {
+  background-image: linear-gradient(to right, #faf5ff, #eff6ff);
+}
+
+.bg-purple-50 {
+  background-color: #faf5ff;
 }
