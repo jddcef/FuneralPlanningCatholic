@@ -868,6 +868,44 @@ function attachResetListener() {
   });
 }
 
+// Church customization functionality
+function attachChurchCustomizationListeners() {
+  // Cover image change
+  $('#change-cover-image').on('click', function() {
+    $('#cover-image-input').click();
+  });
+  
+  $('#cover-image-preview').on('click', function() {
+    $('#cover-image-input').click();
+  });
+  
+  $('#cover-image-input').on('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        $('#cover-image-preview').html(`
+          <img src="${e.target.result}" alt="Cover Image" class="w-full h-full object-cover rounded-lg">
+        `);
+        // Store the image data
+        window.coverImageData = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  // Save church name to localStorage
+  $('#church-name').on('input', function() {
+    localStorage.setItem('church-name', $(this).val());
+  });
+  
+  // Load saved church name
+  const savedChurchName = localStorage.getItem('church-name');
+  if (savedChurchName) {
+    $('#church-name').val(savedChurchName);
+  }
+}
+
 // Smooth scrolling navigation
 function attachNavigationListeners() {
   $('a[href^="#"]').on('click', function(e) {
@@ -900,8 +938,11 @@ $(document).ready(function() {
   attachVideoListeners();
   attachNavigationListeners();
   attachDocumentListeners();
+  attachChurchCustomizationListeners();
 
-  $('#generate-pdf').on('click', generatePDF);
+  $('#generate-planning-booklet').on('click', generateFullPlanningBooklet);
+  $('#download-pdf').on('click', generatePDF);
+  $('#download-docx').on('click', generateDOCX);
   
   // Theme filter change
   $('#theme-filter').on('change', function() {

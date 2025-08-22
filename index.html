@@ -8,6 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://unpkg.com/compromise@14.10.0/builds/compromise.min.js"></script>
+  <script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -194,6 +196,34 @@
     <section id="planning" class="mb-16">
       <h2 class="text-2xl font-bold text-catholic-blue mb-8 text-center">Planning Tools</h2>
       
+      <!-- Church Customization -->
+      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h3 class="text-xl font-semibold text-catholic-blue mb-4">Church Information</h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label for="church-name" class="block text-sm font-medium text-gray-700 mb-2">Church Name</label>
+            <input type="text" id="church-name" value="Catholic Church" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue">
+            <p class="text-xs text-gray-500 mt-1">This will appear on your planning booklet cover</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Cover Image</label>
+            <div class="flex items-center space-x-4">
+              <div id="cover-image-preview" class="w-20 h-20 bg-gradient-to-br from-catholic-blue to-catholic-purple rounded-lg flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                <span class="text-white text-2xl">⛪</span>
+              </div>
+              <div>
+                <button id="change-cover-image" class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition-colors">
+                  Change Image
+                </button>
+                <p class="text-xs text-gray-500 mt-1">Click to upload custom image</p>
+              </div>
+            </div>
+            <input type="file" id="cover-image-input" accept="image/*" class="hidden">
+          </div>
+        </div>
+      </div>
+      
       <!-- Two-column layout for wide screens -->
       <div class="grid lg:grid-cols-2 gap-8">
         <!-- Hymn Selection -->
@@ -217,9 +247,17 @@
 
       <!-- Action Buttons -->
       <div class="text-center space-y-4 mt-8">
-        <button id="generate-pdf" class="bg-gradient-to-r from-catholic-blue to-catholic-purple hover:from-blue-800 hover:to-purple-800 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
-          Generate PDF
+        <button id="generate-planning-booklet" class="bg-gradient-to-r from-catholic-blue to-catholic-purple hover:from-blue-800 hover:to-purple-800 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+          📖 Download Full Planning Booklet
         </button>
+        <div class="flex justify-center space-x-4">
+          <button id="download-pdf" class="bg-catholic-red hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+            📄 PDF
+          </button>
+          <button id="download-docx" class="bg-catholic-gold hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+            📝 DOCX
+          </button>
+        </div>
         <div>
           <a id="reset-app" href="#" class="text-gray-600 hover:text-gray-800 underline">Reset/Start Over</a>
         </div>
@@ -232,32 +270,52 @@
       <h2 class="text-2xl font-bold text-catholic-blue mb-8 text-center">Downloads</h2>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
-          <h3 class="text-lg font-semibold text-catholic-blue mb-3">Checklist PDF</h3>
+          <h3 class="text-lg font-semibold text-catholic-blue mb-3">Checklist</h3>
           <p class="text-xs text-gray-500 mb-3">Step-by-step funeral planning checklist with all essential tasks and considerations.</p>
-          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors download-btn" data-type="checklist">
-            Preview & Download
-          </button>
+          <div class="flex justify-center space-x-2">
+            <button class="bg-catholic-gold hover:bg-orange-600 text-white px-3 py-2 rounded text-sm transition-colors download-btn" data-type="checklist" data-format="pdf">
+              📄 PDF
+            </button>
+            <button class="bg-catholic-gold hover:bg-orange-600 text-white px-3 py-2 rounded text-sm transition-colors download-btn" data-type="checklist" data-format="docx">
+              📝 DOCX
+            </button>
+          </div>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
           <h3 class="text-lg font-semibold text-catholic-blue mb-3">Program Template</h3>
           <p class="text-xs text-gray-500 mb-3">Editable funeral program template with sample text and formatting.</p>
-          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors download-btn" data-type="program">
-            Preview & Download
-          </button>
+          <div class="flex justify-center space-x-2">
+            <button class="bg-catholic-gold hover:bg-orange-600 text-white px-3 py-2 rounded text-sm transition-colors download-btn" data-type="program" data-format="pdf">
+              📄 PDF
+            </button>
+            <button class="bg-catholic-gold hover:bg-orange-600 text-white px-3 py-2 rounded text-sm transition-colors download-btn" data-type="program" data-format="docx">
+              📝 DOCX
+            </button>
+          </div>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
           <h3 class="text-lg font-semibold text-catholic-blue mb-3">Reading Booklet</h3>
           <p class="text-xs text-gray-500 mb-3">Complete collection of approved Catholic funeral readings with themes.</p>
-          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors download-btn" data-type="readings">
-            Preview & Download
-          </button>
+          <div class="flex justify-center space-x-2">
+            <button class="bg-catholic-gold hover:bg-orange-600 text-white px-3 py-2 rounded text-sm transition-colors download-btn" data-type="readings" data-format="pdf">
+              📄 PDF
+            </button>
+            <button class="bg-catholic-gold hover:bg-orange-600 text-white px-3 py-2 rounded text-sm transition-colors download-btn" data-type="readings" data-format="docx">
+              📝 DOCX
+            </button>
+          </div>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
           <h3 class="text-lg font-semibold text-catholic-blue mb-3">Vigil Prayer Sheet</h3>
           <p class="text-xs text-gray-500 mb-3">Prayer service outline and suggested prayers for the vigil service.</p>
-          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors download-btn" data-type="vigil">
-            Preview & Download
-          </button>
+          <div class="flex justify-center space-x-2">
+            <button class="bg-catholic-gold hover:bg-orange-600 text-white px-3 py-2 rounded text-sm transition-colors download-btn" data-type="vigil" data-format="pdf">
+              📄 PDF
+            </button>
+            <button class="bg-catholic-gold hover:bg-orange-600 text-white px-3 py-2 rounded text-sm transition-colors download-btn" data-type="vigil" data-format="docx">
+              📝 DOCX
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -273,6 +331,10 @@
               <li class="flex justify-between">
                 <span>Priest or Deacon</span>
                 <span class="text-catholic-purple font-medium">Tithe suggested (10% of funeral budget)</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Stole fee</span>
+                <span class="text-catholic-purple font-medium">Towards the church</span>
               </li>
               <li class="flex justify-between">
                 <span>Organist</span>
