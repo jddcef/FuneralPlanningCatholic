@@ -202,6 +202,13 @@ window.translations = {
     "funeral_service_title": "Begrafnis Diens (Sonder Eucharistie)",
     "vigil_title": "Waak Diens (Aand Voor)",
     
+    // Background Section
+    "background_title": "Agtergrond oor Katolieke Begrafnisse",
+    "historical_foundation_title": "Historiese en Teologiese Grondslag",
+    "spiritual_care_title": "Geestelike en Pastorale Sorg",
+    "cultural_variations_title": "Kulturele en Streeksvariasies",
+    "modern_considerations_title": "Moderne Oorwegings",
+    
     "hymn_selection": "Liedkeuse",
     "reading_selection": "Leesstukke Keuse",
     "theme_filter": "Filtreer volgens tema:",
@@ -352,6 +359,13 @@ window.translations = {
     "funeral_mass_title": "Inkonzo yoNgcwaba (Inkonzo Epheleleyo)",
     "funeral_service_title": "Inkonzo yoNgcwaba (Ngaphandle kwe-Eucharist)",
     "vigil_title": "Inkonzo yoKulala (Ubusuku Obungaphambili)",
+    
+    // Background Section
+    "background_title": "Inkcukacha Ngemva Kweengcwaba ZamaKatolika",
+    "historical_foundation_title": "Isiseko Sembali Nezitheology",
+    "spiritual_care_title": "Inkathalo Yomoya Nezinkululeko",
+    "cultural_variations_title": "Iintshintsho Zamasiko Nezifunda",
+    "modern_considerations_title": "Iingcinga Zanamhlanje",
     
     "hymn_selection": "Ukukhetha Iingoma",
     "reading_selection": "Ukukhetha Ukufundwa",
