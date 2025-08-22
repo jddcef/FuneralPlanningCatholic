@@ -63,9 +63,16 @@
       <div class="text-center">
         <h1 class="text-4xl md:text-6xl font-bold text-catholic-blue mb-6">Catholic Funeral Planner</h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-          Plan a Catholic funeral with hymn and reading selections. Generate a printable PDF. 
-          All data is processed in your browser for your privacy.
+          Welcome to our Catholic Funeral Planning Guide. Whether you are grieving a loved one, preparing for your own arrangements, or simply curious about Catholic funeral traditions, this site is here to help.
         </p>
+        
+        <!-- Condolence Message -->
+        <div class="bg-blue-50 border-l-4 border-catholic-blue p-4 mb-8 max-w-2xl mx-auto text-left">
+          <p class="text-gray-700 italic">
+            💙 <strong>Our condolences</strong> - We are sorry for your loss. May you find comfort in the hope of the resurrection and the love of your community during this difficult time.
+          </p>
+        </div>
+        
         <div class="flex flex-wrap justify-center gap-4">
           <a href="#planning" class="bg-catholic-blue hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
             Start Planning
@@ -83,15 +90,18 @@
       <div class="grid md:grid-cols-3 gap-8">
         <div class="bg-white p-6 rounded-lg shadow-md">
           <h3 class="text-xl font-semibold text-catholic-blue mb-4">The Vigil / Wake</h3>
-          <p class="text-gray-600">A prayer service held the evening before the funeral, often at a funeral home or church.</p>
+          <p class="text-gray-600 mb-4">A prayer service held the evening before the funeral, often at a funeral home or church. <strong>Pastoral Tip:</strong> The Vigil can also be held at home if other locations are not possible.</p>
+          <p class="text-sm text-gray-500">The Vigil is often the most personal and flexible part of the funeral rites — it can be held at home, in the church, or at a funeral home chapel.</p>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md">
           <h3 class="text-xl font-semibold text-catholic-blue mb-4">The Funeral Mass</h3>
-          <p class="text-gray-600">The central liturgical celebration with readings, prayers, and Eucharist.</p>
+          <p class="text-gray-600 mb-4">The central liturgical celebration with readings, prayers, and Eucharist.</p>
+          <p class="text-sm text-gray-500">The readings and music should reflect Christian hope and the life of the person in the light of Christ.</p>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md">
           <h3 class="text-xl font-semibold text-catholic-blue mb-4">The Burial / Committal</h3>
-          <p class="text-gray-600">Final prayers at the gravesite or mausoleum, committing the body to its final resting place.</p>
+          <p class="text-gray-600 mb-4">Final prayers at the gravesite or mausoleum, committing the body to its final resting place.</p>
+          <p class="text-sm text-gray-500">It is the final act of the community in caring for the body, entrusting it to the earth until the resurrection.</p>
         </div>
       </div>
     </section>
@@ -100,26 +110,29 @@
     <section id="planning" class="mb-16">
       <h2 class="text-3xl font-bold text-catholic-blue mb-8 text-center">Planning Tools</h2>
       
-      <!-- Hymn Selection -->
-      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h3 class="text-xl font-semibold text-catholic-blue mb-4">Hymn Selection</h3>
-        <div id="hymn-list" class="space-y-3"></div>
-      </div>
-
-      <!-- Reading Selection -->
-      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h3 class="text-xl font-semibold text-catholic-blue mb-4">Reading Selection</h3>
-        <div class="mb-4">
-          <label for="theme-filter" class="block text-sm font-medium text-gray-700 mb-2">Filter by theme:</label>
-          <select id="theme-filter" class="w-full md:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue">
-            <option value="">All Themes</option>
-          </select>
+      <!-- Two-column layout for wide screens -->
+      <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Hymn Selection -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold text-catholic-blue mb-4">Hymn Selection</h3>
+          <div id="hymn-list" class="space-y-3"></div>
         </div>
-        <div id="reading-sections"></div>
+
+        <!-- Reading Selection -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold text-catholic-blue mb-4">Reading Selection</h3>
+          <div class="mb-4">
+            <label for="theme-filter" class="block text-sm font-medium text-gray-700 mb-2">Filter by theme:</label>
+            <select id="theme-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue">
+              <option value="">All Themes</option>
+            </select>
+          </div>
+          <div id="reading-sections"></div>
+        </div>
       </div>
 
       <!-- Action Buttons -->
-      <div class="text-center space-y-4">
+      <div class="text-center space-y-4 mt-8">
         <button id="generate-pdf" class="bg-catholic-blue hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
           Generate PDF
         </button>
@@ -136,26 +149,30 @@
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
           <h3 class="text-lg font-semibold text-catholic-blue mb-3">Checklist PDF</h3>
-          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
-            Download
+          <p class="text-xs text-gray-500 mb-3">Step-by-step funeral planning checklist with all essential tasks and considerations.</p>
+          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors download-btn" data-type="checklist">
+            Preview & Download
           </button>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
           <h3 class="text-lg font-semibold text-catholic-blue mb-3">Program Template</h3>
-          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
-            Download
+          <p class="text-xs text-gray-500 mb-3">Editable funeral program template with sample text and formatting.</p>
+          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors download-btn" data-type="program">
+            Preview & Download
           </button>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
           <h3 class="text-lg font-semibold text-catholic-blue mb-3">Reading Booklet</h3>
-          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
-            Download
+          <p class="text-xs text-gray-500 mb-3">Complete collection of approved Catholic funeral readings with themes.</p>
+          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors download-btn" data-type="readings">
+            Preview & Download
           </button>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
           <h3 class="text-lg font-semibold text-catholic-blue mb-3">Vigil Prayer Sheet</h3>
-          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
-            Download
+          <p class="text-xs text-gray-500 mb-3">Prayer service outline and suggested prayers for the vigil service.</p>
+          <button class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors download-btn" data-type="vigil">
+            Preview & Download
           </button>
         </div>
       </div>
@@ -176,6 +193,18 @@
         <div class="bg-white p-6 rounded-lg shadow-md">
           <h3 class="text-lg font-semibold text-catholic-blue mb-2">Can I customize the funeral program?</h3>
           <p class="text-gray-600">Yes, you can download our editable templates and customize them according to your needs.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg font-semibold text-catholic-blue mb-2">Can cremation be Catholic?</h3>
+          <p class="text-gray-600">Yes, the Catholic Church permits cremation, though burial is preferred. The cremated remains should be treated with respect and buried or placed in a columbarium.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg font-semibold text-catholic-blue mb-2">What if the person wasn't a practicing Catholic?</h3>
+          <p class="text-gray-600">Catholic funerals can still be arranged for non-practicing Catholics. Consult with your parish priest for guidance on specific circumstances.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg font-semibold text-catholic-blue mb-2">Do we have to have a Vigil?</h3>
+          <p class="text-gray-600">While not strictly required, the Vigil is highly recommended as it provides an important opportunity for prayer and community support.</p>
         </div>
       </div>
     </section>
@@ -203,6 +232,24 @@
       </div>
       <div class="p-4">
         <div id="video-container" class="aspect-video"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Document Preview Modal -->
+  <div id="document-modal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
+      <div class="flex justify-between items-center p-4 border-b">
+        <h3 id="document-title" class="text-lg font-semibold"></h3>
+        <div class="flex space-x-2">
+          <button id="generate-document-pdf" class="bg-catholic-blue hover:bg-blue-800 text-white px-4 py-2 rounded text-sm transition-colors">
+            Generate PDF
+          </button>
+          <button id="close-document" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        </div>
+      </div>
+      <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div id="document-content"></div>
       </div>
     </div>
   </div>
