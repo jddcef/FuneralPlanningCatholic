@@ -699,6 +699,201 @@ function generateDocumentPDF(title, content) {
   }, 3000);
 }
 
+// Generate full planning booklet with cover page
+function generateFullPlanningBooklet() {
+  const { hymns, readings } = getSelections();
+  const churchName = $('#church-name').val() || 'Catholic Church';
+  const coverImage = window.coverImageData;
+  
+  const doc = new window.jspdf.jsPDF();
+  let y = 20;
+  
+  // Beautiful cover page
+  doc.setFillColor(30, 58, 138); // Catholic blue
+  doc.rect(0, 0, 210, 297, 'F');
+  
+  // Add white overlay for content area
+  doc.setFillColor(255, 255, 255);
+  doc.rect(10, 10, 190, 277, 'F');
+  
+  // Church name at top
+  doc.setTextColor(30, 58, 138);
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  doc.text(churchName, 105, 60, { align: "center" });
+  
+  // Title
+  doc.setTextColor(124, 58, 237); // Catholic purple
+  doc.setFontSize(24);
+  doc.text("Funeral Planning Booklet", 105, 90, { align: "center" });
+  
+  // Subtitle
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'normal');
+  doc.text("A comprehensive guide for Catholic funeral planning", 105, 110, { align: "center" });
+  
+  // Date
+  doc.setFontSize(12);
+  doc.setTextColor(128, 128, 128);
+  const today = new Date().toLocaleDateString();
+  doc.text(`Generated on: ${today}`, 105, 140, { align: "center" });
+  
+  // Add new page for content
+  doc.addPage();
+  y = 20;
+  
+  // Content header
+  doc.setFillColor(124, 58, 237); // Catholic purple
+  doc.rect(0, 0, 210, 40, 'F');
+  
+  // Add white overlay for text
+  doc.setFillColor(255, 255, 255);
+  doc.rect(5, 5, 200, 30, 'F');
+  doc.setFillColor(124, 58, 237);
+  doc.rect(0, 0, 210, 40, 'F');
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(24);
+  doc.setFont('helvetica', 'bold');
+  doc.text("Funeral Planning Details", 105, 25, { align: "center" });
+  
+  // Reset text color for content
+  doc.setTextColor(0, 0, 0);
+  y = 50;
+
+  // Hymns section with beautiful styling
+  doc.setFillColor(124, 58, 237); // Catholic purple
+  doc.rect(10, y-8, 190, 10, 'F');
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(255, 255, 255);
+  doc.text("Selected Hymns", 15, y);
+  y += 12;
+  
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0, 0, 0);
+  
+  if (hymns.length === 0) {
+    doc.text("No hymns selected.", 20, y);
+    y += 7;
+  } else {
+    hymns.forEach((hymn, index) => {
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      // Hymn title with styling
+      doc.setFillColor(217, 119, 6); // Catholic gold
+      doc.rect(15, y-3, 180, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${index + 1}. ${hymn.title}`, 20, y);
+      y += 8;
+      
+      // Hymn description
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text(`   ${hymn.description}`, 20, y);
+      y += 6;
+      
+      // YouTube link with subtle styling
+      doc.setTextColor(128, 128, 128);
+      doc.setFontSize(10);
+      doc.text(`   YouTube: ${hymn.youtube}`, 20, y);
+      y += 8;
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+    });
+  }
+  
+  y += 8;
+  
+  // Readings section with beautiful styling
+  doc.setFillColor(30, 58, 138); // Catholic blue
+  doc.rect(10, y-8, 190, 10, 'F');
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(255, 255, 255);
+  doc.text("Selected Readings", 15, y);
+  y += 12;
+  
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0, 0, 0);
+  
+  ["First Reading", "Psalm", "Second Reading", "Gospel"].forEach(type => {
+    if (readings[type]) {
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      // Reading type with colored background
+      doc.setFillColor(124, 58, 237); // Catholic purple
+      doc.rect(15, y-3, 180, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${type}:`, 20, y);
+      y += 8;
+      
+      // Reading details
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text(`   ${readings[type].title} (${readings[type].ref})`, 20, y);
+      y += 6;
+      
+      // Reading text with proper formatting
+      const lines = doc.splitTextToSize(readings[type].text, 170);
+      lines.forEach(line => {
+        if (y > 250) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 20, y);
+        y += 5;
+      });
+      y += 4;
+    } else {
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(`${type}: [not selected]`, 15, y);
+      y += 7;
+    }
+  });
+
+  // Beautiful footer with page numbers
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    
+    // Footer line
+    doc.setDrawColor(124, 58, 237);
+    doc.setLineWidth(0.5);
+    doc.line(20, 280, 190, 280);
+    
+    // Page numbers
+    doc.setFontSize(10);
+    doc.setTextColor(124, 58, 237);
+    doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: "center" });
+    
+    // Watermark
+    doc.setTextColor(240, 240, 240);
+    doc.setFontSize(8);
+    doc.text("Catholic Funeral Planner", 105, 295, { align: "center" });
+  }
+
+  doc.save(`${churchName.replace(/\s+/g, '-')}-funeral-planning-booklet.pdf`);
+  $('#pdf-status').text("Full planning booklet generated and downloaded!").fadeIn();
+  setTimeout(() => {
+    $('#pdf-status').fadeOut();
+  }, 3000);
+}
+
 // Generate beautiful PDF with jsPDF - enhanced version
 function generatePDF() {
   const { hymns, readings } = getSelections();
@@ -856,6 +1051,159 @@ function generatePDF() {
   }, 2500);
 }
 
+// Generate DOCX document
+function generateDOCX() {
+  const { hymns, readings } = getSelections();
+  const churchName = $('#church-name').val() || 'Catholic Church';
+  
+  // Create a new document
+  const doc = new window.docx.Document({
+    sections: [{
+      properties: {
+        page: {
+          margin: {
+            top: 1440, // 1 inch
+            right: 1440,
+            bottom: 1440,
+            left: 1440
+          }
+        }
+      },
+      children: [
+        // Title
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: "Catholic Funeral Plan",
+              bold: true,
+              size: 32,
+              color: "1e3a8a" // Catholic blue
+            })
+          ],
+          alignment: window.docx.AlignmentType.CENTER,
+          spacing: { after: 400 }
+        }),
+        
+        // Hymns section
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: "Selected Hymns",
+              bold: true,
+              size: 24,
+              color: "7c3aed" // Catholic purple
+            })
+          ],
+          spacing: { before: 400, after: 200 }
+        }),
+        
+        // Hymn list
+        ...hymns.map((hymn, index) => [
+          new window.docx.Paragraph({
+            children: [
+              new window.docx.TextRun({
+                text: `${index + 1}. ${hymn.title}`,
+                bold: true,
+                size: 20
+              })
+            ],
+            spacing: { before: 200 }
+          }),
+          new window.docx.Paragraph({
+            children: [
+              new window.docx.TextRun({
+                text: hymn.description,
+                size: 18
+              })
+            ],
+            spacing: { before: 100 }
+          }),
+          new window.docx.Paragraph({
+            children: [
+              new window.docx.TextRun({
+                text: `YouTube: ${hymn.youtube}`,
+                size: 16,
+                color: "666666"
+              })
+            ],
+            spacing: { before: 100, after: 200 }
+          })
+        ]).flat(),
+        
+        // Readings section
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: "Selected Readings",
+              bold: true,
+              size: 24,
+              color: "1e3a8a" // Catholic blue
+            })
+          ],
+          spacing: { before: 400, after: 200 }
+        }),
+        
+        // Reading list
+        ...["First Reading", "Psalm", "Second Reading", "Gospel"].map(type => {
+          if (readings[type]) {
+            return [
+              new window.docx.Paragraph({
+                children: [
+                  new window.docx.TextRun({
+                    text: `${type}:`,
+                    bold: true,
+                    size: 20,
+                    color: "7c3aed" // Catholic purple
+                  })
+                ],
+                spacing: { before: 200 }
+              }),
+              new window.docx.Paragraph({
+                children: [
+                  new window.docx.TextRun({
+                    text: `${readings[type].title} (${readings[type].ref})`,
+                    size: 18
+                  })
+                ],
+                spacing: { before: 100 }
+              }),
+              new window.docx.Paragraph({
+                children: [
+                  new window.docx.TextRun({
+                    text: readings[type].text.substring(0, 200) + "...",
+                    size: 16
+                  })
+                ],
+                spacing: { before: 100, after: 200 }
+              })
+            ];
+          } else {
+            return new window.docx.Paragraph({
+              children: [
+                new window.docx.TextRun({
+                  text: `${type}: [not selected]`,
+                  size: 18,
+                  color: "999999"
+                })
+              ],
+              spacing: { before: 200, after: 200 }
+            });
+          }
+        }).flat()
+      ]
+    }]
+  });
+  
+  // Generate and download the document
+  window.docx.Packer.toBlob(doc).then(blob => {
+    window.saveAs(blob, `${churchName.replace(/\s+/g, '-')}-funeral-plan.docx`);
+    $('#pdf-status').text("DOCX document generated and downloaded!").fadeIn();
+    setTimeout(() => {
+      $('#pdf-status').fadeOut();
+    }, 3000);
+  });
+}
+
 // Reset functionality
 function attachResetListener() {
   $('#reset-app').on('click', function(e) {
@@ -948,6 +1296,7 @@ $(document).ready(function() {
   $('#theme-filter').on('change', function() {
     const currentSelections = getSavedSelections();
     renderReadings($(this).val(), currentSelections);
+    // Re-attach listeners after re-rendering
     attachReadingListeners();
   });
   
