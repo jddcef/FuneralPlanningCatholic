@@ -1051,6 +1051,159 @@ function generatePDF() {
   }, 2500);
 }
 
+// Generate DOCX document
+function generateDOCX() {
+  const { hymns, readings } = getSelections();
+  const churchName = $('#church-name').val() || 'Catholic Church';
+  
+  // Create a new document
+  const doc = new window.docx.Document({
+    sections: [{
+      properties: {
+        page: {
+          margin: {
+            top: 1440, // 1 inch
+            right: 1440,
+            bottom: 1440,
+            left: 1440
+          }
+        }
+      },
+      children: [
+        // Title
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: "Catholic Funeral Plan",
+              bold: true,
+              size: 32,
+              color: "1e3a8a" // Catholic blue
+            })
+          ],
+          alignment: window.docx.AlignmentType.CENTER,
+          spacing: { after: 400 }
+        }),
+        
+        // Hymns section
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: "Selected Hymns",
+              bold: true,
+              size: 24,
+              color: "7c3aed" // Catholic purple
+            })
+          ],
+          spacing: { before: 400, after: 200 }
+        }),
+        
+        // Hymn list
+        ...hymns.map((hymn, index) => [
+          new window.docx.Paragraph({
+            children: [
+              new window.docx.TextRun({
+                text: `${index + 1}. ${hymn.title}`,
+                bold: true,
+                size: 20
+              })
+            ],
+            spacing: { before: 200 }
+          }),
+          new window.docx.Paragraph({
+            children: [
+              new window.docx.TextRun({
+                text: hymn.description,
+                size: 18
+              })
+            ],
+            spacing: { before: 100 }
+          }),
+          new window.docx.Paragraph({
+            children: [
+              new window.docx.TextRun({
+                text: `YouTube: ${hymn.youtube}`,
+                size: 16,
+                color: "666666"
+              })
+            ],
+            spacing: { before: 100, after: 200 }
+          })
+        ]).flat(),
+        
+        // Readings section
+        new window.docx.Paragraph({
+          children: [
+            new window.docx.TextRun({
+              text: "Selected Readings",
+              bold: true,
+              size: 24,
+              color: "1e3a8a" // Catholic blue
+            })
+          ],
+          spacing: { before: 400, after: 200 }
+        }),
+        
+        // Reading list
+        ...["First Reading", "Psalm", "Second Reading", "Gospel"].map(type => {
+          if (readings[type]) {
+            return [
+              new window.docx.Paragraph({
+                children: [
+                  new window.docx.TextRun({
+                    text: `${type}:`,
+                    bold: true,
+                    size: 20,
+                    color: "7c3aed" // Catholic purple
+                  })
+                ],
+                spacing: { before: 200 }
+              }),
+              new window.docx.Paragraph({
+                children: [
+                  new window.docx.TextRun({
+                    text: `${readings[type].title} (${readings[type].ref})`,
+                    size: 18
+                  })
+                ],
+                spacing: { before: 100 }
+              }),
+              new window.docx.Paragraph({
+                children: [
+                  new window.docx.TextRun({
+                    text: readings[type].text.substring(0, 200) + "...",
+                    size: 16
+                  })
+                ],
+                spacing: { before: 100, after: 200 }
+              })
+            ];
+          } else {
+            return new window.docx.Paragraph({
+              children: [
+                new window.docx.TextRun({
+                  text: `${type}: [not selected]`,
+                  size: 18,
+                  color: "999999"
+                })
+              ],
+              spacing: { before: 200, after: 200 }
+            });
+          }
+        }).flat()
+      ]
+    }]
+  });
+  
+  // Generate and download the document
+  window.docx.Packer.toBlob(doc).then(blob => {
+    window.saveAs(blob, `${churchName.replace(/\s+/g, '-')}-funeral-plan.docx`);
+    $('#pdf-status').text("DOCX document generated and downloaded!").fadeIn();
+    setTimeout(() => {
+      $('#pdf-status').fadeOut();
+    }, 3000);
+  });
+}
+
 // Reset functionality
 function attachResetListener() {
   $('#reset-app').on('click', function(e) {
