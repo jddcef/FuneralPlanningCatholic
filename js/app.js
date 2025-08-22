@@ -802,7 +802,6 @@ function generateFullPlanningBooklet() {
   y = 50;
   
   // Contact Information Section
-  const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
   if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
     doc.setFillColor(30, 58, 138); // Catholic blue
     doc.rect(10, y-8, 190, 10, 'F');
