@@ -57,13 +57,55 @@ select:focus {
 }
 
 /* Custom button animations */
-#generate-pdf:active {
+#generate-pdf:active,
+.download-btn:active {
   transform: scale(0.98);
 }
 
 /* Enhanced video modal */
 #video-modal {
   backdrop-filter: blur(4px);
+}
+
+/* Enhanced document modal */
+#document-modal {
+  backdrop-filter: blur(4px);
+}
+
+/* Document content styling */
+#document-content h2 {
+  color: #1e3a8a;
+  margin-bottom: 1rem;
+}
+
+#document-content h3 {
+  color: #1e3a8a;
+  margin-bottom: 0.75rem;
+}
+
+#document-content h4 {
+  color: #1e3a8a;
+  margin-bottom: 0.5rem;
+}
+
+#document-content ul {
+  margin-left: 1rem;
+}
+
+#document-content li {
+  margin-bottom: 0.25rem;
+}
+
+/* Two-column layout enhancements */
+@media (min-width: 1024px) {
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  /* Ensure equal height columns */
+  .lg\:grid-cols-2 > div {
+    height: fit-content;
+  }
 }
 
 /* Responsive text sizing */
@@ -76,9 +118,28 @@ select:focus {
   }
 }
 
+/* Enhanced download section styling */
+.download-btn {
+  transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+/* Condolence message styling */
+.bg-blue-50 {
+  background-color: #eff6ff;
+}
+
+.border-catholic-blue {
+  border-color: #1e3a8a;
+}
+
 /* Print styles */
 @media print {
-  nav, #video-modal, button, .no-print {
+  nav, #video-modal, #document-modal, button, .no-print {
     display: none !important;
   }
   
@@ -93,4 +154,51 @@ select:focus {
     padding: 0 !important;
     box-shadow: none !important;
   }
+  
+  /* Ensure two-column layout prints properly */
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 1023px) {
+  /* Stack columns on mobile */
+  .lg\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Add spacing between stacked sections */
+  .lg\:grid-cols-2 > div:first-child {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Document preview content styling */
+#document-content .border-l-4 {
+  border-left-width: 4px;
+}
+
+#document-content .bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+#document-content .bg-blue-50 {
+  background-color: #eff6ff;
+}
+
+#document-content .bg-yellow-50 {
+  background-color: #fefce8;
+}
+
+/* Enhanced theme tag styling */
+#document-content .bg-catholic-blue,
+#document-content .bg-catholic-gold,
+#document-content .bg-catholic-red,
+#document-content .bg-green-600 {
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
