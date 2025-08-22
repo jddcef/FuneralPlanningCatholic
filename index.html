@@ -75,15 +75,19 @@
     <section id="home" class="mb-16">
       <div class="text-center">
         <h1 class="text-3xl md:text-5xl font-bold text-catholic-blue mb-6">Catholic Funeral Planner</h1>
-        <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
-          Welcome to our Catholic Funeral Planning Guide. Whether you are grieving a loved one, preparing for your own arrangements, or simply curious about Catholic funeral traditions, this site is here to help.
-        </p>
-        
-        <!-- Condolence Message -->
-        <div class="bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-catholic-purple p-4 mb-8 max-w-2xl mx-auto text-left">
-          <p class="text-gray-700 italic">
-            💙 <strong>Our condolences</strong> - We are sorry for your loss. May you find comfort in the hope of the resurrection and the love of your community during this difficult time.
-          </p>
+        <div class="grid md:grid-cols-2 gap-8 items-start">
+          <div>
+            <p class="text-lg text-gray-600 mb-8">
+              Welcome to our Catholic Funeral Planning Guide. Whether you are grieving a loved one, preparing for your own arrangements, or simply curious about Catholic funeral traditions, this site is here to help.
+            </p>
+          </div>
+          
+          <!-- Condolence Message -->
+          <div class="bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-catholic-purple p-4">
+            <p class="text-gray-700 italic">
+              💙 <strong>Our condolences</strong> to you and your loved ones. May you find comfort in the hope of the resurrection and the love of your community during this difficult time.
+            </p>
+          </div>
         </div>
         
         <div class="flex flex-wrap justify-center gap-4">
@@ -431,13 +435,59 @@
 
     <!-- Contact Section -->
     <section id="contact" class="mb-16">
-      <h2 class="text-2xl font-bold text-catholic-blue mb-8 text-center">Contact & Parish Information</h2>
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-bold text-catholic-blue">Contact & Parish Information</h2>
+        <button id="toggle-contact-edit" class="bg-catholic-gold hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition-colors" data-translate="customize">
+          ✏️ Customize
+        </button>
+      </div>
+      
       <div class="bg-white p-6 rounded-lg shadow-md">
-        <p class="text-gray-600 text-center mb-4">
-          For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.
-        </p>
-        <div class="text-center">
-          <a href="mailto:info@example.com" class="text-catholic-blue hover:text-blue-800 underline">info@example.com</a>
+        <!-- View Mode -->
+        <div id="contact-view-mode">
+          <p class="text-gray-600 text-center mb-4" id="contact-description">
+            For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.
+          </p>
+          <div class="text-center space-y-2">
+            <div id="contact-phone" class="text-catholic-blue font-medium"></div>
+            <div id="contact-email" class="text-catholic-blue hover:text-blue-800 underline cursor-pointer"></div>
+            <div id="contact-address" class="text-gray-600 text-sm"></div>
+            <div id="contact-hours" class="text-gray-600 text-sm"></div>
+          </div>
+        </div>
+        
+        <!-- Edit Mode -->
+        <div id="contact-edit-mode" class="hidden">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="contact_description_label">Contact Description</label>
+              <textarea id="contact-description-input" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue">For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.</textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="phone_number">Phone Number</label>
+              <input type="tel" id="contact-phone-input" placeholder="+27 12 345 6789" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="email_address">Email Address</label>
+              <input type="email" id="contact-email-input" placeholder="info@example.com" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="office_hours">Office Hours</label>
+              <input type="text" id="contact-hours-input" placeholder="Monday-Friday: 8:00 AM - 5:00 PM" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2" data-translate="address">Address</label>
+              <textarea id="contact-address-input" rows="2" placeholder="123 Church Street, City, Province, Postal Code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-catholic-blue"></textarea>
+            </div>
+          </div>
+          <div class="flex justify-end space-x-3 mt-4">
+            <button id="cancel-contact-edit" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded text-sm transition-colors" data-translate="cancel">
+              Cancel
+            </button>
+            <button id="save-contact-info" class="bg-catholic-blue hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition-colors" data-translate="save_changes">
+              Save Changes
+            </button>
+          </div>
         </div>
       </div>
     </section>

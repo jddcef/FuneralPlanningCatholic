@@ -118,6 +118,18 @@ window.translations = {
     // Contact Section
     "contact_title": "Contact & Parish Information",
     "contact_description": "For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.",
+    "customize": "✏️ Customize",
+    "editing": "✏️ Editing...",
+    "cancel": "Cancel",
+    "save_changes": "Save Changes",
+    "contact_description_label": "Contact Description",
+    "phone_number": "Phone Number",
+    "email_address": "Email Address",
+    "office_hours": "Office Hours",
+    "address": "Address",
+    "generate_url": "🔗 Generate URL",
+    "contact_updated": "Contact information updated!",
+    "url_copied": "Custom URL copied to clipboard!",
     
     // Common
     "flow_step1": "Vigil / Wake",
@@ -250,6 +262,18 @@ window.translations = {
     // Contact Section
     "contact_title": "Kontak & Parogie Inligting",
     "contact_description": "Vir spesifieke leiding oor Katolieke begrafnisbeplanning, kontak asseblief jou plaaslike parogie priester of begrafniskoördineerder.",
+    "customize": "✏️ Pas Aan",
+    "editing": "✏️ Redigeer...",
+    "cancel": "Kanselleer",
+    "save_changes": "Stoor Veranderinge",
+    "contact_description_label": "Kontak Beskrywing",
+    "phone_number": "Telefoon Nommer",
+    "email_address": "E-pos Adres",
+    "office_hours": "Kantoor Ure",
+    "address": "Adres",
+    "generate_url": "🔗 Genereer URL",
+    "contact_updated": "Kontak inligting opgedateer!",
+    "url_copied": "Persoonlike URL na knipbord gekopieer!",
     
     // Common
     "flow_step1": "Waak / Begrafnis",
@@ -382,6 +406,18 @@ window.translations = {
     // Contact Section
     "contact_title": "Iinkcukacha & Inkcukacha Zebandla",
     "contact_description": "Ngecebiso elikhethekileyo lokucwangcisa ingcwaba yamaKatolika, nceda uqhagamshelane nomfundisi wakho wendawo okanye umqambi wengcwaba.",
+    "customize": "✏️ Hlela",
+    "editing": "✏️ Iyahlela...",
+    "cancel": "Rhoxisa",
+    "save_changes": "Gcina Iintshintsho",
+    "contact_description_label": "Inkcukacha Yokuxhumana",
+    "phone_number": "Inombolo Yefowuni",
+    "email_address": "Idilesi Ye-imeyili",
+    "office_hours": "Iiyure Zofesi",
+    "address": "Idilesi",
+    "generate_url": "🔗 Yenza i-URL",
+    "contact_updated": "Inkcukacha yokuxhumana iyahlaziyiwe!",
+    "url_copied": "I-URL yakho ikopiwe kwikhadi!",
     
     // Common
     "flow_step1": "UkuLala / UkuKhumbula",
