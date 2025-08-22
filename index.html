@@ -15,7 +15,8 @@
           colors: {
             'catholic-blue': '#1e3a8a',
             'catholic-gold': '#d97706',
-            'catholic-red': '#dc2626'
+            'catholic-red': '#dc2626',
+            'catholic-purple': '#7c3aed'
           }
         }
       }
@@ -24,7 +25,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
   <!-- Navigation -->
-  <nav class="bg-catholic-blue text-white shadow-lg">
+  <nav class="bg-gradient-to-r from-catholic-blue to-catholic-purple text-white shadow-lg">
     <div class="max-w-7xl mx-auto px-4">
       <div class="flex justify-between items-center py-4">
         <div class="text-2xl font-bold">Catholic Funeral Planner</div>
@@ -33,6 +34,7 @@
           <a href="#understanding" class="nav-link hover:text-catholic-gold transition-colors">Understanding</a>
           <a href="#planning" class="nav-link hover:text-catholic-gold transition-colors">Planning Tools</a>
           <a href="#downloads" class="nav-link hover:text-catholic-gold transition-colors">Downloads</a>
+          <a href="#costs" class="nav-link hover:text-catholic-gold transition-colors">Costs</a>
           <a href="#faq" class="nav-link hover:text-catholic-gold transition-colors">FAQ</a>
           <a href="#contact" class="nav-link hover:text-catholic-gold transition-colors">Contact</a>
         </div>
@@ -49,6 +51,7 @@
           <a href="#understanding" class="block py-2 hover:text-catholic-gold">Understanding</a>
           <a href="#planning" class="block py-2 hover:text-catholic-gold">Planning Tools</a>
           <a href="#downloads" class="block py-2 hover:text-catholic-gold">Downloads</a>
+          <a href="#costs" class="block py-2 hover:text-catholic-gold">Costs</a>
           <a href="#faq" class="block py-2 hover:text-catholic-gold">FAQ</a>
           <a href="#contact" class="block py-2 hover:text-catholic-gold">Contact</a>
         </div>
@@ -67,14 +70,14 @@
         </p>
         
         <!-- Condolence Message -->
-        <div class="bg-blue-50 border-l-4 border-catholic-blue p-4 mb-8 max-w-2xl mx-auto text-left">
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-catholic-purple p-4 mb-8 max-w-2xl mx-auto text-left">
           <p class="text-gray-700 italic">
             💙 <strong>Our condolences</strong> - We are sorry for your loss. May you find comfort in the hope of the resurrection and the love of your community during this difficult time.
           </p>
         </div>
         
         <div class="flex flex-wrap justify-center gap-4">
-          <a href="#planning" class="bg-catholic-blue hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+          <a href="#planning" class="bg-gradient-to-r from-catholic-blue to-catholic-purple hover:from-blue-800 hover:to-purple-800 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
             Start Planning
           </a>
           <a href="#understanding" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-3 rounded-lg font-semibold transition-colors">
@@ -87,21 +90,94 @@
     <!-- Understanding Section -->
     <section id="understanding" class="mb-16">
       <h2 class="text-3xl font-bold text-catholic-blue mb-8 text-center">Understanding the Catholic Funeral</h2>
+      
+      <!-- Flow Diagram -->
+      <div class="mb-12">
+        <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
+          <!-- Step 1: Vigil -->
+          <div class="flex flex-col items-center">
+            <div class="w-16 h-16 bg-catholic-blue rounded-full flex items-center justify-center text-white font-bold text-xl mb-2">1</div>
+            <div class="text-center">
+              <h3 class="font-semibold text-catholic-blue">Vigil / Wake</h3>
+              <p class="text-sm text-gray-600">Evening before</p>
+            </div>
+          </div>
+          
+          <!-- Arrow -->
+          <div class="hidden md:block">
+            <svg class="w-8 h-8 text-catholic-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+          </div>
+          
+          <!-- Step 2: Funeral Service -->
+          <div class="flex flex-col items-center">
+            <div class="w-16 h-16 bg-catholic-purple rounded-full flex items-center justify-center text-white font-bold text-xl mb-2">2</div>
+            <div class="text-center">
+              <h3 class="font-semibold text-catholic-purple">Funeral Service</h3>
+              <p class="text-sm text-gray-600">Main ceremony</p>
+            </div>
+          </div>
+          
+          <!-- Arrow -->
+          <div class="hidden md:block">
+            <svg class="w-8 h-8 text-catholic-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+          </div>
+          
+          <!-- Step 3: Burial/Interment -->
+          <div class="flex flex-col items-center">
+            <div class="w-16 h-16 bg-catholic-red rounded-full flex items-center justify-center text-white font-bold text-xl mb-2">3</div>
+            <div class="text-center">
+              <h3 class="font-semibold text-catholic-red">Burial / Interment</h3>
+              <p class="text-sm text-gray-600">Final resting place</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <div class="grid md:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-catholic-blue">
           <h3 class="text-xl font-semibold text-catholic-blue mb-4">The Vigil / Wake</h3>
           <p class="text-gray-600 mb-4">A prayer service held the evening before the funeral, often at a funeral home or church. <strong>Pastoral Tip:</strong> The Vigil can also be held at home if other locations are not possible.</p>
           <p class="text-sm text-gray-500">The Vigil is often the most personal and flexible part of the funeral rites — it can be held at home, in the church, or at a funeral home chapel.</p>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <h3 class="text-xl font-semibold text-catholic-blue mb-4">The Funeral Mass</h3>
-          <p class="text-gray-600 mb-4">The central liturgical celebration with readings, prayers, and Eucharist.</p>
+        <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-catholic-purple">
+          <h3 class="text-xl font-semibold text-catholic-purple mb-4">The Funeral Service</h3>
+          <p class="text-gray-600 mb-4">The central liturgical celebration. This may be a full Requiem Mass with Eucharist, or a funeral service without Mass, depending on circumstances and parish practice.</p>
           <p class="text-sm text-gray-500">The readings and music should reflect Christian hope and the life of the person in the light of Christ.</p>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <h3 class="text-xl font-semibold text-catholic-blue mb-4">The Burial / Committal</h3>
-          <p class="text-gray-600 mb-4">Final prayers at the gravesite or mausoleum, committing the body to its final resting place.</p>
+        <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-catholic-red">
+          <h3 class="text-xl font-semibold text-catholic-red mb-4">The Burial / Interment</h3>
+          <p class="text-gray-600 mb-4">Final prayers at the gravesite, mausoleum, columbarium, or garden of remembrance, committing the body to its final resting place.</p>
           <p class="text-sm text-gray-500">It is the final act of the community in caring for the body, entrusting it to the earth until the resurrection.</p>
+        </div>
+      </div>
+      
+      <!-- Additional Information -->
+      <div class="mt-8 bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg">
+        <h3 class="text-lg font-semibold text-catholic-purple mb-4">Important Notes</h3>
+        <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
+          <div>
+            <h4 class="font-medium text-catholic-purple mb-2">Interment Options</h4>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Traditional burial in cemetery</li>
+              <li>Mausoleum or crypt</li>
+              <li>Columbarium for cremated remains</li>
+              <li>Garden of remembrance</li>
+              <li>Natural burial grounds</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-medium text-catholic-purple mb-2">Service Variations</h4>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Full Requiem Mass (with Eucharist)</li>
+              <li>Funeral Service (without Eucharist)</li>
+              <li>Memorial Service (without body present)</li>
+              <li>Graveside service only</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
@@ -133,7 +209,7 @@
 
       <!-- Action Buttons -->
       <div class="text-center space-y-4 mt-8">
-        <button id="generate-pdf" class="bg-catholic-blue hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+        <button id="generate-pdf" class="bg-gradient-to-r from-catholic-blue to-catholic-purple hover:from-blue-800 hover:to-purple-800 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
           Generate PDF
         </button>
         <div>
@@ -178,13 +254,70 @@
       </div>
     </section>
 
+    <!-- Costs & Fees Section -->
+    <section id="costs" class="mb-16">
+      <h2 class="text-3xl font-bold text-catholic-blue mb-8 text-center">Potential Costs & Fees</h2>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-xl font-semibold text-catholic-purple mb-4">Church & Ministry</h3>
+            <ul class="space-y-3 text-gray-700">
+              <li class="flex justify-between">
+                <span>Priest or Deacon</span>
+                <span class="text-catholic-purple font-medium">Donation suggested</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Organist</span>
+                <span class="text-catholic-purple font-medium">$100 - $200</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Altar servers</span>
+                <span class="text-catholic-purple font-medium">$20 - $50 each</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Church hall rental</span>
+                <span class="text-catholic-purple font-medium">$100 - $300</span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-catholic-purple mb-4">Additional Services</h3>
+            <ul class="space-y-3 text-gray-700">
+              <li class="flex justify-between">
+                <span>Tea/refreshments in hall</span>
+                <span class="text-catholic-purple font-medium">Optional</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Funeral home services</span>
+                <span class="text-catholic-purple font-medium">$2,000 - $8,000</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Cemetery plot</span>
+                <span class="text-catholic-purple font-medium">$1,000 - $5,000</span>
+              </li>
+              <li class="flex justify-between">
+                <span>Headstone/marker</span>
+                <span class="text-catholic-purple font-medium">$500 - $3,000</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6 p-4 bg-purple-50 rounded-lg">
+          <p class="text-sm text-gray-700 text-center">
+            <strong>Note:</strong> Costs vary significantly by location and specific requirements. 
+            Contact your parish office for current local rates and donation guidelines.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ Section -->
     <section id="faq" class="mb-16">
       <h2 class="text-3xl font-bold text-catholic-blue mb-8 text-center">Frequently Asked Questions</h2>
       <div class="space-y-4">
         <div class="bg-white p-6 rounded-lg shadow-md">
           <h3 class="text-lg font-semibold text-catholic-blue mb-2">What is the difference between a vigil and a funeral mass?</h3>
-          <p class="text-gray-600">The vigil is a prayer service held the evening before the funeral, while the funeral mass is the main liturgical celebration.</p>
+          <p class="text-gray-600">The vigil is a prayer service held the evening before the funeral, while the funeral service is the main liturgical celebration.</p>
         </div>
         <div class="bg-white p-6 rounded-lg shadow-md">
           <h3 class="text-lg font-semibold text-catholic-blue mb-2">How many readings should be selected?</h3>
@@ -205,6 +338,10 @@
         <div class="bg-white p-6 rounded-lg shadow-md">
           <h3 class="text-lg font-semibold text-catholic-blue mb-2">Do we have to have a Vigil?</h3>
           <p class="text-gray-600">While not strictly required, the Vigil is highly recommended as it provides an important opportunity for prayer and community support.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg font-semibold text-catholic-blue mb-2">What's the difference between a funeral Mass and a funeral service?</h3>
+          <p class="text-gray-600">A funeral Mass includes the celebration of the Eucharist, while a funeral service includes prayers, readings, and a homily but no Eucharist. Both are valid Catholic funeral rites.</p>
         </div>
       </div>
     </section>
@@ -242,7 +379,7 @@
       <div class="flex justify-between items-center p-4 border-b">
         <h3 id="document-title" class="text-lg font-semibold"></h3>
         <div class="flex space-x-2">
-          <button id="generate-document-pdf" class="bg-catholic-blue hover:bg-blue-800 text-white px-4 py-2 rounded text-sm transition-colors">
+          <button id="generate-document-pdf" class="bg-gradient-to-r from-catholic-blue to-catholic-purple hover:from-blue-800 hover:to-purple-800 text-white px-4 py-2 rounded text-sm transition-all duration-300">
             Generate PDF
           </button>
           <button id="close-document" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
@@ -254,7 +391,7 @@
     </div>
   </div>
 
-  <footer class="bg-catholic-blue text-white py-8">
+  <footer class="bg-gradient-to-r from-catholic-blue to-catholic-purple text-white py-8">
     <div class="max-w-7xl mx-auto px-4 text-center">
       <p>Powered by <a href="https://github.com/jddcef/FuneralPlanningCatholic" target="_blank" rel="noopener" class="text-catholic-gold hover:text-orange-300 underline">FuneralPlanningCatholic on GitHub</a></p>
     </div>
