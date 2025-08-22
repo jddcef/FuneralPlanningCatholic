@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Catholic Funeral Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Catholic Funeral Planner</h1>
+    <p>Plan a Catholic funeral with hymn and reading selections. Generate a printable PDF. All data is processed in your browser.</p>
+  </header>
+  <main>
+    <section id="hymns">
+      <h2>Hymn Selection</h2>
+      <ul id="hymn-list"></ul>
+    </section>
+
+    <section id="readings">
+      <h2>Reading Selection</h2>
+      <div id="readings-filters">
+        <label for="theme-filter">Filter by theme:</label>
+        <select id="theme-filter">
+          <option value="">All</option>
+        </select>
+      </div>
+      <div id="reading-sections"></div>
+    </section>
+
+    <button id="generate-pdf">Generate PDF</button>
+    <a id="reset-app" href="#" style="display:block; margin-top:1em; font-size:0.95em; color:#555; opacity:0.7; text-decoration:underline;">Reset/Start Over</a>
+    <div id="pdf-status"></div>
+  </main>
+  <footer>
+    <p>Powered by <a href="https://github.com/jddcef/FuneralPlanningCatholic" target="_blank" rel="noopener">FuneralPlanningCatholic on GitHub</a></p>
+  </footer>
+  <script src="js/hymns.js"></script>
+  <script src="js/readings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
