@@ -127,7 +127,7 @@ window.translations = {
     "email_address": "Email Address",
     "office_hours": "Office Hours",
     "address": "Address",
-    "generate_url": "🔗 Generate URL",
+    "generate_url": "🔗 Generate & Copy URL",
     "contact_updated": "Contact information updated!",
     "url_copied": "Custom URL copied to clipboard!",
     
@@ -271,7 +271,7 @@ window.translations = {
     "email_address": "E-pos Adres",
     "office_hours": "Kantoor Ure",
     "address": "Adres",
-    "generate_url": "🔗 Genereer URL",
+    "generate_url": "🔗 Genereer & Kopieer URL",
     "contact_updated": "Kontak inligting opgedateer!",
     "url_copied": "Persoonlike URL na knipbord gekopieer!",
     
@@ -415,7 +415,7 @@ window.translations = {
     "email_address": "Idilesi Ye-imeyili",
     "office_hours": "Iiyure Zofesi",
     "address": "Idilesi",
-    "generate_url": "🔗 Yenza i-URL",
+    "generate_url": "🔗 Yenza & Kopi i-URL",
     "contact_updated": "Inkcukacha yokuxhumana iyahlaziyiwe!",
     "url_copied": "I-URL yakho ikopiwe kwikhadi!",
     
