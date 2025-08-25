@@ -124,7 +124,7 @@ function renderReadings(filterTheme = "", saved) {
       if (filterTheme && (!r.theme || !r.theme.includes(filterTheme))) return;
       
       const id = `${type.replace(/\s+/g, "")}_${r.id}`;
-      const checked = saved && saved.readings && saved.readings[type] === r.id;
+      const checked = saved && saved.readingIds && saved.readingIds[type] === r.id;
       
       const readingHtml = `
         <label class="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -1539,7 +1539,7 @@ function generateFullPlanningBookletDOCX() {
   }
   
   // Readings section
-  if (readings.length > 0) {
+  if (Object.keys(readings).length > 0) {
     children.push(
       new window.docx.Paragraph({
         children: [
@@ -1553,7 +1553,7 @@ function generateFullPlanningBookletDOCX() {
       })
     );
     
-    readings.forEach(reading => {
+    Object.values(readings).forEach(reading => {
       children.push(
         new window.docx.Paragraph({
           children: [
@@ -1568,7 +1568,7 @@ function generateFullPlanningBookletDOCX() {
         new window.docx.Paragraph({
           children: [
             new window.docx.TextRun({
-              text: reading.reference,
+              text: reading.ref,
               size: 24
             })
           ],
@@ -1590,96 +1590,6 @@ function generateFullPlanningBookletDOCX() {
   window.docx.Packer.toBlob(doc).then(blob => {
     const fileName = `funeral_planning_booklet_${churchName.replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
     saveAs(blob, fileName);
-  });
-}
-  
-  // Load saved contact info
-  loadContactInfo();
-  
-  // Add URL generation button
-  const urlGenButton = $('<button class="bg-catholic-purple hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors ml-2">' + t('generate_url') + '</button>');
-  $('#toggle-contact-edit').after(urlGenButton);
-  
-  // Order of Service toggle functionality
-  $('.service-type-btn').on('click', function() {
-    const serviceType = $(this).data('service');
-    
-    // Update button styles
-    $('.service-type-btn').removeClass('bg-catholic-blue text-white').addClass('bg-gray-200 text-gray-700');
-    $(this).removeClass('bg-gray-200 text-gray-700').addClass('bg-catholic-blue text-white');
-    
-    // Hide all service details
-    $('.service-details').addClass('hidden');
-    
-    // Show selected service details
-    if (serviceType === 'funeral-mass') {
-      $('#funeral-mass-details').removeClass('hidden');
-    } else if (serviceType === 'funeral-service') {
-      $('#funeral-service-details').removeClass('hidden');
-    } else if (serviceType === 'vigil') {
-      $('#vigil-details').removeClass('hidden');
-    }
-  });
-  
-  // Download button hover functionality
-  $('.download-btn').each(function() {
-    const $button = $(this);
-    const $dropdown = $button.closest('.flex').find('.relative');
-    
-    $dropdown.on('mouseenter', function() {
-      $(this).find('.absolute').removeClass('hidden');
-    });
-    
-    $dropdown.on('mouseleave', function() {
-      $(this).find('.absolute').addClass('hidden');
-    });
-  });
-  
-  // Update download button text when format changes
-  $(document).on('click', '.download-btn', function() {
-    const format = $(this).data('format');
-    const $mainButton = $(this).closest('.flex').find('.download-btn').first();
-    
-    if (format === 'pdf') {
-      $mainButton.html('Download <span class="font-bold">PDF</span>');
-    } else if (format === 'docx') {
-      $mainButton.html('Download <span class="font-bold">DOCX</span>');
-    }
-  });
-  
-  urlGenButton.on('click', function() {
-    const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
-    const churchName = $('#church-name').val();
-    
-    let customUrl = window.location.origin + window.location.pathname;
-    const params = new URLSearchParams();
-    
-    if (churchName && churchName !== 'Catholic Church') {
-      params.append('church_name', churchName);
-    }
-    
-    if (contactInfo.description && contactInfo.description !== 'For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.') {
-      params.append('contact_desc', contactInfo.description);
-    }
-    if (contactInfo.phone) params.append('contact_phone', contactInfo.phone);
-    if (contactInfo.email) params.append('contact_email', contactInfo.email);
-    if (contactInfo.address) params.append('contact_address', contactInfo.address);
-    if (contactInfo.hours) params.append('contact_hours', contactInfo.hours);
-    
-    if (params.toString()) {
-      customUrl += '?' + params.toString();
-    }
-    
-    // Copy to clipboard
-    navigator.clipboard.writeText(customUrl).then(() => {
-      $('#pdf-status').text(t('url_copied')).fadeIn();
-      setTimeout(() => {
-        $('#pdf-status').fadeOut();
-      }, 3000);
-    }).catch(() => {
-      // Fallback: show URL in alert
-      alert('Custom URL:\n' + customUrl);
-    });
   });
 }
 
@@ -1785,12 +1695,14 @@ $(document).ready(function() {
     // Re-attach listeners after re-rendering
     attachReadingListeners();
     // Mark current selections as checked
-    currentSelections.readings.forEach(reading => {
-      const checkbox = $(`input[data-reading-id="${reading.id}"]`);
-      if (checkbox.length) {
-        checkbox.prop('checked', true);
-      }
-    });
+    if (currentSelections && currentSelections.readings) {
+      Object.values(currentSelections.readings).forEach(reading => {
+        const checkbox = $(`input[value="${reading.id}"]`);
+        if (checkbox.length) {
+          checkbox.prop('checked', true);
+        }
+      });
+    }
   });
   
   // Initialize with semantic theme analysis if compromise.js is available
@@ -1804,4 +1716,93 @@ $(document).ready(function() {
     renderThemeFilter();
     renderReadings("", saved);
   }
+
+  // Load saved contact info
+  loadContactInfo();
+
+  // Add URL generation button
+  const urlGenButton = $('<button class="bg-catholic-purple hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors ml-2">' + t('generate_url') + '</button>');
+  $('#toggle-contact-edit').after(urlGenButton);
+
+  // Order of Service toggle functionality
+  $('.service-type-btn').on('click', function() {
+    const serviceType = $(this).data('service');
+
+    // Update button styles
+    $('.service-type-btn').removeClass('bg-catholic-blue text-white').addClass('bg-gray-200 text-gray-700');
+    $(this).removeClass('bg-gray-200 text-gray-700').addClass('bg-catholic-blue text-white');
+
+    // Hide all service details
+    $('.service-details').addClass('hidden');
+
+    // Show selected service details
+    if (serviceType === 'funeral-mass') {
+      $('#funeral-mass-details').removeClass('hidden');
+    } else if (serviceType === 'funeral-service') {
+      $('#funeral-service-details').removeClass('hidden');
+    } else if (serviceType === 'vigil') {
+      $('#vigil-details').removeClass('hidden');
+    }
+  });
+
+  // Download button hover functionality
+  $('.download-btn').each(function() {
+    const $button = $(this);
+    const $dropdown = $button.closest('.flex').find('.relative');
+
+    $dropdown.on('mouseenter', function() {
+      $(this).find('.absolute').removeClass('hidden');
+    });
+
+    $dropdown.on('mouseleave', function() {
+      $(this).find('.absolute').addClass('hidden');
+    });
+  });
+
+  // Update download button text when format changes
+  $(document).on('click', '.download-btn', function() {
+    const format = $(this).data('format');
+    const $mainButton = $(this).closest('.flex').find('.download-btn').first();
+
+    if (format === 'pdf') {
+      $mainButton.html('Download <span class="font-bold">PDF</span>');
+    } else if (format === 'docx') {
+      $mainButton.html('Download <span class="font-bold">DOCX</span>');
+    }
+  });
+
+  urlGenButton.on('click', function() {
+    const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+    const churchName = $('#church-name').val();
+
+    let customUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams();
+
+    if (churchName && churchName !== 'Catholic Church') {
+      params.append('church_name', churchName);
+    }
+
+    if (contactInfo.description && contactInfo.description !== 'For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.') {
+      params.append('contact_desc', contactInfo.description);
+    }
+    if (contactInfo.phone) params.append('contact_phone', contactInfo.phone);
+    if (contactInfo.email) params.append('contact_email', contactInfo.email);
+    if (contactInfo.address) params.append('contact_address', contactInfo.address);
+    if (contactInfo.hours) params.append('contact_hours', contactInfo.hours);
+
+    if (params.toString()) {
+      customUrl += '?' + params.toString();
+    }
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(customUrl).then(() => {
+      $('#pdf-status').text(t('url_copied')).fadeIn();
+      setTimeout(() => {
+        $('#pdf-status').fadeOut();
+      }, 3000);
+    }).catch(() => {
+      // Fallback: show URL in alert
+      alert('Custom URL:\n' + customUrl);
+    });
+  });
 });
