@@ -292,12 +292,19 @@ function attachDocumentListeners() {
       $('#document-title').text(t(`${type}_title`));
       $('#document-modal').removeClass('hidden');
 
+      const title = t(`${type}_title`);
+      const docContent = $('#document-content').html();
+
       if (format === 'pdf') {
         $('#generate-document-pdf').off('click').on('click', function() {
-          generateDocumentPDF(t(`${type}_title`), $('#document-content').html());
+          generateDocumentPDF(title, docContent);
         });
+        $('#generate-document-pdf').text('Generate PDF');
       } else if (format === 'docx') {
-        // We can add a DOCX generation button here if needed
+        $('#generate-document-pdf').off('click').on('click', function() {
+          generateDocumentDOCX(type, title, docContent);
+        });
+        $('#generate-document-pdf').text('Generate DOCX');
       }
     }
   });
@@ -956,30 +963,16 @@ function attachContactCustomizationListeners() {
 }
 
 // Generate DOCX for individual documents
-function generateDocumentDOCX(type) {
+function generateDocumentDOCX(type, title, content) {
   // Check if docx library is available
-  if (!window.docx || !window.docx.Document) {
-    // Try to load the library dynamically
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/docx@8.5.0/build/index.js';
-    script.onload = function() {
-      // Retry after library loads
-      setTimeout(() => generateDocumentDOCX(type), 100);
-    };
-    script.onerror = function() {
-      alert('DOCX generation is not available. Please try the PDF option instead.');
-    };
-    document.head.appendChild(script);
+  if (!window.docx) {
+    alert('DOCX generation is not available. Please try again in a few moments.');
     return;
   }
-  
-  const content = documentContents[type];
-  if (!content) {
-    alert('Document content not found.');
-    return;
-  }
-  
-  // Create a new document
+
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = content;
+
   const doc = new window.docx.Document({
     sections: [{
       properties: {},
@@ -987,7 +980,7 @@ function generateDocumentDOCX(type) {
         new window.docx.Paragraph({
           children: [
             new window.docx.TextRun({
-              text: content.title,
+              text: title,
               bold: true,
               size: 32
             })
@@ -997,7 +990,7 @@ function generateDocumentDOCX(type) {
         new window.docx.Paragraph({
           children: [
             new window.docx.TextRun({
-              text: content.content.replace(/<[^>]*>/g, ''), // Remove HTML tags
+              text: tempDiv.textContent.replace(/<[^>]*>/g, ''), // Basic HTML tag removal
               size: 24
             })
           ]
@@ -1019,18 +1012,8 @@ function generateFullPlanningBookletDOCX() {
   const churchName = $('#church-name').val() || t('church_name');
   
   // Check if docx library is available
-  if (!window.docx || !window.docx.Document) {
-    // Try to load the library dynamically
-    const script = document.createElement('script');
-    script.src = 'https://unpkg.com/docx@8.5.0/build/index.js';
-    script.onload = function() {
-      // Retry after library loads
-      setTimeout(() => generateFullPlanningBookletDOCX(), 100);
-    };
-    script.onerror = function() {
-      alert(t('docx_generation_not_available'));
-    };
-    document.head.appendChild(script);
+  if (!window.docx) {
+    alert(t('docx_generation_not_available'));
     return;
   }
   
