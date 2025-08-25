@@ -1,0 +1,41 @@
+{
+  "siteTitle": "The Last Conversation Deck",
+  "pageTitle": "The Last Conversation Deck | Printable End-of-Life Planning Cards",
+  "tagline": "Start the conversation. Share your wishes.",
+  "introHeader": "What is This?",
+  "introText": "This is a free resource to help individuals and families discuss end-of-life wishes. These cards provide prompts to cover topics that might otherwise be overlooked, making a difficult conversation a little easier. Click a button below to generate a document with the latest topics.",
+  "downloadHeader": "Generate Your Document (English)",
+  "generateTablePdfButton": "Generate Table PDF",
+  "generateCardsPdfButton": "Generate Printable Cards PDF",
+  "generateDocxButton": "Generate Editable DOCX",
+  "resourcesHeader": "Helpful Resources",
+  "footerText": "Project source code available on GitHub. Licensed under Creative Commons.",
+  "cards": [
+    { "category": "Medical Wishes", "text": "Under what circumstances would I want life-sustaining treatment?" },
+    { "category": "Medical Wishes", "text": "How important is it for me to be pain-free, even if it means being less alert?" },
+    { "category": "Medical Wishes", "text": "Where do I want to spend my final days? (At home, in a hospital, in a hospice)" },
+    { "category": "Medical Wishes", "text": "Do I want to donate my organs or my body to science?" },
+    { "category": "Medical Wishes", "text": "Who do I trust to make medical decisions for me if I am unable to?" },
+    { "category": "Personal & Spiritual", "text": "What beliefs, traditions, or spiritual practices give me comfort?" },
+    { "category": "Personal & Spiritual", "text": "What music, poems, or readings would I find comforting?" },
+    { "category": "Personal & Spiritual", "text": "Is there anyone I need to forgive, or ask for forgiveness from?" },
+    { "category": "Personal & Spiritual", "text": "What does a 'good day' look like to me right now?" },
+    { "category": "Personal & Spiritual", "text": "What am I most proud of in my life?" },
+    { "category": "Personal & Spiritual", "text": "What message of love or advice do I want to leave for my loved ones?" },
+    { "category": "Funeral & Remembrance", "text": "Do I prefer burial or cremation?" },
+    { "category": "Funeral & Remembrance", "text": "What kind of ceremony or memorial service would I want, if any? (e.g., formal, casual, a celebration)" },
+    { "category": "Funeral & Remembrance", "text": "Are there specific songs, poems, or stories I would like to be included?" },
+    { "category": "Funeral & Remembrance", "text": "How do I want to be remembered?" },
+    { "category": "Practical Matters", "text": "Where are my important documents located (will, passwords, bank accounts)?" },
+    { "category": "Practical Matters", "text": "Who should be responsible for notifying friends and family of my passing?" },
+    { "category": "Practical Matters", "text": "Have I made arrangements for the care of my pets?" },
+    { "category": "Practical Matters", "text": "Are there specific personal belongings I wish to give to certain people?" }
+  ],
+  "resources": [
+    { "title": "The Conversation Project", "desc": "An initiative dedicated to helping people talk about their wishes for end-of-life care.", "url": "https://theconversationproject.org/" },
+    { "title": "Hospice UK - Talkabout", "desc": "Resources and conversation cards from the UK's leading hospice and palliative care charity.", "url": "https://www.hospiceuk.org/our-campaigns/dying-matters/talkabout" },
+    { "title": "Directives Anticipées (France)", "desc": "Official French government information on writing advance directives for medical care.", "url": "https://www.service-public.fr/particuliers/vosdroits/F32010" },
+    { "title": "Five Wishes", "desc": "An easy-to-use legal document that lets you express your wishes ahead of time.", "url": "https://www.fivewishes.org/" },
+    { "title": "Death Cafe", "desc": "A place where people drink tea, eat cake and discuss death. The objective is to increase awareness of death to help people make the most of their (finite) lives.", "url": "https://deathcafe.com/" }
+  ]
+}
