@@ -185,7 +185,7 @@ function getSelections() {
 
 function getSavedSelections() {
   const sel = loadSelections();
-  if (!sel) return null;
+  if (!sel) return { hymns: [], hymnIdxs: [], readings: {}, readingIds: {} };
   
   // Map indices to hymn objects for compatibility
   const hymns = (sel.hymns || []).map(idx => window.hymns[idx]);
@@ -206,6 +206,7 @@ function attachHymnListeners() {
       hymns: selections.hymnIdxs,
       readings: selections.readingIds
     });
+    displayDefaultBooklet();
   });
 }
 
@@ -216,6 +217,7 @@ function attachReadingListeners() {
       hymns: selections.hymnIdxs,
       readings: selections.readingIds
     });
+    displayDefaultBooklet();
   });
 }
 
@@ -479,7 +481,7 @@ function generateDocumentPDF(title, content) {
 }
 
 // Generate full planning booklet with cover page
-function generateFullPlanningBooklet() {
+function generateFullPlanningBooklet(outputType = 'save') {
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || t('church_name');
   const coverImage = window.coverImageData;
@@ -850,11 +852,20 @@ function generateFullPlanningBooklet() {
     doc.text(t('catholic_funeral_planner'), 105, 295, { align: "center" });
   }
 
-  doc.save(`${churchName.replace(/\s+/g, '-')}-funeral-planning-booklet.pdf`);
-  $('#pdf-status').text(t('full_planning_booklet_generated')).fadeIn();
-  setTimeout(() => {
-    $('#pdf-status').fadeOut();
-  }, 3000);
+  if (outputType === 'save') {
+    doc.save(`${churchName.replace(/\s+/g, '-')}-funeral-planning-booklet.pdf`);
+    $('#pdf-status').text(t('full_planning_booklet_generated')).fadeIn();
+    setTimeout(() => {
+      $('#pdf-status').fadeOut();
+    }, 3000);
+  } else {
+    return doc.output('datauristring');
+  }
+}
+
+function displayDefaultBooklet() {
+  const pdfDataUri = generateFullPlanningBooklet('datauristring');
+  $('#pdf-viewer').attr('src', pdfDataUri);
 }
 
 // Reset functionality
@@ -866,6 +877,7 @@ function attachResetListener() {
     renderReadings("", null);
     attachHymnListeners();
     attachReadingListeners();
+    displayDefaultBooklet();
   });
 }
 
@@ -890,6 +902,7 @@ function attachChurchCustomizationListeners() {
         `);
         // Store the image data
         window.coverImageData = e.target.result;
+        displayDefaultBooklet();
       };
       reader.readAsDataURL(file);
     }
@@ -898,6 +911,7 @@ function attachChurchCustomizationListeners() {
   // Save church name to localStorage
   $('#church-name').on('input', function() {
     localStorage.setItem('church-name', $(this).val());
+    displayDefaultBooklet();
   });
   
   // Load saved church name
@@ -959,6 +973,7 @@ function attachContactCustomizationListeners() {
     setTimeout(() => {
       $('#pdf-status').fadeOut();
     }, 2000);
+    displayDefaultBooklet();
   });
 }
 
@@ -1668,7 +1683,7 @@ $(document).ready(function() {
   attachChurchCustomizationListeners();
   attachContactCustomizationListeners();
 
-  $('#download-pdf').on('click', generateFullPlanningBooklet);
+  $('#download-pdf').on('click', function() { generateFullPlanningBooklet('save'); });
   $('#download-docx').on('click', generateFullPlanningBookletDOCX);
   
   // Theme filter change
@@ -1788,4 +1803,6 @@ $(document).ready(function() {
       alert('Custom URL:\n' + customUrl);
     });
   });
+
+  displayDefaultBooklet();
 });
