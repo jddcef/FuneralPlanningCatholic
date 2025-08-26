@@ -476,43 +476,80 @@ function changeLanguage(lang) {
 
 // Function to get translated text
 function t(key) {
-  return window.translations[window.currentLanguage][key] || window.translations['en'][key] || key;
+  const currentLang = window.currentLanguage;
+  if (window.translations[currentLang] && typeof window.translations[currentLang][key] !== 'undefined') {
+    return window.translations[currentLang][key];
+  }
+  if (window.translations['en'] && typeof window.translations['en'][key] !== 'undefined') {
+    return window.translations['en'][key];
+  }
+  return key;
 }
 
 // Function to update all text on the page
 function updatePageLanguage() {
-  // Update navigation
+  // Update elements with data-translate attribute
   $('[data-translate]').each(function() {
     const key = $(this).data('translate');
-    $(this).text(t(key));
+    const translation = t(key);
+    if (translation !== key) {
+      $(this).text(translation);
+    }
   });
   
-  // Update specific elements
+  // Update specific elements that may not have data-translate
   $('#language-selector').val(window.currentLanguage);
   
   // Update flow diagram
-  $('.flow-step1 h3').text(t('flow_step1'));
-  $('.flow-step1 p').text(t('flow_step1_time'));
-  $('.flow-step2 h3').text(t('flow_step2'));
-  $('.flow-step2 p').text(t('flow_step2_time'));
-  $('.flow-step3 h3').text(t('flow_step3'));
-  $('.flow-step3 p').text(t('flow_step3_time'));
+  const flowStep1 = t('flow_step1');
+  if (flowStep1 !== 'flow_step1') $('.flow-step1 h3').text(flowStep1);
   
+  const flowStep1Time = t('flow_step1_time');
+  if (flowStep1Time !== 'flow_step1_time') $('.flow-step1 p').text(flowStep1Time);
+
+  const flowStep2 = t('flow_step2');
+  if (flowStep2 !== 'flow_step2') $('.flow-step2 h3').text(flowStep2);
+
+  const flowStep2Time = t('flow_step2_time');
+  if (flowStep2Time !== 'flow_step2_time') $('.flow-step2 p').text(flowStep2Time);
+
+  const flowStep3 = t('flow_step3');
+  if (flowStep3 !== 'flow_step3') $('.flow-step3 h3').text(flowStep3);
+
+  const flowStep3Time = t('flow_step3_time');
+  if (flowStep3Time !== 'flow_step3_time') $('.flow-step3 p').text(flowStep3Time);
+
   // Update section headings
-  $('#understanding h2').text(t('understanding_title'));
-  $('#planning h2').text(t('planning_title'));
-  $('#downloads h2').text(t('downloads_title'));
-  $('#costs h2').text(t('costs_title'));
-  $('#faq h2').text(t('faq_title'));
-  $('#contact h2').text(t('contact_title'));
+  const understandingTitle = t('understanding_title');
+  if (understandingTitle !== 'understanding_title') $('#understanding h2').text(understandingTitle);
+
+  const planningTitle = t('planning_title');
+  if (planningTitle !== 'planning_title') $('#planning h2').text(planningTitle);
   
+  const downloadsTitle = t('downloads_title');
+  if (downloadsTitle !== 'downloads_title') $('#downloads h2').text(downloadsTitle);
+
+  const costsTitle = t('costs_title');
+  if (costsTitle !== 'costs_title') $('#costs h2').text(costsTitle);
+
+  const faqTitle = t('faq_title');
+  if (faqTitle !== 'faq_title') $('#faq h2').text(faqTitle);
+
+  const contactTitle = t('contact_title');
+  if (contactTitle !== 'contact_title') $('#contact h2').text(contactTitle);
+
   // Update planning tools section headings
   $('#planning .reading-group h4').each(function() {
     const type = $(this).text();
-    if (type === 'First Reading') $(this).text(t('first_reading'));
-    else if (type === 'Psalm') $(this).text(t('psalm'));
-    else if (type === 'Second Reading') $(this).text(t('second_reading'));
-    else if (type === 'Gospel') $(this).text(t('gospel'));
+    const firstReading = t('first_reading');
+    const psalm = t('psalm');
+    const secondReading = t('second_reading');
+    const gospel = t('gospel');
+
+    if (type === 'First Reading' && firstReading !== 'first_reading') $(this).text(firstReading);
+    else if (type === 'Psalm' && psalm !== 'psalm') $(this).text(psalm);
+    else if (type === 'Second Reading' && secondReading !== 'second_reading') $(this).text(secondReading);
+    else if (type === 'Gospel' && gospel !== 'gospel') $(this).text(gospel);
   });
 }
 
