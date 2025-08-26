@@ -256,7 +256,10 @@ function attachVideoListeners() {
 
 // Document preview functionality
 function attachDocumentListeners() {
+  let lastClickedDownloadButton = null;
+
   $(document).on('click', '.download-btn', function() {
+    lastClickedDownloadButton = $(this);
     const type = $(this).data('type');
     const format = $(this).data('format');
     const template = document.getElementById(`${type}-template`);
@@ -293,39 +296,32 @@ function attachDocumentListeners() {
       $('#document-title').text(title);
       $('#document-modal').removeClass('hidden');
 
-      if (format === 'pdf') {
-        $('#generate-document-pdf').off('click').on('click', function() {
-          generateDocumentPDF(title, $('#document-content').html());
-        });
-      } else if (format === 'docx') {
-        $('#generate-document-docx').off('click').on('click', function() {
-          generateDocumentDOCX(type);
-        });
-      }
+      // The generate button in the modal will use the lastClickedDownloadButton
     }
   });
 
   $('#close-document').on('click', function() {
     $('#document-modal').addClass('hidden');
   });
-  
+
   // Close modal when clicking outside
   $('#document-modal').on('click', function(e) {
     if (e.target === this) {
       $(this).addClass('hidden');
     }
   });
-  
+
   // Generate PDF for specific document
   $('#generate-document-pdf').on('click', function() {
     const title = $('#document-title').text();
     const content = $('#document-content').html();
-    generateDocumentPDF(title, content);
+    const watermark = lastClickedDownloadButton ? lastClickedDownloadButton.data('watermark') : "Catholic Funeral Planner";
+    generateDocumentPDF(title, content, watermark);
   });
 }
 
 // Generate beautiful PDF for specific documents with rich formatting
-function generateDocumentPDF(title, content) {
+function generateDocumentPDF(title, content, watermarkText = "Catholic Funeral Planner") {
   const doc = new window.jspdf.jsPDF();
   let y = 20;
   
@@ -362,7 +358,7 @@ function generateDocumentPDF(title, content) {
     if (element.tagName === 'H2') {
       // Main section heading
       doc.setFillColor(124, 58, 237); // Catholic purple
-      doc.rect(10, y-5, 190, 8, 'F');
+      doc.rect(10, y - 5, 190, 8, 'F');
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
@@ -370,7 +366,7 @@ function generateDocumentPDF(title, content) {
         doc.addPage();
         y = 20;
       }
-      doc.text(element.textContent, 15, y);
+      doc.text(element.textContent, 15, y - 1, { baseline: 'middle' });
       y += 12;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
@@ -378,7 +374,7 @@ function generateDocumentPDF(title, content) {
     } else if (element.tagName === 'H3') {
       // Subsection heading
       doc.setFillColor(30, 58, 138); // Catholic blue
-      doc.rect(15, y-3, 180, 6, 'F');
+      doc.rect(15, y - 3, 180, 6, 'F');
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
@@ -386,7 +382,7 @@ function generateDocumentPDF(title, content) {
         doc.addPage();
         y = 20;
       }
-      doc.text(element.textContent, 20, y);
+      doc.text(element.textContent, 20, y, { baseline: 'middle' });
       y += 8;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
@@ -461,7 +457,7 @@ function generateDocumentPDF(title, content) {
     // Add subtle watermark
     doc.setTextColor(240, 240, 240);
     doc.setFontSize(8);
-    doc.text("Catholic Funeral Planner", 105, 295, { align: "center" });
+    doc.text(watermarkText, 105, 295, { align: "center" });
   }
   
   doc.save(`${title.toLowerCase().replace(/\s+/g, '-')}.pdf`);
@@ -475,7 +471,7 @@ function generateDocumentPDF(title, content) {
 }
 
 // Generate full planning booklet with cover page
-function generateFullPlanningBooklet() {
+function generateFullPlanningBooklet(watermarkText = "Catholic Funeral Planner") {
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || 'Catholic Church';
   const coverImage = window.coverImageData;
@@ -513,11 +509,11 @@ function generateFullPlanningBooklet() {
   if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
     y = 140;
     doc.setFillColor(124, 58, 237); // Catholic purple
-    doc.rect(20, y-5, 170, 8, 'F');
+    doc.rect(20, y - 5, 170, 8, 'F');
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text("Contact Information", 25, y);
+    doc.text("Contact Information", 25, y - 1, { baseline: 'middle' });
     y += 12;
     
     doc.setFontSize(10);
@@ -576,11 +572,11 @@ function generateFullPlanningBooklet() {
   // Contact Information Section
   if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
     doc.setFillColor(30, 58, 138); // Catholic blue
-    doc.rect(10, y-8, 190, 10, 'F');
+    doc.rect(10, y - 8, 190, 10, 'F');
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text("Contact Information", 15, y);
+    doc.text("Contact Information", 15, y - 3, { baseline: 'middle' });
     y += 12;
     
     doc.setFontSize(12);
@@ -609,11 +605,11 @@ function generateFullPlanningBooklet() {
 
   // Order of Service Section
   doc.setFillColor(124, 58, 237); // Catholic purple
-  doc.rect(10, y-8, 190, 10, 'F');
+  doc.rect(10, y - 8, 190, 10, 'F');
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
-  doc.text("Order of Service", 15, y);
+  doc.text("Order of Service", 15, y - 3, { baseline: 'middle' });
   y += 12;
   
   doc.setFontSize(12);
@@ -723,11 +719,11 @@ function generateFullPlanningBooklet() {
 
   // Hymns section with beautiful styling
   doc.setFillColor(124, 58, 237); // Catholic purple
-  doc.rect(10, y-8, 190, 10, 'F');
+  doc.rect(10, y - 8, 190, 10, 'F');
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
-  doc.text("Selected Hymns", 15, y);
+  doc.text("Selected Hymns", 15, y - 3, { baseline: 'middle' });
   y += 12;
   
   doc.setFontSize(12);
@@ -746,10 +742,10 @@ function generateFullPlanningBooklet() {
       
       // Hymn title with styling
       doc.setFillColor(217, 119, 6); // Catholic gold
-      doc.rect(15, y-3, 180, 6, 'F');
+      doc.rect(15, y - 3, 180, 6, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
-      doc.text(`${index + 1}. ${hymn.title}`, 20, y);
+      doc.text(`${index + 1}. ${hymn.title}`, 20, y, { baseline: 'middle' });
       y += 8;
       
       // Hymn description
@@ -772,11 +768,11 @@ function generateFullPlanningBooklet() {
   
   // Readings section with beautiful styling
   doc.setFillColor(30, 58, 138); // Catholic blue
-  doc.rect(10, y-8, 190, 10, 'F');
+  doc.rect(10, y - 8, 190, 10, 'F');
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
-  doc.text("Selected Readings", 15, y);
+  doc.text("Selected Readings", 15, y - 3, { baseline: 'middle' });
   y += 12;
   
   doc.setFontSize(12);
@@ -792,10 +788,10 @@ function generateFullPlanningBooklet() {
       
       // Reading type with colored background
       doc.setFillColor(124, 58, 237); // Catholic purple
-      doc.rect(15, y-3, 180, 6, 'F');
+      doc.rect(15, y - 3, 180, 6, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
-      doc.text(`${type}:`, 20, y);
+      doc.text(`${type}:`, 20, y, { baseline: 'middle' });
       y += 8;
       
       // Reading details
@@ -843,7 +839,7 @@ function generateFullPlanningBooklet() {
     // Watermark
     doc.setTextColor(240, 240, 240);
     doc.setFontSize(8);
-    doc.text("Catholic Funeral Planner", 105, 295, { align: "center" });
+    doc.text(watermarkText, 105, 295, { align: "center" });
   }
 
   doc.save(`${churchName.replace(/\s+/g, '-')}-funeral-planning-booklet.pdf`);
@@ -854,7 +850,7 @@ function generateFullPlanningBooklet() {
 }
 
 // Generate beautiful PDF with jsPDF - enhanced version
-function generatePDF() {
+function generatePDF(watermarkText = "Catholic Funeral Planner") {
   const { hymns, readings } = getSelections();
   const doc = new window.jspdf.jsPDF();
   let y = 20;
@@ -1000,7 +996,7 @@ function generatePDF() {
     // Watermark
     doc.setTextColor(240, 240, 240);
     doc.setFontSize(8);
-    doc.text("Catholic Funeral Planner", 105, 295, { align: "center" });
+    doc.text(watermarkText, 105, 295, { align: "center" });
   }
 
   doc.save("funeral-plan.pdf");
@@ -1011,7 +1007,8 @@ function generatePDF() {
 }
 
 // Generate DOCX document for selected hymns and readings
-function generateDOCX() {
+function generateDOCX(watermarkText = "Catholic Funeral Planner") {
+  // TODO: Implement visual watermark for DOCX
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || 'Catholic Church';
 
@@ -1285,7 +1282,8 @@ function attachContactCustomizationListeners() {
 }
 
 // Generate DOCX for individual documents
-function generateDocumentDOCX(type) {
+function generateDocumentDOCX(type, watermarkText = "Catholic Funeral Planner") {
+  // TODO: Implement visual watermark for DOCX
   // Check if docx library is available
   if (!window.docx || !window.docx.Document) {
     // Try to load the library dynamically
@@ -1345,7 +1343,8 @@ function generateDocumentDOCX(type) {
 }
 
 // Generate DOCX for full planning booklet
-function generateFullPlanningBookletDOCX() {
+function generateFullPlanningBookletDOCX(watermarkText = "Catholic Funeral Planner") {
+  // TODO: Implement visual watermark for DOCX
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || 'Catholic Church';
   
@@ -1941,9 +1940,18 @@ $(document).ready(function() {
   attachChurchCustomizationListeners();
   attachContactCustomizationListeners();
 
-  $('#generate-planning-booklet').on('click', generateFullPlanningBooklet);
-  $('#download-pdf').on('click', generatePDF);
-  $('#download-docx').on('click', generateFullPlanningBookletDOCX);
+  $('#generate-planning-booklet').on('click', function() {
+      const watermark = $(this).data('watermark') || 'Catholic Funeral Planner';
+      generateFullPlanningBooklet(watermark);
+  });
+  $('#download-pdf').on('click', function() {
+      const watermark = $(this).data('watermark') || 'Catholic Funeral Planner';
+      generatePDF(watermark);
+  });
+  $('#download-docx').on('click', function() {
+      const watermark = $(this).data('watermark') || 'Catholic Funeral Planner';
+      generateFullPlanningBookletDOCX(watermark);
+  });
   
   // Theme filter change
   $('#theme-filter').on('change', function() {
