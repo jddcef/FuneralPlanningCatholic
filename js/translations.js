@@ -204,6 +204,9 @@ window.translations = {
     "program_tip_readable": "Keep text readable and well-organized",
     "program_tip_quality_paper": "Consider printing on quality paper",
 
+    // Booklet Preview
+    "booklet_preview_title": "Booklet Preview",
+
     // Readings Template
     "readings_booklet_title": "Catholic Funeral Readings Booklet",
     "first_reading_options": "First Reading Options",
@@ -457,6 +460,9 @@ window.translations = {
     "program_tip_readable": "Hou teks leesbaar en goed georganiseer",
     "program_tip_quality_paper": "Oorweeg dit om op kwaliteit papier te druk",
 
+    // Booklet Preview
+    "booklet_preview_title": "Boekie Voorskou",
+
     // Readings Template
     "readings_booklet_title": "Katolieke Begrafnislesings Boekie",
     "first_reading_options": "Eerste Lesing Opsies",
@@ -709,6 +715,9 @@ window.translations = {
     "program_tip_personal_touches": "Yongeza iinkcukacha zobuqu ezibonisa ongasekhoyo",
     "program_tip_readable": "Gcina isicatshulwa sifundeka kwaye silungelelaniswe kakuhle",
     "program_tip_quality_paper": "Qwalasela ukuprinta kwiphepha elisemgangathweni",
+
+    // Booklet Preview
+    "booklet_preview_title": "Imbonakalo Yencwadana",
 
     // Readings Template
     "readings_booklet_title": "Incwadana Yezifundo Zomngcwabo WamaKatolika",
