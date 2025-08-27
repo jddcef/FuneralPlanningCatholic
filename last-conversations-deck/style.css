@@ -98,6 +98,7 @@ nav select {
     width: 150px;
     height: 100px;
     margin: 2rem auto;
+    cursor: pointer;
 }
 
 .card {
@@ -133,15 +134,23 @@ nav select {
 
 .card-1 {
     transform: rotate(-15deg) translate(-10px, 10px);
+    z-index: 1;
 }
 
 .card-2 {
     transform: rotate(10deg) translate(10px, 0px);
+    z-index: 2;
 }
 
 .card-3 {
     transform: rotate(-5deg) translate(0px, -10px);
     background-color: #f0f8ff; /* AliceBlue to make it stand out a bit */
+    z-index: 3;
+}
+
+.card.flipped {
+    transform: rotate(0deg) translate(0, 20px) scale(0.9);
+    z-index: 0;
 }
 
 .card-stack-container:hover .card-1 {

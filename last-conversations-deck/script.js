@@ -40,18 +40,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. DOCUMENT GENERATION FUNCTIONS ---
 
+    const drawIcon = (doc, category, x, y) => {
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(100, 100, 100);
+
+        switch (category) {
+            case 'Medical Wishes': // Simple cross
+                doc.line(x, y - 2, x, y + 2);
+                doc.line(x - 2, y, x + 2, y);
+                break;
+            case 'Personal & Spiritual': // Simple heart
+                doc.path([
+                    { op: 'm', c: [x, y] },
+                    { op: 'c', c: [x + 1, y - 1.5, x + 2.5, y - 1, x + 2.5, y + 0.5] },
+                    { op: 'c', c: [x + 2.5, y + 2, x, y + 3.5, x, y + 3.5] },
+                    { op: 'c', c: [x, y + 3.5, x - 2.5, y + 2, x - 2.5, y + 0.5] },
+                    { op: 'c', c: [x - 2.5, y - 1, x - 1, y - 1.5, x, y] },
+                ]).fill();
+                break;
+            case 'Funeral & Remembrance': // Simple dove/bird
+                doc.path([
+                    { op: 'm', c: [x - 3, y] },
+                    { op: 'c', c: [x - 1, y - 3, x + 2, y - 2, x + 3, y + 1] },
+                ]).stroke();
+                 doc.path([
+                    { op: 'm', c: [x - 3, y] },
+                    { op: 'c', c: [x - 1, y + 1, x + 1, y + 2, x + 2, y + 1] },
+                ]).stroke();
+                break;
+            case 'Practical Matters': // Simple document
+                doc.rect(x - 2, y - 3, 4, 5);
+                doc.line(x - 2, y - 1, x + 2, y - 1);
+                doc.line(x - 2, y + 1, x + 2, y + 1);
+                break;
+        }
+    };
+
     // A. Generate PDF (Table Format)
     const generateTablePdf = () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const cardData = translations.cards || [];
-        const body = cardData.map(card => [card.category, `${card.icon} ${card.text}`]);
+        const body = cardData.map(card => [card.category, card.text]);
 
         doc.autoTable({
             head: [['Category', 'Topic / Question']],
             body: body,
-            styles: { fontSize: 12 },
+            styles: { fontSize: 12, cellPadding: 3 },
             headStyles: { fontSize: 14, fontStyle: 'bold' },
+            columnStyles: {
+                0: { cellWidth: 45 },
+                1: { cellWidth: 'auto' }
+            },
+            didDrawCell: (data) => {
+                if (data.section === 'body' && data.column.index === 1) {
+                    const card = cardData[data.row.index];
+                    drawIcon(doc, card.category, data.cell.x + 5, data.cell.y + 6);
+                    // Adjust text position to make space for the icon
+                    data.cell.textPos.x = data.cell.x + 10;
+                }
+            },
             didDrawPage: (data) => {
                 // Add header and footer to each page
                 doc.setFontSize(20);
@@ -89,10 +137,13 @@ document.addEventListener('DOMContentLoaded', () => {
             doc.setDrawColor(200, 200, 200); // Light grey for cut lines
             doc.rect(cursorX, cursorY, cardWidth, cardHeight);
 
+            // Draw icon
+            drawIcon(doc, card.category, cursorX + (cardWidth / 2), cursorY + 10);
+
             // Add text
             doc.setFontSize(12);
-            const textLines = doc.splitTextToSize(`${card.icon} ${card.text}`, cardWidth - 10);
-            doc.text(textLines, cursorX + 5, cursorY + 12);
+            const textLines = doc.splitTextToSize(card.text, cardWidth - 20);
+            doc.text(textLines, cursorX + 10, cursorY + 22, { align: 'center' });
 
             // Add category footnote
             doc.setFontSize(7);
@@ -156,6 +207,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('lang-select').addEventListener('change', (event) => {
         loadLanguage(event.target.value);
+    });
+
+    document.querySelector('.card-stack-container').addEventListener('click', () => {
+        const container = document.querySelector('.card-stack-container');
+        const topCard = container.querySelector('.card:last-of-type');
+
+        if (topCard) {
+            topCard.classList.add('flipped');
+
+            setTimeout(() => {
+                topCard.classList.remove('flipped');
+                container.prepend(topCard);
+            }, 500); // Match timeout to CSS transition duration
+        }
     });
 
     // --- INITIAL LOAD ---
