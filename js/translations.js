@@ -6,7 +6,9 @@ window.translations = {
     // Navigation
     "nav_home": "Home",
     "nav_understanding": "Understanding",
-    "nav_planning": "Planning Tools",
+    "nav_planning_tools": "Planning Tools",
+    "nav_order_of_service": "Order of Service",
+    "nav_background": "Background",
     "nav_downloads": "Downloads",
     "nav_costs": "Costs",
     "nav_faq": "FAQ",
@@ -288,7 +290,9 @@ window.translations = {
     // Navigation
     "nav_home": "Tuis",
     "nav_understanding": "Begrip",
-    "nav_planning": "Beplanningsgereedskap",
+    "nav_planning_tools": "Beplanningsgereedskap",
+    "nav_order_of_service": "Orde van Diens",
+    "nav_background": "Agtergrond",
     "nav_downloads": "Aflaaie",
     "nav_costs": "Koste",
     "nav_faq": "Vrae",
@@ -544,7 +548,9 @@ window.translations = {
     // Navigation
     "nav_home": "Ekhaya",
     "nav_understanding": "UkuQonda",
-    "nav_planning": "Amathuluzi Okucwangcisa",
+    "nav_planning_tools": "Amathuluzi Okucwangcisa",
+    "nav_order_of_service": "I-Order yoNkonzo",
+    "nav_background": "Inkcukacha Ngemva",
     "nav_downloads": "Ukukhuphela",
     "nav_costs": "Iindleko",
     "nav_faq": "Imibuzo Ejwayelekileyo",

@@ -10,6 +10,7 @@
   <script src="https://unpkg.com/compromise@14.10.0/builds/compromise.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -270,6 +271,16 @@
       </div>
     </section>
 
+    <!-- Booklet Preview Section -->
+    <section id="booklet-preview" class="mb-16">
+      <h2 class="text-2xl font-bold text-catholic-blue mb-8 text-center" data-translate="booklet_preview_title">Booklet Preview</h2>
+      <div id="pdf-viewer-container" class="bg-gray-200 p-4 rounded-lg shadow-inner min-h-[80vh]">
+        <div id="pdf-viewer" class="flex flex-row flex-wrap justify-center items-start gap-4">
+          <!-- PDF pages will be rendered here as canvases -->
+        </div>
+      </div>
+    </section>
+
     <!-- Order of Service Section -->
     <section id="order-of-service" class="mb-16">
       <h2 class="text-2xl font-bold text-catholic-blue mb-8 text-center" data-translate="order_of_service_title">Order of Service</h2>
@@ -289,6 +300,13 @@
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- Carousel Dots -->
+      <div id="carousel-dots" class="flex justify-center space-x-2 mb-6">
+        <button data-service="funeral-mass" class="carousel-dot h-3 w-3 bg-catholic-blue rounded-full transition-colors"></button>
+        <button data-service="funeral-service" class="carousel-dot h-3 w-3 bg-gray-400 hover:bg-gray-500 rounded-full transition-colors"></button>
+        <button data-service="vigil" class="carousel-dot h-3 w-3 bg-gray-400 hover:bg-gray-500 rounded-full transition-colors"></button>
       </div>
       
       <!-- Service Details -->
@@ -356,14 +374,6 @@
             <li><strong>8.</strong> Final Blessing</li>
           </ol>
         </div>
-      </div>
-    </section>
-
-    <!-- Booklet Preview Section -->
-    <section id="booklet-preview" class="mb-16">
-      <h2 class="text-2xl font-bold text-catholic-blue mb-8 text-center" data-translate="booklet_preview_title">Booklet Preview</h2>
-      <div class="bg-white p-2 rounded-lg shadow-md">
-        <iframe id="pdf-viewer" class="w-full h-[80vh]" src=""></iframe>
       </div>
     </section>
 
