@@ -24,24 +24,33 @@
     </header>
 
     <main>
-        <section id="intro">
-            <h2 data-i18n-key="introHeader"></h2>
-            <p data-i18n-key="introText"></p>
-        </section>
+        <div class="main-content">
+            <section id="intro">
+                <h2 data-i18n-key="introHeader"></h2>
+                <p data-i18n-key="introText"></p>
+                <div class="card-stack-container">
+                    <div class="card card-1"></div>
+                    <div class="card card-2"></div>
+                    <div class="card card-3"></div>
+                </div>
+            </section>
 
-        <section id="downloads">
-            <h2 data-i18n-key="downloadHeader"></h2>
-            <div class="button-container">
-                <button id="generate-table-pdf" class="button" data-i18n-key="generateTablePdfButton"></button>
-                <button id="generate-cards-pdf" class="button" data-i18n-key="generateCardsPdfButton"></button>
-                <button id="generate-docx" class="button" data-i18n-key="generateDocxButton"></button>
-            </div>
-        </section>
+            <section id="downloads">
+                <h2 data-i18n-key="downloadHeader"></h2>
+                <div class="button-container">
+                    <button id="generate-table-pdf" class="button" data-i18n-key="generateTablePdfButton"></button>
+                    <button id="generate-cards-pdf" class="button" data-i18n-key="generateCardsPdfButton"></button>
+                    <button id="generate-docx" class="button" data-i18n-key="generateDocxButton"></button>
+                </div>
+            </section>
+        </div>
 
-        <section id="resources">
-            <h2 data-i18n-key="resourcesHeader"></h2>
-            <ul id="resources-list"></ul>
-        </section>
+        <aside class="sidebar">
+            <section id="resources">
+                <h2 data-i18n-key="resourcesHeader"></h2>
+                <ul id="resources-list"></ul>
+            </section>
+        </aside>
     </main>
 
     <footer>
