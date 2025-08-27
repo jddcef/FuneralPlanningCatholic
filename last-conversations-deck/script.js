@@ -88,9 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
             doc.rect(cursorX, cursorY, cardWidth, cardHeight);
 
             // Add text
-            doc.setFontSize(9);
+            doc.setFontSize(11);
             const textLines = doc.splitTextToSize(card.text, cardWidth - 10);
-            doc.text(textLines, cursorX + 5, cursorY + 15);
+            doc.text(textLines, cursorX + 5, cursorY + 12);
 
             // Add category footnote
             doc.setFontSize(7);
@@ -151,7 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('generate-table-pdf').addEventListener('click', generateTablePdf);
     document.getElementById('generate-cards-pdf').addEventListener('click', generateCardsPdf);
     document.getElementById('generate-docx').addEventListener('click', generateDocx);
-    // Add language button listeners here when new languages are added
+
+    document.getElementById('lang-select').addEventListener('change', (event) => {
+        loadLanguage(event.target.value);
+    });
 
     // --- INITIAL LOAD ---
     loadLanguage(currentLanguage);

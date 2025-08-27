@@ -15,7 +15,11 @@
         <h1 data-i18n-key="siteTitle"></h1>
         <p data-i18n-key="tagline"></p>
         <nav>
-            Language: <button id="lang-en" class="active">EN</button> <!-- Add | <button id="lang-fr">FR</button> when ready -->
+            <label for="lang-select">Language:</label>
+            <select id="lang-select">
+                <option value="en" selected>English</option>
+                <option value="fr" disabled>Français (coming soon)</option>
+            </select>
         </nav>
     </header>
 

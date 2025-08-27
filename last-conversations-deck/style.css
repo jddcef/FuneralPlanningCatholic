@@ -7,9 +7,19 @@ body {
     padding: 0 1rem;
     background-color: #fdfdfd;
 }
-header, section, footer {
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align to the top */
+    margin-bottom: 2.5rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 1rem;
+}
+
+section, footer {
     margin-bottom: 2.5rem;
 }
+
 h1 {
     font-size: 2.5rem;
     color: #111;
@@ -64,15 +74,20 @@ footer {
     font-size: 0.9rem;
     margin-top: 3rem;
 }
-nav button {
-    background: none;
-    border: 1px solid #ccc;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 3px;
+nav {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem; /* Add some margin to align better with the title */
 }
-nav button.active {
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
+
+nav label {
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+nav select {
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 0.9rem;
 }
