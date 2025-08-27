@@ -299,7 +299,7 @@ function attachDocumentListeners() {
 
       if (format === 'pdf') {
         $('#generate-document-pdf').off('click').on('click', function() {
-          generateDocumentPDF(title, docContent);
+          generateDocumentPDF(title, docContent, type);
         });
         $('#generate-document-pdf').text('Generate PDF');
       } else if (format === 'docx') {
@@ -321,17 +321,10 @@ function attachDocumentListeners() {
       $(this).addClass('hidden');
     }
   });
-  
-  // Generate PDF for specific document
-  $('#generate-document-pdf').on('click', function() {
-    const title = $('#document-title').text();
-    const content = $('#document-content').html();
-    generateDocumentPDF(title, content);
-  });
 }
 
 // Generate beautiful PDF for specific documents with rich formatting
-function generateDocumentPDF(title, content) {
+function generateDocumentPDF(title, content, type) {
   const doc = new window.jspdf.jsPDF();
   let y = 20;
   
@@ -454,6 +447,25 @@ function generateDocumentPDF(title, content) {
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     
+    // Add subtle watermark
+    let watermarkText = t('catholic_funeral_planner');
+    if (type === 'checklist') {
+      watermarkText = t('checklist_title');
+    } else if (type === 'program') {
+      watermarkText = t('program_title');
+    } else if (type === 'readings') {
+      watermarkText = t('readings_title');
+    } else if (type === 'vigil') {
+      watermarkText = t('vigil_title_download');
+    }
+
+    doc.saveGraphicsState();
+    doc.setFontSize(50);
+    doc.setTextColor(235, 235, 235);
+    doc.setFont('helvetica', 'bold');
+    doc.text(watermarkText, 105, 160, { align: 'center', angle: -45 });
+    doc.restoreGraphicsState();
+
     // Footer line
     doc.setDrawColor(124, 58, 237);
     doc.setLineWidth(0.5);
@@ -462,19 +474,19 @@ function generateDocumentPDF(title, content) {
     // Page numbers with styling
     doc.setFontSize(10);
     doc.setTextColor(124, 58, 237);
-    doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: "center" });
+    doc.text(`${t('page')} ${i} ${t('of')} ${pageCount}`, 105, 290, { align: "center" });
     
-    // Add subtle watermark
-    doc.setTextColor(240, 240, 240);
+    // Add subtle footer watermark
+    doc.setTextColor(180, 180, 180);
     doc.setFontSize(8);
-    doc.text("Catholic Funeral Planner", 105, 295, { align: "center" });
+    doc.text(t('catholic_funeral_planner'), 105, 295, { align: "center" });
   }
   
   doc.save(`${title.toLowerCase().replace(/\s+/g, '-')}.pdf`);
   
   // Show success message
   $('#document-modal').addClass('hidden');
-  $('#pdf-status').text(t('pdf_generated', { title })).fadeIn();
+  $('#pdf-status').text(t('pdf_generated')).fadeIn();
   setTimeout(() => {
     $('#pdf-status').fadeOut();
   }, 3000);
@@ -835,6 +847,14 @@ function generateFullPlanningBooklet(outputType = 'save') {
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
+
+    // Watermark
+    doc.saveGraphicsState();
+    doc.setFontSize(50);
+    doc.setTextColor(235, 235, 235);
+    doc.setFont('helvetica', 'bold');
+    doc.text(t('funeral_planning_booklet'), 105, 160, { align: 'center', angle: -45 });
+    doc.restoreGraphicsState();
     
     // Footer line
     doc.setDrawColor(124, 58, 237);
@@ -846,8 +866,8 @@ function generateFullPlanningBooklet(outputType = 'save') {
     doc.setTextColor(124, 58, 237);
     doc.text(`${t('page')} ${i} ${t('of')} ${pageCount}`, 105, 290, { align: "center" });
     
-    // Watermark
-    doc.setTextColor(240, 240, 240);
+    // Footer watermark
+    doc.setTextColor(180, 180, 180);
     doc.setFontSize(8);
     doc.text(t('catholic_funeral_planner'), 105, 295, { align: "center" });
   }
