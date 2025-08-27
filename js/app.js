@@ -1,3 +1,9 @@
+const watermarkSVG = '<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M40,0 L60,0 L60,40 L100,40 L100,60 L60,60 L60,100 L40,100 L40,60 L0,60 L0,40 L40,40 Z" fill="#EAEAEA"/></svg>';
+
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+}
+
 // Utility: Group readings by type
 function groupReadings(readings) {
   const groups = {};
@@ -327,163 +333,162 @@ function attachDocumentListeners() {
 function generateDocumentPDF(title, content, type) {
   const doc = new window.jspdf.jsPDF();
   let y = 20;
-  
+
+  const _addPage = () => {
+    doc.addPage();
+    try {
+      doc.addImage(watermarkSVG, 'SVG', 60, 100, 90, 90, 'watermark', 'NONE');
+    } catch (e) {
+      // Fallback to text watermark if SVG fails
+      doc.saveGraphicsState();
+      let watermarkText = t('catholic_funeral_planner');
+      if (type === 'checklist') watermarkText = t('checklist_title');
+      else if (type === 'program') watermarkText = t('program_title');
+      else if (type === 'readings') watermarkText = t('readings_title');
+      else if (type === 'vigil') watermarkText = t('vigil_title_download');
+      doc.setFontSize(50);
+      doc.setTextColor(235, 235, 235);
+      doc.setFont('helvetica', 'bold');
+      doc.text(watermarkText, 105, 160, { align: 'center', angle: -45 });
+      doc.restoreGraphicsState();
+    }
+    return 20; // Return new y position
+  };
+
+  const _checkPageBreak = (currentY) => {
+    if (currentY > 270) {
+      return _addPage();
+    }
+    return currentY;
+  };
+
   // Header with beautiful styling
   doc.setFillColor(30, 58, 138); // Catholic blue
   doc.rect(0, 0, 210, 35, 'F');
-  
-  // Add subtle pattern to header
-  doc.setFillColor(255, 255, 255);
-  doc.rect(5, 5, 200, 25, 'F');
-  doc.setFillColor(30, 58, 138);
-  doc.rect(0, 0, 210, 35, 'F');
-  
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
   doc.text(title, 105, 22, { align: "center" });
-  
+
   // Reset text color for content
   doc.setTextColor(0, 0, 0);
   y = 45;
-  
+
+  // Add watermark to first page
+  try {
+    doc.addImage(watermarkSVG, 'SVG', 60, 100, 90, 90, 'watermark', 'NONE');
+  } catch(e) { /* fallback handled in _addPage */ }
+
+
   // Convert HTML content to beautifully formatted text
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = content;
-  
+
   // Process headings and content with rich formatting
-  const processContent = (element, level = 0) => {
+  const processContent = (element) => {
+    if (!element) return;
+
     if (element.nodeType === Node.TEXT_NODE) {
-      return element.textContent;
+      const lines = doc.splitTextToSize(element.textContent, 170);
+      lines.forEach(line => {
+        y = _checkPageBreak(y);
+        doc.text(line, 20, y);
+        y += 5;
+      });
+      return;
     }
-    
-    let text = '';
-    if (element.tagName === 'H2') {
-      // Main section heading
+
+    const tagName = element.tagName;
+    if (tagName === 'H2') {
+      y = _checkPageBreak(y);
       doc.setFillColor(124, 58, 237); // Catholic purple
-      doc.rect(10, y-5, 190, 8, 'F');
+      doc.rect(10, y - 5, 190, 10, 'F');
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-      doc.text(element.textContent, 15, y);
+      doc.text(element.textContent, 105, y, { align: 'center', baseline: 'middle' });
+      y += 15;
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+    } else if (tagName === 'H3') {
+      y = _checkPageBreak(y);
+      doc.setFillColor(30, 58, 138); // Catholic blue
+      doc.rect(15, y - 3, 180, 8, 'F');
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(element.textContent, 20, y + 1, { baseline: 'middle' });
       y += 12;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-    } else if (element.tagName === 'H3') {
-      // Subsection heading
-      doc.setFillColor(30, 58, 138); // Catholic blue
-      doc.rect(15, y-3, 180, 6, 'F');
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-      doc.text(element.textContent, 20, y);
-      y += 8;
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-    } else if (element.tagName === 'H4') {
-      // Minor heading
+    } else if (tagName === 'H4') {
+      y = _checkPageBreak(y);
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(30, 58, 138);
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
       doc.text(element.textContent, 20, y);
-      y += 6;
+      y += 8;
       doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-    } else if (element.tagName === 'UL') {
-      // Bullet points with styling
+    } else if (tagName === 'UL') {
       y += 3;
-      element.querySelectorAll('li').forEach((li, index) => {
-        if (y > 250) {
-          doc.addPage();
-          y = 20;
-        }
-        // Add colored bullet
+      element.querySelectorAll('li').forEach((li) => {
+        y = _checkPageBreak(y);
         doc.setFillColor(217, 119, 6); // Catholic gold
-        doc.circle(22, y-1, 1.5, 'F');
+        doc.circle(22, y - 1, 1.5, 'F');
         doc.setTextColor(0, 0, 0);
-        doc.text(li.textContent, 28, y);
-        y += 6;
+        const lines = doc.splitTextToSize(li.textContent, 160);
+        lines.forEach(line => {
+          doc.text(line, 28, y);
+          y += 6;
+          y = _checkPageBreak(y);
+        });
       });
       y += 3;
-    } else if (element.tagName === 'P') {
-      // Paragraphs with proper spacing
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
+    } else if (tagName === 'P') {
+      y = _checkPageBreak(y);
       const lines = doc.splitTextToSize(element.textContent, 170);
       lines.forEach(line => {
         doc.text(line, 20, y);
         y += 5;
+        y = _checkPageBreak(y);
       });
       y += 3;
-    } else if (element.tagName === 'DIV') {
-      // Process child elements
+    } else {
+      // Process child elements for other tags like DIV
       element.childNodes.forEach(child => {
-        processContent(child, level + 1);
+        processContent(child);
       });
     }
   };
-  
+
   processContent(tempDiv);
-  
+
   // Add beautiful footer with page numbers
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    
-    // Add subtle watermark
-    let watermarkText = t('catholic_funeral_planner');
-    if (type === 'checklist') {
-      watermarkText = t('checklist_title');
-    } else if (type === 'program') {
-      watermarkText = t('program_title');
-    } else if (type === 'readings') {
-      watermarkText = t('readings_title');
-    } else if (type === 'vigil') {
-      watermarkText = t('vigil_title_download');
-    }
-
-    doc.saveGraphicsState();
-    doc.setFontSize(50);
-    doc.setTextColor(235, 235, 235);
-    doc.setFont('helvetica', 'bold');
-    doc.text(watermarkText, 105, 160, { align: 'center', angle: -45 });
-    doc.restoreGraphicsState();
-
     // Footer line
     doc.setDrawColor(124, 58, 237);
     doc.setLineWidth(0.5);
     doc.line(20, 280, 190, 280);
-    
+
     // Page numbers with styling
     doc.setFontSize(10);
     doc.setTextColor(124, 58, 237);
     doc.text(`${t('page')} ${i} ${t('of')} ${pageCount}`, 105, 290, { align: "center" });
-    
+
     // Add subtle footer watermark
     doc.setTextColor(180, 180, 180);
     doc.setFontSize(8);
     doc.text(t('catholic_funeral_planner'), 105, 295, { align: "center" });
   }
-  
+
   doc.save(`${title.toLowerCase().replace(/\s+/g, '-')}.pdf`);
-  
+
   // Show success message
   $('#document-modal').addClass('hidden');
   $('#pdf-status').text(t('pdf_generated')).fadeIn();
@@ -497,51 +502,79 @@ function generateFullPlanningBooklet(outputType = 'save') {
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || t('church_name');
   const coverImage = window.coverImageData;
-  
+
   const doc = new window.jspdf.jsPDF();
   let y = 20;
-  
+
+  const _addPage = () => {
+    doc.addPage();
+    try {
+      doc.addImage(watermarkSVG, 'SVG', 60, 100, 90, 90, 'watermark', 'NONE');
+    } catch (e) {
+      // Fallback to text watermark if SVG fails
+      doc.saveGraphicsState();
+      doc.setFontSize(50);
+      doc.setTextColor(235, 235, 235);
+      doc.setFont('helvetica', 'bold');
+      doc.text(t('funeral_planning_booklet'), 105, 160, { align: 'center', angle: -45 });
+      doc.restoreGraphicsState();
+    }
+    return 20; // Return new y position
+  };
+
+  const _checkPageBreak = (currentY) => {
+    if (currentY > 270) {
+      return _addPage();
+    }
+    return currentY;
+  };
+
   // Beautiful cover page
   doc.setFillColor(30, 58, 138); // Catholic blue
   doc.rect(0, 0, 210, 297, 'F');
-  
+
   // Add white overlay for content area
   doc.setFillColor(255, 255, 255);
   doc.rect(10, 10, 190, 277, 'F');
-  
+
+  // Add border
+  doc.setDrawColor(217, 119, 6); // Catholic gold
+  doc.setLineWidth(1.5);
+  doc.rect(12, 12, 186, 273);
+
   // Church name at top
   doc.setTextColor(30, 58, 138);
   doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
   doc.text(churchName, 105, 60, { align: "center" });
-  
+
   // Title
   doc.setTextColor(124, 58, 237); // Catholic purple
   doc.setFontSize(24);
   doc.text(t('funeral_planning_booklet'), 105, 90, { align: "center" });
-  
+
   // Subtitle
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(16);
   doc.setFont('helvetica', 'normal');
   doc.text(t('comprehensive_guide'), 105, 110, { align: "center" });
-  
+
   // Contact Information on cover page
   const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+  y = 140;
   if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
-    y = 140;
     doc.setFillColor(124, 58, 237); // Catholic purple
-    doc.rect(20, y-5, 170, 8, 'F');
+    doc.rect(20, y - 5, 170, 8, 'F');
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text(t('contact_information'), 25, y);
+    doc.text(t('contact_information'), 105, y, { align: 'center' });
     y += 12;
-    
+
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 0, 0);
-    
+
     if (contactInfo.phone) {
       doc.text(`📞 ${t('phone_number')}: ${contactInfo.phone}`, 25, y);
       y += 5;
@@ -551,321 +584,249 @@ function generateFullPlanningBooklet(outputType = 'save') {
       y += 5;
     }
     if (contactInfo.address) {
-      doc.text(`📍 ${t('address')}: ${contactInfo.address}`, 25, y);
-      y += 5;
+      const addressLines = doc.splitTextToSize(contactInfo.address, 160);
+      doc.text(`📍 ${t('address')}:`, 25, y);
+      addressLines.forEach(line => {
+        doc.text(line, 35, y);
+        y += 5;
+      });
     }
     if (contactInfo.hours) {
       doc.text(`🕒 ${t('office_hours')}: ${contactInfo.hours}`, 25, y);
       y += 5;
     }
-    
-    y += 10;
+    y += 5;
   }
-  
+
   // Date
   doc.setFontSize(12);
   doc.setTextColor(128, 128, 128);
   const today = new Date().toLocaleDateString();
-  doc.text(`${t('generated_on')}: ${today}`, 105, y, { align: "center" });
-  
+  doc.text(`${t('generated_on')}: ${today}`, 105, 250, { align: "center" });
+
   // Add new page for content
-  doc.addPage();
-  y = 20;
-  
+  y = _addPage();
+
   // Content header
   doc.setFillColor(124, 58, 237); // Catholic purple
   doc.rect(0, 0, 210, 40, 'F');
-  
-  // Add white overlay for text
-  doc.setFillColor(255, 255, 255);
-  doc.rect(5, 5, 200, 30, 'F');
-  doc.setFillColor(124, 58, 237);
-  doc.rect(0, 0, 210, 40, 'F');
-  
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.text(t('funeral_planning_details'), 105, 25, { align: "center" });
-  
+
   // Reset text color for content
   doc.setTextColor(0, 0, 0);
   y = 50;
-  
+
   // Contact Information Section
   if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
     doc.setFillColor(30, 58, 138); // Catholic blue
-    doc.rect(10, y-8, 190, 10, 'F');
+    doc.rect(10, y - 8, 190, 10, 'F');
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
     doc.text(t('contact_information'), 15, y);
     y += 12;
-    
+
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 0, 0);
-    
+
     if (contactInfo.phone) {
-      doc.text(`📞 ${t('phone_number')}: ${contactInfo.phone}`, 20, y);
-      y += 6;
+      y = _checkPageBreak(y); doc.text(`📞 ${t('phone_number')}: ${contactInfo.phone}`, 20, y); y += 6;
     }
     if (contactInfo.email) {
-      doc.text(`✉️ ${t('email_address')}: ${contactInfo.email}`, 20, y);
-      y += 6;
+      y = _checkPageBreak(y); doc.text(`✉️ ${t('email_address')}: ${contactInfo.email}`, 20, y); y += 6;
     }
     if (contactInfo.address) {
-      doc.text(`📍 ${t('address')}: ${contactInfo.address}`, 20, y);
-      y += 6;
+      y = _checkPageBreak(y);
+      const addressLines = doc.splitTextToSize(contactInfo.address, 170);
+      doc.text(`📍 ${t('address')}:`, 20, y);
+      addressLines.forEach(line => {
+        doc.text(line, 30, y);
+        y += 6;
+        y = _checkPageBreak(y);
+      });
     }
     if (contactInfo.hours) {
-      doc.text(`🕒 ${t('office_hours')}: ${contactInfo.hours}`, 20, y);
-      y += 6;
+      y = _checkPageBreak(y); doc.text(`🕒 ${t('office_hours')}: ${contactInfo.hours}`, 20, y); y += 6;
     }
-    
     y += 8;
   }
 
   // Order of Service Section
+  y = _checkPageBreak(y);
   doc.setFillColor(124, 58, 237); // Catholic purple
-  doc.rect(10, y-8, 190, 10, 'F');
+  doc.rect(10, y - 8, 190, 10, 'F');
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
   doc.text(t('order_of_service'), 15, y);
   y += 12;
-  
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(0, 0, 0);
-  
+
   // Funeral Mass Order
+  y = _checkPageBreak(y);
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 58, 138);
   doc.text(t('funeral_mass_full_service'), 15, y);
   y += 8;
-  
+
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0, 0, 0);
-  doc.text(`1. ${t('reception_of_body')}`, 20, y);
-  y += 5;
-  doc.text(`2. ${t('opening_prayer')}`, 20, y);
-  y += 5;
-  doc.text(`3. ${t('liturgy_of_the_word')}`, 20, y);
-  y += 5;
-  doc.text(`   • ${t('first_reading')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('responsorial_psalm')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('second_reading')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('gospel_acclamation')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('gospel_reading')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('homily')}`, 25, y);
-  y += 5;
-  doc.text(`4. ${t('liturgy_of_the_eucharist')}`, 20, y);
-  y += 5;
-  doc.text(`   • ${t('preparation_of_gifts')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('eucharistic_prayer')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('communion')}`, 25, y);
-  y += 5;
-  doc.text(`5. ${t('final_commendation')}`, 20, y);
-  y += 5;
-  doc.text(`6. ${t('procession_to_committal')}`, 20, y);
+  const massOrder = [
+    `1. ${t('reception_of_body')}`, `2. ${t('opening_prayer')}`, `3. ${t('liturgy_of_the_word')}`,
+    `   • ${t('first_reading')}`, `   • ${t('responsorial_psalm')}`, `   • ${t('second_reading')}`,
+    `   • ${t('gospel_acclamation')}`, `   • ${t('gospel_reading')}`, `   • ${t('homily')}`,
+    `4. ${t('liturgy_of_the_eucharist')}`, `   • ${t('preparation_of_gifts')}`, `   • ${t('eucharistic_prayer')}`,
+    `   • ${t('communion')}`, `5. ${t('final_commendation')}`, `6. ${t('procession_to_committal')}`
+  ];
+  massOrder.forEach(item => { y = _checkPageBreak(y); doc.text(item, item.startsWith(' ') ? 25 : 20, y); y += 5; });
   y += 8;
-  
-  // Funeral Service Order (without Eucharist)
+
+  // Funeral Service Order
+  y = _checkPageBreak(y);
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 58, 138);
   doc.text(t('funeral_service_without_eucharist'), 15, y);
   y += 8;
-  
+
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0, 0, 0);
-  doc.text(`1. ${t('reception_of_body')}`, 20, y);
-  y += 5;
-  doc.text(`2. ${t('opening_prayer')}`, 20, y);
-  y += 5;
-  doc.text(`3. ${t('liturgy_of_the_word')}`, 20, y);
-  y += 5;
-  doc.text(`   • ${t('first_reading')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('responsorial_psalm')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('second_reading')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('gospel_acclamation')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('gospel_reading')}`, 25, y);
-  y += 5;
-  doc.text(`   • ${t('homily')}`, 25, y);
-  y += 5;
-  doc.text(`4. ${t('final_commendation')}`, 20, y);
-  y += 5;
-  doc.text(`5. ${t('procession_to_committal')}`, 20, y);
+  const serviceOrder = [
+    `1. ${t('reception_of_body')}`, `2. ${t('opening_prayer')}`, `3. ${t('liturgy_of_the_word')}`,
+    `   • ${t('first_reading')}`, `   • ${t('responsorial_psalm')}`, `   • ${t('second_reading')}`,
+    `   • ${t('gospel_acclamation')}`, `   • ${t('gospel_reading')}`, `   • ${t('homily')}`,
+    `4. ${t('final_commendation')}`, `5. ${t('procession_to_committal')}`
+  ];
+  serviceOrder.forEach(item => { y = _checkPageBreak(y); doc.text(item, item.startsWith(' ') ? 25 : 20, y); y += 5; });
   y += 8;
-  
+
   // Vigil Order
+  y = _checkPageBreak(y);
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 58, 138);
   doc.text(t('vigil_service_evening_before'), 15, y);
   y += 8;
-  
+
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0, 0, 0);
-  doc.text(`1. ${t('opening_prayer')}`, 20, y);
-  y += 5;
-  doc.text(`2. ${t('scripture_reading')}`, 20, y);
-  y += 5;
-  doc.text(`3. ${t('responsorial_psalm')}`, 20, y);
-  y += 5;
-  doc.text(`4. ${t('gospel_reading')}`, 20, y);
-  y += 5;
-  doc.text(`5. ${t('homily_or_reflection')}`, 20, y);
-  y += 5;
-  doc.text(`6. ${t('intercessions')}`, 20, y);
-  y += 5;
-  doc.text(`7. ${t('lords_prayer')}`, 20, y);
-  y += 5;
-  doc.text(`8. ${t('final_blessing')}`, 20, y);
+  const vigilOrder = [
+    `1. ${t('opening_prayer')}`, `2. ${t('scripture_reading')}`, `3. ${t('responsorial_psalm')}`,
+    `4. ${t('gospel_reading')}`, `5. ${t('homily_or_reflection')}`, `6. ${t('intercessions')}`,
+    `7. ${t('lords_prayer')}`, `8. ${t('final_blessing')}`
+  ];
+  vigilOrder.forEach(item => { y = _checkPageBreak(y); doc.text(item, 20, y); y += 5; });
   y += 8;
 
-  // Hymns section with beautiful styling
+  // Hymns section
+  y = _checkPageBreak(y);
   doc.setFillColor(124, 58, 237); // Catholic purple
-  doc.rect(10, y-8, 190, 10, 'F');
+  doc.rect(10, y - 8, 190, 10, 'F');
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
   doc.text(t('selected_hymns'), 15, y);
   y += 12;
-  
+
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0, 0, 0);
-  
+
   if (hymns.length === 0) {
+    y = _checkPageBreak(y);
     doc.text(t('no_hymns_selected'), 20, y);
     y += 7;
   } else {
     hymns.forEach((hymn, index) => {
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-      
-      // Hymn title with styling
+      y = _checkPageBreak(y);
       doc.setFillColor(217, 119, 6); // Catholic gold
-      doc.rect(15, y-3, 180, 6, 'F');
+      doc.rect(15, y - 3, 180, 6, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
       doc.text(`${index + 1}. ${hymn.title}`, 20, y);
       y += 8;
-      
-      // Hymn description
+
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      doc.text(`   ${hymn.description}`, 20, y);
-      y += 6;
-      
-      // YouTube link with subtle styling
+      const hymnDescLines = doc.splitTextToSize(hymn.description, 170);
+      hymnDescLines.forEach(line => {
+        y = _checkPageBreak(y);
+        doc.text(line, 25, y);
+        y += 5;
+      });
+
       doc.setTextColor(128, 128, 128);
       doc.setFontSize(10);
-      doc.text(`   YouTube: ${hymn.youtube}`, 20, y);
+      y = _checkPageBreak(y);
+      doc.text(`YouTube: ${hymn.youtube}`, 25, y);
       y += 8;
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
     });
   }
-  
   y += 8;
-  
-  // Readings section with beautiful styling
+
+  // Readings section
+  y = _checkPageBreak(y);
   doc.setFillColor(30, 58, 138); // Catholic blue
-  doc.rect(10, y-8, 190, 10, 'F');
+  doc.rect(10, y - 8, 190, 10, 'F');
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
   doc.text(t('selected_readings'), 15, y);
   y += 12;
-  
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(0, 0, 0);
-  
-  [t('first_reading'), t('psalm'), t('second_reading'), t('gospel')].forEach(type => {
-    if (readings[type]) {
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
+
+  const readingTypes = Object.keys(readings);
+  if (readingTypes.length === 0) {
+    y = _checkPageBreak(y);
+    doc.text(t('no_readings_selected'), 20, y);
+    y+= 7;
+  } else {
+    readingTypes.forEach(type => {
+      const reading = readings[type];
+      if (reading) {
+        y = _checkPageBreak(y);
+        doc.setFillColor(124, 58, 237); // Catholic purple
+        doc.rect(15, y - 3, 180, 6, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(`${t(type.toLowerCase().replace(/\s/g, '_'))}: ${reading.title} (${reading.ref})`, 20, y);
+        y += 8;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        const lines = doc.splitTextToSize(reading.text, 170);
+        lines.forEach(line => {
+          y = _checkPageBreak(y);
+          doc.text(line, 20, y);
+          y += 5;
+        });
+        y += 4;
       }
-      
-      // Reading type with colored background
-      doc.setFillColor(124, 58, 237); // Catholic purple
-      doc.rect(15, y-3, 180, 6, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
-      doc.text(`${type}:`, 20, y);
-      y += 8;
-      
-      // Reading details
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      doc.text(`   ${readings[type].title} (${readings[type].ref})`, 20, y);
-      y += 6;
-      
-      // Reading text with proper formatting
-      const lines = doc.splitTextToSize(readings[type].text, 170);
-      lines.forEach(line => {
-        if (y > 250) {
-          doc.addPage();
-          y = 20;
-        }
-        doc.text(line, 20, y);
-        y += 5;
-      });
-      y += 4;
-    } else {
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-      doc.text(`${type}: [${t('not_selected')}]`, 15, y);
-      y += 7;
-    }
-  });
+    });
+  }
 
   // Beautiful footer with page numbers
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-
-    // Watermark
-    doc.saveGraphicsState();
-    doc.setFontSize(50);
-    doc.setTextColor(235, 235, 235);
-    doc.setFont('helvetica', 'bold');
-    doc.text(t('funeral_planning_booklet'), 105, 160, { align: 'center', angle: -45 });
-    doc.restoreGraphicsState();
-    
     // Footer line
     doc.setDrawColor(124, 58, 237);
     doc.setLineWidth(0.5);
     doc.line(20, 280, 190, 280);
-    
+
     // Page numbers
     doc.setFontSize(10);
     doc.setTextColor(124, 58, 237);
     doc.text(`${t('page')} ${i} ${t('of')} ${pageCount}`, 105, 290, { align: "center" });
-    
+
     // Footer watermark
     doc.setTextColor(180, 180, 180);
     doc.setFontSize(8);
@@ -878,14 +839,52 @@ function generateFullPlanningBooklet(outputType = 'save') {
     setTimeout(() => {
       $('#pdf-status').fadeOut();
     }, 3000);
+  } else if (outputType === 'arraybuffer') {
+    return doc.output('arraybuffer');
   } else {
     return doc.output('datauristring');
   }
 }
 
-function displayDefaultBooklet() {
-  const pdfDataUri = generateFullPlanningBooklet('datauristring');
-  $('#pdf-viewer').attr('src', pdfDataUri);
+async function displayDefaultBooklet() {
+  const viewer = document.getElementById('pdf-viewer');
+  if (!viewer || !window.pdfjsLib) {
+    if (viewer) viewer.innerHTML = '<p>Preview is not available.</p>';
+    return;
+  }
+
+  viewer.innerHTML = `<div class="text-center p-8"><p class="text-lg text-gray-600">${t('generating_preview')}...</p></div>`;
+
+  try {
+    const pdfOutput = generateFullPlanningBooklet('arraybuffer');
+    const loadingTask = pdfjsLib.getDocument({ data: pdfOutput });
+    const pdf = await loadingTask.promise;
+
+    viewer.innerHTML = ''; // Clear loading message
+    const scale = 1.2;
+
+    // Render pages in spreads (2 pages side-by-side)
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const viewport = page.getViewport({ scale: scale });
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      canvas.classList.add('shadow-xl', 'mb-4');
+
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+      await page.render(renderContext).promise;
+
+      viewer.appendChild(canvas);
+    }
+  } catch (error) {
+    viewer.innerHTML = `<div class="text-center p-8"><p class="text-red-600">${t('preview_error')}</p></div>`;
+  }
 }
 
 // Reset functionality
@@ -1045,569 +1044,133 @@ function generateDocumentDOCX(type, title, content) {
 function generateFullPlanningBookletDOCX() {
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || t('church_name');
-  
-  // Check if docx library is available
+  const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+
   if (!window.docx) {
     alert(t('docx_generation_not_available'));
     return;
   }
-  
-  // Create document sections
-  const children = [];
-  
-  // Title page
-  children.push(
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: t('funeral_planning_booklet'),
-          bold: true,
-          size: 48
-        })
-      ],
-      spacing: { after: 400, before: 200 },
-      alignment: window.docx.AlignmentType.CENTER
+
+  const { Paragraph, TextRun, HeadingLevel, AlignmentType, ShadingType, Packer } = window.docx;
+
+  const CATHOLIC_BLUE = "1e3a8a";
+  const CATHOLIC_PURPLE = "7c3aed";
+  const CATHOLIC_GOLD = "d97706";
+  const WHITE = "FFFFFF";
+  const BLACK = "000000";
+  const GREY = "808080";
+
+  const docChildren = [];
+
+  // Helper to create a shaded title paragraph
+  const createSectionTitle = (text, color) => new Paragraph({
+    children: [new TextRun({ text, bold: true, size: 32, color: WHITE })],
+    shading: { type: ShadingType.CLEAR, fill: color },
+    spacing: { before: 400, after: 200 },
+  });
+
+  // --- Cover Page ---
+  docChildren.push(
+    new Paragraph({ text: churchName, heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER, spacing: { after: 400 } }),
+    new Paragraph({
+      children: [new TextRun({ text: t('funeral_planning_booklet'), bold: true, size: 48, color: CATHOLIC_BLUE })],
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 }
     }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: churchName,
-          bold: true,
-          size: 36
-        })
-      ],
-      spacing: { after: 600 },
-      alignment: window.docx.AlignmentType.CENTER
+    new Paragraph({
+      children: [new TextRun({ text: t('comprehensive_guide'), size: 28, italics: true, color: GREY })],
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 800 }
     })
   );
-  
-  // Contact Information
-  const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+
   if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
-    children.push(
-      new window.docx.Paragraph({
-        children: [
-          new window.docx.TextRun({
-            text: t('contact_information'),
-            bold: true,
-            size: 32
-          })
-        ],
-        spacing: { after: 200, before: 400 }
-      })
-    );
-    
-    if (contactInfo.phone) {
-      children.push(
-        new window.docx.Paragraph({
-          children: [
-            new window.docx.TextRun({
-              text: `📞 ${t('phone_number')}: ${contactInfo.phone}`,
-              size: 24
-            })
-          ],
-          spacing: { after: 100 }
-        })
-      );
-    }
-    
-    if (contactInfo.email) {
-      children.push(
-        new window.docx.Paragraph({
-          children: [
-            new window.docx.TextRun({
-              text: `✉️ ${t('email_address')}: ${contactInfo.email}`,
-              size: 24
-            })
-          ],
-          spacing: { after: 100 }
-        })
-      );
-    }
-    
-    if (contactInfo.address) {
-      children.push(
-        new window.docx.Paragraph({
-          children: [
-            new window.docx.TextRun({
-              text: `📍 ${t('address')}: ${contactInfo.address}`,
-              size: 24
-            })
-          ],
-          spacing: { after: 100 }
-        })
-      );
-    }
-    
-    if (contactInfo.hours) {
-      children.push(
-        new window.docx.Paragraph({
-          children: [
-            new window.docx.TextRun({
-              text: `🕒 ${t('office_hours')}: ${contactInfo.hours}`,
-              size: 24
-            })
-          ],
-          spacing: { after: 200 }
-        })
-      );
-    }
+    docChildren.push(createSectionTitle(t('contact_information'), CATHOLIC_PURPLE));
+    if (contactInfo.phone) docChildren.push(new Paragraph({ text: `📞 ${t('phone_number')}: ${contactInfo.phone}` }));
+    if (contactInfo.email) docChildren.push(new Paragraph({ text: `✉️ ${t('email_address')}: ${contactInfo.email}` }));
+    if (contactInfo.address) docChildren.push(new Paragraph({ text: `📍 ${t('address')}: ${contactInfo.address}` }));
+    if (contactInfo.hours) docChildren.push(new Paragraph({ text: `🕒 ${t('office_hours')}: ${contactInfo.hours}` }));
   }
+  docChildren.push(new Paragraph({ children: [new TextRun({ text: '', break: 1 })] })); // Page break
+
+  // --- Order of Service ---
+  docChildren.push(createSectionTitle(t('order_of_service'), CATHOLIC_PURPLE));
+  const createServiceList = (title, items) => {
+    docChildren.push(new Paragraph({ text: title, heading: HeadingLevel.HEADING_2, spacing: { before: 200, after: 100 } }));
+    items.forEach(item => {
+      docChildren.push(new Paragraph({
+        text: item.text,
+        bullet: { level: item.level },
+        style: "ListParagraph"
+      }));
+    });
+  };
+
+  createServiceList(t('funeral_mass_full_service'), [
+    { text: t('reception_of_body'), level: 0 }, { text: t('opening_prayer'), level: 0 }, { text: t('liturgy_of_the_word'), level: 0 },
+    { text: t('first_reading'), level: 1 }, { text: t('responsorial_psalm'), level: 1 }, { text: t('second_reading'), level: 1 },
+    { text: t('gospel_acclamation'), level: 1 }, { text: t('gospel_reading'), level: 1 }, { text: t('homily'), level: 1 },
+    { text: t('liturgy_of_the_eucharist'), level: 0 }, { text: t('preparation_of_gifts'), level: 1 }, { text: t('eucharistic_prayer'), level: 1 },
+    { text: t('communion'), level: 1 }, { text: t('final_commendation'), level: 0 }, { text: t('procession_to_committal'), level: 0 }
+  ]);
+
+  createServiceList(t('funeral_service_without_eucharist'), [
+     { text: t('reception_of_body'), level: 0 }, { text: t('opening_prayer'), level: 0 }, { text: t('liturgy_of_the_word'), level: 0 },
+     { text: t('first_reading'), level: 1 }, { text: t('responsorial_psalm'), level: 1 }, { text: t('second_reading'), level: 1 },
+     { text: t('gospel_acclamation'), level: 1 }, { text: t('gospel_reading'), level: 1 }, { text: t('homily'), level: 1 },
+     { text: t('final_commendation'), level: 0 }, { text: t('procession_to_committal'), level: 0 }
+  ]);
   
-  // Order of Service Section
-  children.push(
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: t('order_of_service'),
-          bold: true,
-          size: 32
-        })
-      ],
-      spacing: { after: 200, before: 400 }
-    })
-  );
-  
-  // Funeral Mass Order
-  children.push(
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: t('funeral_mass_full_service'),
-          bold: true,
-          size: 28
-        })
-      ],
-      spacing: { after: 150 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `1. ${t('reception_of_body')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `2. ${t('opening_prayer')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `3. ${t('liturgy_of_the_word')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('first_reading')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('responsorial_psalm')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('second_reading')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('gospel_acclamation')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('gospel_reading')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('homily')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `4. ${t('liturgy_of_the_eucharist')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('preparation_of_gifts')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('eucharistic_prayer')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('communion')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `5. ${t('final_commendation')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `6. ${t('procession_to_committal')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 150 }
-    })
-  );
-  
-  // Funeral Service Order (without Eucharist)
-  children.push(
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: t('funeral_service_without_eucharist'),
-          bold: true,
-          size: 28
-        })
-      ],
-      spacing: { after: 150 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `1. ${t('reception_of_body')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `2. ${t('opening_prayer')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `3. ${t('liturgy_of_the_word')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('first_reading')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('responsorial_psalm')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('second_reading')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('gospel_acclamation')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('gospel_reading')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `   • ${t('homily')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `4. ${t('final_commendation')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `5. ${t('procession_to_committal')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 150 }
-    })
-  );
-  
-  // Vigil Order
-  children.push(
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: t('vigil_service_evening_before'),
-          bold: true,
-          size: 28
-        })
-      ],
-      spacing: { after: 150 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `1. ${t('opening_prayer')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `2. ${t('scripture_reading')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `3. ${t('responsorial_psalm')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `4. ${t('gospel_reading')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `5. ${t('homily_or_reflection')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `6. ${t('intercessions')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `7. ${t('lords_prayer')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 100 }
-    }),
-    new window.docx.Paragraph({
-      children: [
-        new window.docx.TextRun({
-          text: `8. ${t('final_blessing')}`,
-          size: 24
-        })
-      ],
-      spacing: { after: 150 }
-    })
-  );
-  
-  // Hymns section
+  createServiceList(t('vigil_service_evening_before'), [
+      { text: t('opening_prayer'), level: 0 }, { text: t('scripture_reading'), level: 0 }, { text: t('responsorial_psalm'), level: 0 },
+      { text: t('gospel_reading'), level: 0 }, { text: t('homily_or_reflection'), level: 0 }, { text: t('intercessions'), level: 0 },
+      { text: t('lords_prayer'), level: 0 }, { text: t('final_blessing'), level: 0 }
+  ]);
+
+  // --- Hymns ---
   if (hymns.length > 0) {
-    children.push(
-      new window.docx.Paragraph({
-        children: [
-          new window.docx.TextRun({
-            text: t('selected_hymns'),
-            bold: true,
-            size: 32
-          })
-        ],
-        spacing: { after: 200, before: 400 }
-      })
-    );
-    
+    docChildren.push(createSectionTitle(t('selected_hymns'), CATHOLIC_GOLD));
     hymns.forEach(hymn => {
-      children.push(
-        new window.docx.Paragraph({
-          children: [
-            new window.docx.TextRun({
-              text: hymn.title,
-              bold: true,
-              size: 28
-            })
-          ],
-          spacing: { after: 100 }
-        }),
-        new window.docx.Paragraph({
-          children: [
-            new window.docx.TextRun({
-              text: hymn.description,
-              size: 24
-            })
-          ],
-          spacing: { after: 100 }
-        })
-      );
+      docChildren.push(new Paragraph({ text: hymn.title, heading: HeadingLevel.HEADING_2, style: "ListParagraph" }));
+      docChildren.push(new Paragraph({ text: hymn.description, style: "ListParagraph", indent: { left: 720 } }));
     });
   }
-  
-  // Readings section
-  if (Object.keys(readings).length > 0) {
-    children.push(
-      new window.docx.Paragraph({
-        children: [
-          new window.docx.TextRun({
-            text: t('selected_readings'),
-            bold: true,
-            size: 32
-          })
-        ],
-        spacing: { after: 200, before: 400 }
-      })
-    );
-    
-    Object.values(readings).forEach(reading => {
-      children.push(
-        new window.docx.Paragraph({
-          children: [
-            new window.docx.TextRun({
-              text: `${t(reading.type.toLowerCase().replace(' ', '_'))}: ${reading.title}`,
-              bold: true,
-              size: 28
-            })
-          ],
-          spacing: { after: 100 }
-        }),
-        new window.docx.Paragraph({
-          children: [
-            new window.docx.TextRun({
-              text: reading.ref,
-              size: 24
-            })
-          ],
-          spacing: { after: 100 }
-        })
-      );
+
+  // --- Readings ---
+  const readingTypes = Object.keys(readings);
+  if (readingTypes.length > 0) {
+    docChildren.push(createSectionTitle(t('selected_readings'), CATHOLIC_BLUE));
+    readingTypes.forEach(type => {
+      const reading = readings[type];
+      docChildren.push(new Paragraph({ text: `${t(type.toLowerCase().replace(/\s/g, '_'))}: ${reading.title} (${reading.ref})`, heading: HeadingLevel.HEADING_2 }));
+      reading.text.split('\n').forEach(line => {
+        docChildren.push(new Paragraph({ text: line, indent: { left: 720 } }));
+      });
     });
   }
-  
-  // Create the document
-  const doc = new window.docx.Document({
+
+  const doc = new docx.Document({
+    styles: {
+        paragraphStyles: [{
+            id: "ListParagraph",
+            name: "List Paragraph",
+            basedOn: "Normal",
+            next: "Normal",
+            quickFormat: true,
+            run: { size: 24 },
+            paragraph: { spacing: { after: 100 } },
+        }],
+    },
     sections: [{
       properties: {},
-      children: children
-    }]
+      children: docChildren,
+    }],
   });
-  
-  // Generate and save the document
-  window.docx.Packer.toBlob(doc).then(blob => {
-    const fileName = `funeral_planning_booklet_${churchName.replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
-    saveAs(blob, fileName);
+
+  Packer.toBlob(doc).then(blob => {
+    saveAs(blob, `funeral-booklet-${churchName.replace(/\s+/g, '-')}.docx`);
+    $('#pdf-status').text(t('docx_generated')).fadeIn();
+    setTimeout(() => { $('#pdf-status').fadeOut(); }, 3000);
   });
 }
 
@@ -1742,24 +1305,69 @@ $(document).ready(function() {
   const urlGenButton = $('<button class="bg-catholic-purple hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors ml-2">' + t('generate_url') + '</button>');
   $('#toggle-contact-edit').after(urlGenButton);
 
-  // Order of Service toggle functionality
-  $('.service-type-btn').on('click', function() {
-    const serviceType = $(this).data('service');
+  // Order of Service Carousel
+  const services = ['funeral-mass', 'funeral-service', 'vigil'];
+  let currentServiceIndex = 0;
 
+  function showService(serviceType, index) {
+    currentServiceIndex = index;
     // Update button styles
     $('.service-type-btn').removeClass('bg-catholic-blue text-white').addClass('bg-gray-200 text-gray-700');
-    $(this).removeClass('bg-gray-200 text-gray-700').addClass('bg-catholic-blue text-white');
+    $(`.service-type-btn[data-service="${serviceType}"]`).removeClass('bg-gray-200 text-gray-700').addClass('bg-catholic-blue text-white');
 
-    // Hide all service details
-    $('.service-details').addClass('hidden');
+    // Update dot styles
+    $('.carousel-dot').removeClass('bg-catholic-blue').addClass('bg-gray-400 hover:bg-gray-500');
+    $(`.carousel-dot[data-service="${serviceType}"]`).removeClass('bg-gray-400 hover:bg-gray-500').addClass('bg-catholic-blue');
 
-    // Show selected service details
-    if (serviceType === 'funeral-mass') {
-      $('#funeral-mass-details').removeClass('hidden');
-    } else if (serviceType === 'funeral-service') {
-      $('#funeral-service-details').removeClass('hidden');
-    } else if (serviceType === 'vigil') {
-      $('#vigil-details').removeClass('hidden');
+    // Animate transition
+    const detailsContainer = $('.service-details').parent();
+    detailsContainer.css('opacity', 0.5);
+    setTimeout(() => {
+      $('.service-details').addClass('hidden');
+      $(`#${serviceType}-details`).removeClass('hidden');
+      detailsContainer.css('opacity', 1);
+    }, 150);
+  }
+
+  // Button clicks
+  $('.service-type-btn').on('click', function() {
+    const serviceType = $(this).data('service');
+    const serviceIndex = services.indexOf(serviceType);
+    if (serviceIndex !== -1) {
+      showService(serviceType, serviceIndex);
+    }
+  });
+
+  // Dot clicks
+  $('.carousel-dot').on('click', function() {
+    const serviceType = $(this).data('service');
+    const serviceIndex = services.indexOf(serviceType);
+    if (serviceIndex !== -1) {
+      showService(serviceType, serviceIndex);
+    }
+  });
+
+  // Swipe Gestures
+  const swipeArea = document.getElementById('order-of-service');
+  let touchstartX = 0;
+  let touchendX = 0;
+  const swipeThreshold = 50; // Minimum distance for a swipe
+
+  swipeArea.addEventListener('touchstart', e => {
+    touchstartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  swipeArea.addEventListener('touchend', e => {
+    touchendX = e.changedTouches[0].screenX;
+    const deltaX = touchendX - touchstartX;
+
+    if (Math.abs(deltaX) > swipeThreshold) {
+      if (deltaX < 0) { // Swiped left
+        currentServiceIndex = (currentServiceIndex + 1) % services.length;
+      } else { // Swiped right
+        currentServiceIndex = (currentServiceIndex - 1 + services.length) % services.length;
+      }
+      showService(services[currentServiceIndex], currentServiceIndex);
     }
   });
 
