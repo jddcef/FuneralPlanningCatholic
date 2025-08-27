@@ -204,6 +204,9 @@ window.translations = {
     "program_tip_readable": "Keep text readable and well-organized",
     "program_tip_quality_paper": "Consider printing on quality paper",
 
+    // Booklet Preview
+    "booklet_preview_title": "Booklet Preview",
+
     // Readings Template
     "readings_booklet_title": "Catholic Funeral Readings Booklet",
     "first_reading_options": "First Reading Options",
@@ -456,6 +459,9 @@ window.translations = {
     "program_tip_personal_touches": "Voeg persoonlike aanrakings by wat die oorledene weerspieël",
     "program_tip_readable": "Hou teks leesbaar en goed georganiseer",
     "program_tip_quality_paper": "Oorweeg dit om op kwaliteit papier te druk",
+
+    // Booklet Preview
+    "booklet_preview_title": "Boekie Voorskou",
 
     // Readings Template
     "readings_booklet_title": "Katolieke Begrafnislesings Boekie",
@@ -710,6 +716,9 @@ window.translations = {
     "program_tip_readable": "Gcina isicatshulwa sifundeka kwaye silungelelaniswe kakuhle",
     "program_tip_quality_paper": "Qwalasela ukuprinta kwiphepha elisemgangathweni",
 
+    // Booklet Preview
+    "booklet_preview_title": "Imbonakalo Yencwadana",
+
     // Readings Template
     "readings_booklet_title": "Incwadana Yezifundo Zomngcwabo WamaKatolika",
     "first_reading_options": "Iinketho Zesifundo Sokuqala",
@@ -761,7 +770,11 @@ function changeLanguage(lang) {
 
 // Function to get translated text
 function t(key) {
-  return window.translations[window.currentLanguage][key] || window.translations['en'][key] || key;
+  const lang = window.currentLanguage;
+  if (window.translations[lang] && window.translations[lang][key]) {
+    return window.translations[lang][key];
+  }
+  return window.translations['en'][key] || key;
 }
 
 // Function to update all text on the page
