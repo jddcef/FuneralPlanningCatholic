@@ -131,6 +131,46 @@ window.translations = {
     "generate_url": "🔗 Generate & Copy URL",
     "contact_updated": "Contact information updated!",
     "url_copied": "Custom URL copied to clipboard!",
+
+    // PDF & DOCX Generation
+    "funeral_planning_booklet": "Funeral Planning Booklet",
+    "full_planning_booklet_generated": "Full planning booklet generated.",
+    "pdf_generated": "PDF Generated",
+    "docx_generation_not_available": "DOCX generation is not available. Please try again in a few moments.",
+    "page": "Page",
+    "of": "of",
+    "catholic_funeral_planner": "Catholic Funeral Planner",
+
+    // Order of Service PDF content
+    "funeral_mass_full_service": "Funeral Mass (Full Service)",
+    "reception_of_body": "Reception of the Body",
+    "opening_prayer": "Opening Prayer",
+    "liturgy_of_the_word": "Liturgy of the Word",
+    "first_reading": "First Reading",
+    "responsorial_psalm": "Responsorial Psalm",
+    "second_reading": "Second Reading",
+    "gospel_acclamation": "Gospel Acclamation",
+    "gospel_reading": "Gospel Reading",
+    "homily": "Homily",
+    "liturgy_of_the_eucharist": "Liturgy of the Eucharist",
+    "preparation_of_gifts": "Preparation of the Gifts",
+    "eucharistic_prayer": "Eucharistic Prayer",
+    "communion": "Communion",
+    "final_commendation": "Final Commendation",
+    "procession_to_committal": "Procession to Place of Committal",
+    "funeral_service_without_eucharist": "Funeral Service (without Eucharist)",
+    "vigil_service_evening_before": "Vigil Service (Evening Before)",
+    "scripture_reading": "Scripture Reading",
+    "homily_or_reflection": "Homily or Reflection",
+    "intercessions": "Intercessions",
+    "lords_prayer": "Lord's Prayer",
+    "final_blessing": "Final Blessing",
+
+    // Selections PDF content
+    "selected_hymns": "Selected Hymns",
+    "no_hymns_selected": "No hymns selected",
+    "selected_readings": "Selected Readings",
+    "not_selected": "Not Selected",
     
     // Common
     "flow_step1": "Vigil / Wake",
