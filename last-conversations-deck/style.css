@@ -109,18 +109,38 @@ nav select {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.card-text-placeholder {
+    display: block;
+    width: 80%;
+    height: 8px;
+    background-color: #e0e0e0;
+    margin-top: 8px;
+    border-radius: 4px;
 }
 
 .card-1 {
-    transform: rotate(-10deg) translate(5px, 5px);
+    transform: rotate(-15deg) translate(-10px, 10px);
 }
 
 .card-2 {
-    transform: rotate(5deg) translate(-5px, 0px);
+    transform: rotate(10deg) translate(10px, 0px);
 }
 
 .card-3 {
-    transform: rotate(-2deg) translate(0px, -5px);
+    transform: rotate(-5deg) translate(0px, -10px);
     background-color: #f0f8ff; /* AliceBlue to make it stand out a bit */
 }
 

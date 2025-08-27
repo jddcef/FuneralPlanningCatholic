@@ -45,11 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const cardData = translations.cards || [];
-        const body = cardData.map(card => [card.category, card.text]);
+        const body = cardData.map(card => [card.category, `${card.icon} ${card.text}`]);
 
         doc.autoTable({
             head: [['Category', 'Topic / Question']],
             body: body,
+            styles: { fontSize: 12 },
+            headStyles: { fontSize: 14, fontStyle: 'bold' },
             didDrawPage: (data) => {
                 // Add header and footer to each page
                 doc.setFontSize(20);
@@ -88,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
             doc.rect(cursorX, cursorY, cardWidth, cardHeight);
 
             // Add text
-            doc.setFontSize(11);
-            const textLines = doc.splitTextToSize(card.text, cardWidth - 10);
+            doc.setFontSize(12);
+            const textLines = doc.splitTextToSize(`${card.icon} ${card.text}`, cardWidth - 10);
             doc.text(textLines, cursorX + 5, cursorY + 12);
 
             // Add category footnote
