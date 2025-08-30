@@ -82,26 +82,10 @@
     </div>
 
     <footer>
-        Test Page Version: v1.0.4
+        Test Page Version: v1.0.5
     </footer>
 
-    <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.1.13/dist/docx-preview.min.js"></script>
     <script>
-      window.docxPreview = window.docx;
-    </script>
-    <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.10.0/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.31.2/docxtemplater.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-    <script type="module">
-        import docx4js from 'https://cdn.jsdelivr.net/npm/docx4js@3.1.1/dist/docx4js.js';
-
         document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('docx-file-input');
             const fileStatus = document.getElementById('file-status');
@@ -112,6 +96,7 @@
             const htmlOutput = document.getElementById('html-output');
 
             let fileDataURL = null;
+            const loadedScripts = {};
 
             function log(message) {
                 const time = new Date().toLocaleTimeString();
@@ -120,6 +105,28 @@
             }
 
             log("Page loaded and script initialized.");
+
+            function loadScript(url) {
+                if (loadedScripts[url]) {
+                    log(`Script already loaded: ${url}`);
+                    return Promise.resolve();
+                }
+                log(`Loading script: ${url}`);
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = url;
+                    script.onload = () => {
+                        log(`Script loaded successfully: ${url}`);
+                        loadedScripts[url] = true;
+                        resolve();
+                    };
+                    script.onerror = () => {
+                        log(`Error loading script: ${url}`);
+                        reject(new Error(`Script load error for ${url}`));
+                    };
+                    document.head.appendChild(script);
+                });
+            }
 
             fileInput.addEventListener('change', function (event) {
                 log("File input 'change' event fired.");
@@ -176,13 +183,10 @@
                     const writer = document.querySelector('input[name="html-writer"]:checked').value;
                     const format = document.querySelector('input[name="html-format"]:checked').value;
                     const arrayBuffer = await getFileAsArrayBuffer();
-
                     log(`Running HTML test with Reader: ${reader}, Writer: ${writer}, Format: ${format}`);
-
                     const html = await runHtmlReader(reader, arrayBuffer);
                     htmlOutput.innerHTML = html;
                     log("Intermediate HTML rendered.");
-
                     const fileName = `recreated-html-${reader}-${writer}.${format}`;
                     if (format === 'pdf') {
                         await runPdfWriter(html, fileName);
@@ -203,11 +207,13 @@
                 try {
                     const arrayBuffer = await getFileAsArrayBuffer();
                     log("Running docx4js pass-through test.");
+                    const { default: docx4js } = await import('https://cdn.jsdelivr.net/npm/docx4js@3.1.1/dist/docx4js.js');
                     const doc = await docx4js.load(arrayBuffer);
                     log("docx4js object loaded.");
                     htmlOutput.textContent = 'Pass-through test does not generate HTML.';
                     const blob = await doc.save();
                     log("docx4js save complete. Triggering download.");
+                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js');
                     window.saveAs(blob, 'recreated-passthrough-docx4js.docx');
                     log("Test complete.");
                 } catch (err) {
@@ -223,6 +229,7 @@
                 try {
                     const arrayBuffer = await getFileAsArrayBuffer();
                     log("Running docx.js pass-through test.");
+                    await loadScript('https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js');
                     htmlOutput.textContent = 'Pass-through test does not generate HTML.';
                     const blob = await window.docx.patchDocument({
                         outputType: "blob",
@@ -230,6 +237,7 @@
                         patches: {},
                     });
                     log("docx.js patch complete. Triggering download.");
+                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js');
                     window.saveAs(blob, 'recreated-passthrough-docxjs.docx');
                     log("Test complete.");
                 } catch (err) {
@@ -240,17 +248,22 @@
                 }
             });
 
-            function runHtmlReader(reader, arrayBuffer) {
+            async function runHtmlReader(reader, arrayBuffer) {
                 log(`Running HTML Reader: ${reader}...`);
+                await loadScript('https://unpkg.com/jszip/dist/jszip.min.js');
                 const container = document.createElement('div');
                 switch (reader) {
                     case 'docx-preview':
+                        await loadScript('https://cdn.jsdelivr.net/npm/docx-preview@0.1.13/dist/docx-preview.min.js');
+                        // This script creates a window.docx, so we rename it
+                        if(!window.docxPreview) window.docxPreview = window.docx;
                         return window.docxPreview.renderAsync(arrayBuffer, container)
                             .then(() => {
                                 log("docx-preview finished.");
                                 return container.innerHTML;
                             });
                     case 'mammoth':
+                        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.10.0/mammoth.browser.min.js');
                         return window.mammoth.convertToHtml({ arrayBuffer })
                             .then(result => {
                                 log("mammoth.js finished.");
@@ -261,69 +274,69 @@
                 }
             }
 
-            function runPdfWriter(html, fileName) {
+            async function runPdfWriter(html, fileName) {
                 log("Running PDF Writer (jsPDF)...");
+                await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+                await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
                 const container = document.createElement('div');
                 container.innerHTML = html;
                 document.body.appendChild(container);
 
-                return window.html2canvas(container, { useCORS: true }).then(canvas => {
-                    log("html2canvas finished. Creating PDF...");
-                    document.body.removeChild(container);
-                    const imgData = canvas.toDataURL('image/png');
-                    const imgProps = pdf.getImageProperties(imgData);
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                    pdf.save(fileName);
-                    log("PDF saved.");
-                });
+                const canvas = await window.html2canvas(container, { useCORS: true });
+                log("html2canvas finished. Creating PDF...");
+                document.body.removeChild(container);
+                const imgData = canvas.toDataURL('image/png');
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(fileName);
+                log("PDF saved.");
             }
 
-            function runHtmlWriter(writer, html, fileName) {
+            async function runHtmlWriter(writer, html, fileName) {
                 log(`Running HTML Writer: ${writer}...`);
+                 await loadScript('https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js');
                 switch (writer) {
                     case 'docxtemplater':
+                        await loadScript('https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js');
+                        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js');
+                        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.31.2/docxtemplater.js');
                         const templateDoc = new window.docx.Document({
                             sections: [{ children: [new window.docx.Paragraph(new window.docx.TextRun("{content}"))] }],
                         });
-                        return window.docx.Packer.toBlob(templateDoc).then(templateBlob => {
-                            return new Promise((resolve, reject) => {
-                                const fr = new FileReader();
-                                fr.onload = () => {
-                                    const zip = new window.PizZip(fr.result);
-                                    const doc = new window.docxtemplater(zip);
-                                    doc.render({ content: html });
-                                    const out = doc.getZip().generate({ type: 'blob' });
-                                    window.saveAs(out, fileName);
-                                    log("docxtemplater finished.");
-                                    resolve();
-                                };
-                                fr.onerror = reject;
-                                fr.readAsArrayBuffer(templateBlob);
-                            });
-                        });
+                        const templateBlob = await window.docx.Packer.toBlob(templateDoc);
+                        const templateBuffer = await templateBlob.arrayBuffer();
+                        const zip = new window.PizZip(templateBuffer);
+                        const doc = new window.docxtemplater(zip);
+                        doc.render({ content: html });
+                        const out = doc.getZip().generate({ type: 'blob' });
+                        window.saveAs(out, fileName);
+                        log("docxtemplater finished.");
+                        break;
                     case 'html-docx-js':
+                        await loadScript('https://unpkg.com/html-docx-js/dist/html-docx.js');
                         const simplifiedHtml = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
                         var converted = window.htmlDocx.asBlob(simplifiedHtml);
                         window.saveAs(converted, fileName);
                         log("html-docx-js finished.");
-                        return Promise.resolve();
+                        break;
                     case 'docxjs':
+                         await loadScript('https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js');
                         const parser = new DOMParser();
                         const htmlDoc = parser.parseFromString(html, 'text/html');
                         const paragraphs = Array.from(htmlDoc.querySelectorAll('p')).map(p =>
                             new window.docx.Paragraph({ children: [new window.docx.TextRun(p.textContent)] })
                         );
                         const newDoc = new window.docx.Document({ sections: [{ children: paragraphs }] });
-                        return window.docx.Packer.toBlob(newDoc).then(blob => {
-                            window.saveAs(blob, fileName);
-                            log("docx.js finished.");
-                        });
+                        const blob = await window.docx.Packer.toBlob(newDoc);
+                        window.saveAs(blob, fileName);
+                        log("docx.js finished.");
+                        break;
                     default:
-                        return Promise.reject(new Error(`HTML Writer not implemented: ${writer}`));
+                        throw new Error(`HTML Writer not implemented: ${writer}`);
                 }
             }
         });
