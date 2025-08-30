@@ -17,6 +17,7 @@
         label { display: block; margin-bottom: 5px; }
         #file-status { margin-top: 10px; font-style: italic; color: #555; }
         footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #777; }
+        #page-console { background-color: #333; color: #0f0; font-family: monospace; height: 200px; overflow-y: scroll; padding: 10px; border: 1px solid #555; white-space: pre-wrap; margin-top: 20px;}
     </style>
 </head>
 <body>
@@ -75,8 +76,13 @@
         </div>
     </div>
 
+    <div class="container">
+        <h2>Debug Console</h2>
+        <div id="page-console"></div>
+    </div>
+
     <footer>
-        Test Page Version: v1.0.2
+        Test Page Version: v1.0.4
     </footer>
 
     <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
@@ -99,6 +105,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('docx-file-input');
             const fileStatus = document.getElementById('file-status');
+            const pageConsole = document.getElementById('page-console');
             const runHtmlTestBtn = document.getElementById('run-html-test-btn');
             const runDocx4jsPassthroughBtn = document.getElementById('run-docx4js-passthrough-btn');
             const runDocxjsPassthroughBtn = document.getElementById('run-docxjs-passthrough-btn');
@@ -106,27 +113,40 @@
 
             let fileDataURL = null;
 
+            function log(message) {
+                const time = new Date().toLocaleTimeString();
+                pageConsole.innerHTML += `[${time}] ${message}\n`;
+                pageConsole.scrollTop = pageConsole.scrollHeight;
+            }
+
+            log("Page loaded and script initialized.");
+
             fileInput.addEventListener('change', function (event) {
+                log("File input 'change' event fired.");
                 const file = event.target.files[0];
                 if (!file) {
+                    log("No file found in event. Resetting.");
                     fileDataURL = null;
                     fileStatus.textContent = "No file selected.";
                     return;
                 }
+                log(`File object found: ${file.name}. Reading file...`);
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     fileDataURL = e.target.result;
                     fileStatus.textContent = `File loaded: ${file.name}`;
-                    console.log("File loaded and ready.");
+                    log("File successfully read into memory as Data URL.");
                 };
                 reader.onerror = () => {
                     fileDataURL = null;
                     fileStatus.textContent = "Error loading file.";
+                    log("Error reading file with FileReader.");
                 };
                 reader.readAsDataURL(file);
             });
 
             function dataURLtoArrayBuffer(dataurl) {
+                log("Converting Data URL to ArrayBuffer...");
                 const parts = dataurl.split(',');
                 const byteString = atob(parts[1]);
                 const buffer = new ArrayBuffer(byteString.length);
@@ -134,28 +154,34 @@
                 for (let i = 0; i < byteString.length; i++) {
                     a[i] = byteString.charCodeAt(i);
                 }
+                log("Conversion complete.");
                 return buffer;
             }
 
             const getFileAsArrayBuffer = () => {
+                log("Attempting to get file as ArrayBuffer...");
                 if (!fileDataURL) {
-                    alert("Please select a file first.");
+                    log("No file data found. Alerting user.");
+                    alert("Please select a file first. The 'File loaded' message should appear below the selector.");
                     return Promise.reject(new Error("No file loaded"));
                 }
+                log("File data found. Proceeding with conversion.");
                 return Promise.resolve(dataURLtoArrayBuffer(fileDataURL));
             };
 
             runHtmlTestBtn.addEventListener('click', async () => {
+                log("'Run HTML Conversion Test' button clicked.");
                 try {
                     const reader = document.querySelector('input[name="html-reader"]:checked').value;
                     const writer = document.querySelector('input[name="html-writer"]:checked').value;
                     const format = document.querySelector('input[name="html-format"]:checked').value;
                     const arrayBuffer = await getFileAsArrayBuffer();
 
-                    console.log(`Running HTML test with Reader: ${reader}, Writer: ${writer}, Format: ${format}`);
+                    log(`Running HTML test with Reader: ${reader}, Writer: ${writer}, Format: ${format}`);
 
                     const html = await runHtmlReader(reader, arrayBuffer);
                     htmlOutput.innerHTML = html;
+                    log("Intermediate HTML rendered.");
 
                     const fileName = `recreated-html-${reader}-${writer}.${format}`;
                     if (format === 'pdf') {
@@ -163,8 +189,9 @@
                     } else {
                         await runHtmlWriter(writer, html, fileName);
                     }
+                    log("Test complete.");
                 } catch (err) {
-                    console.error("HTML Conversion Test Error:", err);
+                    log(`Error in HTML Conversion Test: ${err.message}`);
                     if (err.message !== "No file loaded") {
                         alert(`An error occurred: ${err.message}`);
                     }
@@ -172,15 +199,19 @@
             });
 
             runDocx4jsPassthroughBtn.addEventListener('click', async () => {
+                log("'Run docx4js Pass-Through' button clicked.");
                 try {
                     const arrayBuffer = await getFileAsArrayBuffer();
-                    console.log("Running docx4js pass-through test.");
+                    log("Running docx4js pass-through test.");
                     const doc = await docx4js.load(arrayBuffer);
+                    log("docx4js object loaded.");
                     htmlOutput.textContent = 'Pass-through test does not generate HTML.';
                     const blob = await doc.save();
+                    log("docx4js save complete. Triggering download.");
                     window.saveAs(blob, 'recreated-passthrough-docx4js.docx');
+                    log("Test complete.");
                 } catch (err) {
-                    console.error("Pass-through Test Error:", err);
+                    log(`Error in docx4js Pass-through Test: ${err.message}`);
                     if (err.message !== "No file loaded") {
                         alert(`An error occurred: ${err.message}`);
                     }
@@ -188,18 +219,21 @@
             });
 
             runDocxjsPassthroughBtn.addEventListener('click', async () => {
+                log("'Run docx.js Pass-Through' button clicked.");
                 try {
                     const arrayBuffer = await getFileAsArrayBuffer();
-                    console.log("Running docx.js pass-through test.");
+                    log("Running docx.js pass-through test.");
                     htmlOutput.textContent = 'Pass-through test does not generate HTML.';
                     const blob = await window.docx.patchDocument({
                         outputType: "blob",
                         data: arrayBuffer,
                         patches: {},
                     });
+                    log("docx.js patch complete. Triggering download.");
                     window.saveAs(blob, 'recreated-passthrough-docxjs.docx');
+                    log("Test complete.");
                 } catch (err) {
-                    console.error("Pass-through Test Error:", err);
+                    log(`Error in docx.js Pass-through Test: ${err.message}`);
                     if (err.message !== "No file loaded") {
                         alert(`An error occurred: ${err.message}`);
                     }
@@ -207,20 +241,28 @@
             });
 
             function runHtmlReader(reader, arrayBuffer) {
+                log(`Running HTML Reader: ${reader}...`);
                 const container = document.createElement('div');
                 switch (reader) {
                     case 'docx-preview':
                         return window.docxPreview.renderAsync(arrayBuffer, container)
-                            .then(() => container.innerHTML);
+                            .then(() => {
+                                log("docx-preview finished.");
+                                return container.innerHTML;
+                            });
                     case 'mammoth':
                         return window.mammoth.convertToHtml({ arrayBuffer })
-                            .then(result => result.value);
+                            .then(result => {
+                                log("mammoth.js finished.");
+                                return result.value;
+                            });
                     default:
                         return Promise.reject(new Error(`HTML Reader not implemented: ${reader}`));
                 }
             }
 
             function runPdfWriter(html, fileName) {
+                log("Running PDF Writer (jsPDF)...");
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
                 const container = document.createElement('div');
@@ -228,6 +270,7 @@
                 document.body.appendChild(container);
 
                 return window.html2canvas(container, { useCORS: true }).then(canvas => {
+                    log("html2canvas finished. Creating PDF...");
                     document.body.removeChild(container);
                     const imgData = canvas.toDataURL('image/png');
                     const imgProps = pdf.getImageProperties(imgData);
@@ -235,10 +278,12 @@
                     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
                     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                     pdf.save(fileName);
+                    log("PDF saved.");
                 });
             }
 
             function runHtmlWriter(writer, html, fileName) {
+                log(`Running HTML Writer: ${writer}...`);
                 switch (writer) {
                     case 'docxtemplater':
                         const templateDoc = new window.docx.Document({
@@ -253,6 +298,7 @@
                                     doc.render({ content: html });
                                     const out = doc.getZip().generate({ type: 'blob' });
                                     window.saveAs(out, fileName);
+                                    log("docxtemplater finished.");
                                     resolve();
                                 };
                                 fr.onerror = reject;
@@ -263,6 +309,7 @@
                         const simplifiedHtml = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
                         var converted = window.htmlDocx.asBlob(simplifiedHtml);
                         window.saveAs(converted, fileName);
+                        log("html-docx-js finished.");
                         return Promise.resolve();
                     case 'docxjs':
                         const parser = new DOMParser();
@@ -273,6 +320,7 @@
                         const newDoc = new window.docx.Document({ sections: [{ children: paragraphs }] });
                         return window.docx.Packer.toBlob(newDoc).then(blob => {
                             window.saveAs(blob, fileName);
+                            log("docx.js finished.");
                         });
                     default:
                         return Promise.reject(new Error(`HTML Writer not implemented: ${writer}`));
