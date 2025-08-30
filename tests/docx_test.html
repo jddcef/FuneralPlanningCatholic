@@ -14,7 +14,6 @@
         h3 { margin-top: 0; }
         button { font-size: 1em; padding: 10px 15px; border-radius: 5px; cursor: pointer; border: 1px solid #999; margin-top: 10px;}
         .run-btn { background-color: #28a745; color: white; border-color: #28a745; }
-        #load-file-btn { background-color: #007bff; color: white; border-color: #007bff; margin-left: 10px; }
         label { display: block; margin-bottom: 5px; }
         #file-status { margin-top: 10px; font-style: italic; color: #555; }
         footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #777; }
@@ -22,12 +21,11 @@
 </head>
 <body>
     <h1>DOCX Recreation Test Matrix</h1>
-    <p>Select a .docx file, click "Load Selected File", then choose a method below to test different recreation strategies.</p>
+    <p>Select a .docx file. Once loaded, choose a method below to test different recreation strategies.</p>
 
     <div class="container">
         <h2>1. Select File</h2>
         <input type="file" id="docx-file-input" accept=".docx">
-        <button id="load-file-btn">Load Selected File</button>
         <div id="file-status">No file selected.</div>
     </div>
 
@@ -78,7 +76,7 @@
     </div>
 
     <footer>
-        Test Page Version: v1.0.1
+        Test Page Version: v1.0.2
     </footer>
 
     <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
@@ -100,40 +98,51 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('docx-file-input');
-            const loadFileBtn = document.getElementById('load-file-btn');
             const fileStatus = document.getElementById('file-status');
             const runHtmlTestBtn = document.getElementById('run-html-test-btn');
             const runDocx4jsPassthroughBtn = document.getElementById('run-docx4js-passthrough-btn');
             const runDocxjsPassthroughBtn = document.getElementById('run-docxjs-passthrough-btn');
             const htmlOutput = document.getElementById('html-output');
 
-            let fileArrayBuffer = null;
+            let fileDataURL = null;
 
-            loadFileBtn.addEventListener('click', function() {
-                const file = fileInput.files[0];
+            fileInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
                 if (!file) {
-                    alert("Please select a file first.");
+                    fileDataURL = null;
+                    fileStatus.textContent = "No file selected.";
                     return;
                 }
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    fileArrayBuffer = e.target.result;
+                    fileDataURL = e.target.result;
                     fileStatus.textContent = `File loaded: ${file.name}`;
                     console.log("File loaded and ready.");
                 };
                 reader.onerror = () => {
-                    fileArrayBuffer = null;
+                    fileDataURL = null;
                     fileStatus.textContent = "Error loading file.";
                 };
-                reader.readAsArrayBuffer(file);
+                reader.readAsDataURL(file);
             });
 
+            function dataURLtoArrayBuffer(dataurl) {
+                const parts = dataurl.split(',');
+                const byteString = atob(parts[1]);
+                const buffer = new ArrayBuffer(byteString.length);
+                const a = new Uint8Array(buffer);
+                for (let i = 0; i < byteString.length; i++) {
+                    a[i] = byteString.charCodeAt(i);
+                }
+                return buffer;
+            }
+
             const getFileAsArrayBuffer = () => {
-                if (!fileArrayBuffer) {
-                    alert("Please select a file and click 'Load Selected File'.");
+                if (!fileDataURL) {
+                    alert("Please select a file first.");
                     return Promise.reject(new Error("No file loaded"));
                 }
-                return Promise.resolve(fileArrayBuffer);
+                return Promise.resolve(dataURLtoArrayBuffer(fileDataURL));
             };
 
             runHtmlTestBtn.addEventListener('click', async () => {
