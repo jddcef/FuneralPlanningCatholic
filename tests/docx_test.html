@@ -12,7 +12,7 @@
         .selection-group { border: 1px solid #eee; padding: 10px; border-radius: 5px; }
         h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
         h3 { margin-top: 0; }
-        button { font-size: 1em; padding: 10px 15px; border-radius: 5px; cursor: pointer; border: 1px solid #999; }
+        button { font-size: 1em; padding: 10px 15px; border-radius: 5px; cursor: pointer; border: 1px solid #999; margin-top: 10px;}
         .run-btn { background-color: #28a745; color: white; border-color: #28a745; }
         .run-btn:disabled { background-color: #ccc; border-color: #ccc; cursor: not-allowed; }
         label { display: block; margin-bottom: 5px; }
@@ -52,7 +52,7 @@
                     <label><input type="radio" name="html-format" value="pdf"> PDF</label>
                 </div>
             </div>
-            <button id="run-html-test-btn" class="run-btn" style="margin-top: 15px;">Run HTML Conversion Test</button>
+            <button id="run-html-test-btn" class="run-btn">Run HTML Conversion Test</button>
         </div>
 
         <hr>
@@ -61,7 +61,8 @@
         <div class="method-container">
             <h3>Method 2: High-Fidelity Pass-Through (DOCX &rarr; Internal Model &rarr; DOCX)</h3>
             <p>This method loads the DOCX into a library's internal model and saves it again. This is the best method for testing formatting retention.</p>
-            <button id="run-passthrough-test-btn" class="run-btn">Run docx4js Pass-Through Test</button>
+            <button id="run-docx4js-passthrough-btn" class="run-btn">Run docx4js Pass-Through</button>
+            <button id="run-docxjs-passthrough-btn" class="run-btn">Run docx.js Pass-Through</button>
         </div>
     </div>
 
@@ -93,7 +94,8 @@
             const fileInput = document.getElementById('docx-file-input');
             const methodsDiv = document.getElementById('methods');
             const runHtmlTestBtn = document.getElementById('run-html-test-btn');
-            const runPassthroughBtn = document.getElementById('run-passthrough-test-btn');
+            const runDocx4jsPassthroughBtn = document.getElementById('run-docx4js-passthrough-btn');
+            const runDocxjsPassthroughBtn = document.getElementById('run-docxjs-passthrough-btn');
             const htmlOutput = document.getElementById('html-output');
 
             let docxFile = null;
@@ -137,7 +139,7 @@
                 }
             });
 
-            runPassthroughBtn.addEventListener('click', async () => {
+            runDocx4jsPassthroughBtn.addEventListener('click', async () => {
                 try {
                     const arrayBuffer = await getFileAsArrayBuffer();
                     console.log("Running docx4js pass-through test.");
@@ -145,6 +147,23 @@
                     htmlOutput.textContent = 'Pass-through test does not generate HTML.';
                     const blob = await doc.save();
                     window.saveAs(blob, 'recreated-passthrough-docx4js.docx');
+                } catch (err) {
+                    console.error("Pass-through Test Error:", err);
+                    alert(`An error occurred: ${err.message}`);
+                }
+            });
+
+            runDocxjsPassthroughBtn.addEventListener('click', async () => {
+                try {
+                    const arrayBuffer = await getFileAsArrayBuffer();
+                    console.log("Running docx.js pass-through test.");
+                    htmlOutput.textContent = 'Pass-through test does not generate HTML.';
+                    const blob = await window.docx.patchDocument({
+                        outputType: "blob",
+                        data: arrayBuffer,
+                        patches: {},
+                    });
+                    window.saveAs(blob, 'recreated-passthrough-docxjs.docx');
                 } catch (err) {
                     console.error("Pass-through Test Error:", err);
                     alert(`An error occurred: ${err.message}`);
