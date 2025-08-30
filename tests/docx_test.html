@@ -52,7 +52,7 @@
                     <label><input type="radio" name="html-format" value="pdf"> PDF</label>
                 </div>
             </div>
-            <button id="run-html-test-btn" class="run-btn" disabled>Run HTML Conversion Test</button>
+            <button id="run-html-test-btn" class="run-btn">Run HTML Conversion Test</button>
         </div>
 
         <hr>
@@ -61,8 +61,8 @@
         <div class="method-container">
             <h3>Method 2: High-Fidelity Pass-Through (DOCX &rarr; Internal Model &rarr; DOCX)</h3>
             <p>This method loads the DOCX into a library's internal model and saves it again. This is the best method for testing formatting retention.</p>
-            <button id="run-docx4js-passthrough-btn" class="run-btn" disabled>Run docx4js Pass-Through</button>
-            <button id="run-docxjs-passthrough-btn" class="run-btn" disabled>Run docx.js Pass-Through</button>
+            <button id="run-docx4js-passthrough-btn" class="run-btn">Run docx4js Pass-Through</button>
+            <button id="run-docxjs-passthrough-btn" class="run-btn">Run docx.js Pass-Through</button>
         </div>
     </div>
 
@@ -98,50 +98,21 @@
             const htmlOutput = document.getElementById('html-output');
 
             let docxFile = null;
-            let fileCheckInterval = null;
 
-            function enableButtons() {
-                runHtmlTestBtn.disabled = false;
-                runDocx4jsPassthroughBtn.disabled = false;
-                runDocxjsPassthroughBtn.disabled = false;
-            }
-
-            // Fallback for browsers that don't fire 'change' event reliably (e.g., iOS)
-            fileInput.addEventListener('click', function() {
-                // Clear any existing interval
-                if (fileCheckInterval) {
-                    clearInterval(fileCheckInterval);
-                }
-                // Check every 500ms to see if a file has been selected
-                fileCheckInterval = setInterval(function() {
-                    if (fileInput.files.length > 0) {
-                        console.log("File selected (detected by interval).");
-                        docxFile = fileInput.files[0];
-                        enableButtons();
-                        clearInterval(fileCheckInterval);
-                    }
-                }, 500);
-            });
-
-            // Standard event listener
             fileInput.addEventListener('change', function (event) {
-                console.log("File selected (detected by change event).");
-                if (fileCheckInterval) {
-                    clearInterval(fileCheckInterval);
-                }
                 docxFile = event.target.files[0];
-                if (docxFile) {
-                    enableButtons();
-                }
             });
 
             const getFileAsArrayBuffer = () => {
                 return new Promise((resolve, reject) => {
-                    if (!docxFile) return reject(new Error("No file selected"));
+                    if (!fileInput.files[0]) {
+                        alert("Please select a file first.");
+                        return reject(new Error("No file selected"));
+                    }
                     const fileReader = new FileReader();
                     fileReader.onload = (e) => resolve(e.target.result);
                     fileReader.onerror = (e) => reject(e.target.error);
-                    fileReader.readAsArrayBuffer(docxFile);
+                    fileReader.readAsArrayBuffer(fileInput.files[0]);
                 });
             };
 
@@ -165,7 +136,9 @@
                     }
                 } catch (err) {
                     console.error("HTML Conversion Test Error:", err);
-                    alert(`An error occurred: ${err.message}`);
+                    if (err.message !== "No file selected") {
+                        alert(`An error occurred: ${err.message}`);
+                    }
                 }
             });
 
@@ -179,7 +152,9 @@
                     window.saveAs(blob, 'recreated-passthrough-docx4js.docx');
                 } catch (err) {
                     console.error("Pass-through Test Error:", err);
-                    alert(`An error occurred: ${err.message}`);
+                    if (err.message !== "No file selected") {
+                        alert(`An error occurred: ${err.message}`);
+                    }
                 }
             });
 
@@ -196,7 +171,9 @@
                     window.saveAs(blob, 'recreated-passthrough-docxjs.docx');
                 } catch (err) {
                     console.error("Pass-through Test Error:", err);
-                    alert(`An error occurred: ${err.message}`);
+                    if (err.message !== "No file selected") {
+                        alert(`An error occurred: ${err.message}`);
+                    }
                 }
             });
 
