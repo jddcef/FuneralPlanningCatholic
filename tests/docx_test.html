@@ -27,7 +27,7 @@
         <input type="file" id="docx-file-input" accept=".docx">
     </div>
 
-    <div id="methods" class="container" style="display: none;">
+    <div id="methods" class="container">
         <h2>2. Choose a Method</h2>
 
         <!-- Method 1: HTML Conversion -->
@@ -52,7 +52,7 @@
                     <label><input type="radio" name="html-format" value="pdf"> PDF</label>
                 </div>
             </div>
-            <button id="run-html-test-btn" class="run-btn">Run HTML Conversion Test</button>
+            <button id="run-html-test-btn" class="run-btn" disabled>Run HTML Conversion Test</button>
         </div>
 
         <hr>
@@ -61,8 +61,8 @@
         <div class="method-container">
             <h3>Method 2: High-Fidelity Pass-Through (DOCX &rarr; Internal Model &rarr; DOCX)</h3>
             <p>This method loads the DOCX into a library's internal model and saves it again. This is the best method for testing formatting retention.</p>
-            <button id="run-docx4js-passthrough-btn" class="run-btn">Run docx4js Pass-Through</button>
-            <button id="run-docxjs-passthrough-btn" class="run-btn">Run docx.js Pass-Through</button>
+            <button id="run-docx4js-passthrough-btn" class="run-btn" disabled>Run docx4js Pass-Through</button>
+            <button id="run-docxjs-passthrough-btn" class="run-btn" disabled>Run docx.js Pass-Through</button>
         </div>
     </div>
 
@@ -92,7 +92,6 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('docx-file-input');
-            const methodsDiv = document.getElementById('methods');
             const runHtmlTestBtn = document.getElementById('run-html-test-btn');
             const runDocx4jsPassthroughBtn = document.getElementById('run-docx4js-passthrough-btn');
             const runDocxjsPassthroughBtn = document.getElementById('run-docxjs-passthrough-btn');
@@ -102,7 +101,9 @@
 
             fileInput.addEventListener('change', function (event) {
                 docxFile = event.target.files[0];
-                methodsDiv.style.display = docxFile ? 'block' : 'none';
+                runHtmlTestBtn.disabled = !docxFile;
+                runDocx4jsPassthroughBtn.disabled = !docxFile;
+                runDocxjsPassthroughBtn.disabled = !docxFile;
             });
 
             const getFileAsArrayBuffer = () => {
