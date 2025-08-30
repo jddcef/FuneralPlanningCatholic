@@ -77,13 +77,14 @@
 
     <!-- New libraries will be added here -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.10.0/mammoth.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx4js@3.1.1/dist/docx4js.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.31.2/docxtemplater.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <script>
+    <script type="module">
+        import docx4js from 'https://cdn.jsdelivr.net/npm/docx4js@3.1.1/dist/docx4js.js';
+
         document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('docx-file-input');
             const runTestBtn = document.getElementById('run-test-btn');
@@ -188,10 +189,10 @@
                 const htmlOutputContainer = document.createElement('div');
                 switch (reader) {
                     case 'docx-preview':
-                        return docxPreview.renderAsync(arrayBuffer, htmlOutputContainer)
+                        return window.docxPreview.renderAsync(arrayBuffer, htmlOutputContainer)
                             .then(() => htmlOutputContainer.innerHTML);
                     case 'mammoth':
-                        return mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+                        return window.mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
                             .then(result => result.value);
                     case 'docx4js':
                         return docx4js.load(arrayBuffer); // Return the docx object directly
@@ -207,7 +208,7 @@
                 container.innerHTML = html;
                 document.body.appendChild(container); // Must be in the DOM for html2canvas
 
-                return html2canvas(container, { useCORS: true }).then(canvas => {
+                return window.html2canvas(container, { useCORS: true }).then(canvas => {
                     document.body.removeChild(container);
                     const imgData = canvas.toDataURL('image/png');
                     const imgProps = pdf.getImageProperties(imgData);
@@ -225,27 +226,27 @@
                             return Promise.reject(new Error('docx4js writer requires a docx4js object from the reader.'));
                         }
                         return intermediate.save().then(blob => {
-                            saveAs(blob, fileName);
+                            window.saveAs(blob, fileName);
                         });
                     case 'docxtemplater':
                         if (typeof intermediate !== 'string') {
                             return Promise.reject(new Error('docxtemplater writer requires an HTML string from the reader.'));
                         }
-                        const templateDoc = new docx.Document({
+                        const templateDoc = new window.docx.Document({
                             sections: [{
-                                children: [new docx.Paragraph({
-                                    children: [new docx.TextRun("{content}")]
+                                children: [new window.docx.Paragraph({
+                                    children: [new window.docx.TextRun("{content}")]
                                 })],
                             }],
                         });
 
-                        return docx.Packer.toBlob(templateDoc).then(templateBlob => {
+                        return window.docx.Packer.toBlob(templateDoc).then(templateBlob => {
                             const reader = new FileReader();
                             reader.readAsArrayBuffer(templateBlob);
                             return new Promise(resolve => {
                                 reader.onload = function(e) {
                                     const arrayBuffer = e.target.result;
-                                    const zip = new PizZip(arrayBuffer);
+                                    const zip = new window.PizZip(arrayBuffer);
                                     const doc = new window.docxtemplater();
                                     doc.loadZip(zip);
                                     doc.setData({ content: intermediate });
@@ -255,7 +256,7 @@
                                         return Promise.reject(error);
                                     }
                                     const out = doc.getZip().generate({ type: 'blob' });
-                                    saveAs(out, fileName);
+                                    window.saveAs(out, fileName);
                                     resolve();
                                 };
                             });
@@ -264,8 +265,9 @@
                         if (typeof intermediate !== 'string') {
                             return Promise.reject(new Error('html-docx-js writer requires an HTML string from the reader.'));
                         }
-                        var converted = window.htmlDocx.asBlob(intermediate);
-                        saveAs(converted, fileName);
+                        const simplifiedHtml = intermediate.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+                        var converted = window.htmlDocx.asBlob(simplifiedHtml);
+                        window.saveAs(converted, fileName);
                         return Promise.resolve();
                     case 'docxjs':
                         if (typeof intermediate !== 'string') {
@@ -274,15 +276,15 @@
                         const parser = new DOMParser();
                         const htmlDoc = parser.parseFromString(intermediate, 'text/html');
                         const paragraphs = Array.from(htmlDoc.querySelectorAll('p')).map(p => {
-                            return new docx.Paragraph({
-                                children: [new docx.TextRun(p.textContent)],
+                            return new window.docx.Paragraph({
+                                children: [new window.docx.TextRun(p.textContent)],
                             });
                         });
-                        const newDoc = new docx.Document({
+                        const newDoc = new window.docx.Document({
                             sections: [{ children: paragraphs }],
                         });
-                        return docx.Packer.toBlob(newDoc).then(blob => {
-                            saveAs(blob, fileName);
+                        return window.docx.Packer.toBlob(newDoc).then(blob => {
+                            window.saveAs(blob, fileName);
                         });
                     default:
                         return Promise.reject(new Error(`Writer not implemented: ${writer}`));
