@@ -16,6 +16,7 @@
         .run-btn { background-color: #28a745; color: white; border-color: #28a745; }
         .run-btn:disabled { background-color: #ccc; border-color: #ccc; cursor: not-allowed; }
         label { display: block; margin-bottom: 5px; }
+        #file-status { margin-top: 10px; font-style: italic; color: #555; }
     </style>
 </head>
 <body>
@@ -25,6 +26,7 @@
     <div class="container">
         <h2>1. Select File</h2>
         <input type="file" id="docx-file-input" accept=".docx">
+        <div id="file-status">No file selected.</div>
     </div>
 
     <div id="methods" class="container">
@@ -92,22 +94,40 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('docx-file-input');
+            const fileStatus = document.getElementById('file-status');
             const runHtmlTestBtn = document.getElementById('run-html-test-btn');
             const runDocx4jsPassthroughBtn = document.getElementById('run-docx4js-passthrough-btn');
             const runDocxjsPassthroughBtn = document.getElementById('run-docxjs-passthrough-btn');
             const htmlOutput = document.getElementById('html-output');
 
+            let fileArrayBuffer = null;
+
+            fileInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (!file) {
+                    fileArrayBuffer = null;
+                    fileStatus.textContent = "No file selected.";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    fileArrayBuffer = e.target.result;
+                    fileStatus.textContent = `File loaded: ${file.name}`;
+                    console.log("File loaded and ready.");
+                };
+                reader.onerror = () => {
+                    fileArrayBuffer = null;
+                    fileStatus.textContent = "Error loading file.";
+                };
+                reader.readAsArrayBuffer(file);
+            });
+
             const getFileAsArrayBuffer = () => {
-                return new Promise((resolve, reject) => {
-                    if (fileInput.files.length === 0) {
-                        alert("Please select a file first.");
-                        return reject(new Error("No file selected"));
-                    }
-                    const fileReader = new FileReader();
-                    fileReader.onload = (e) => resolve(e.target.result);
-                    fileReader.onerror = (e) => reject(e.target.error);
-                    fileReader.readAsArrayBuffer(fileInput.files[0]);
-                });
+                if (!fileArrayBuffer) {
+                    alert("Please select a file first.");
+                    return Promise.reject(new Error("No file selected"));
+                }
+                return Promise.resolve(fileArrayBuffer);
             };
 
             runHtmlTestBtn.addEventListener('click', async () => {
