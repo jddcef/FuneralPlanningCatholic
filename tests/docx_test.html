@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOCX Recreation Test Matrix</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+        .container { border: 1px solid #ccc; padding: 15px; margin-top: 20px; border-radius: 5px; }
+        .matrix-selection { display: flex; justify-content: space-around; }
+        .selection-group { border: 1px solid #eee; padding: 10px; border-radius: 5px; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        button { font-size: 1em; padding: 10px 15px; border-radius: 5px; cursor: pointer; border: 1px solid #999; }
+        #run-test-btn { background-color: #28a745; color: white; border-color: #28a745; }
+        #run-all-btn { background-color: #17a2b8; color: white; border-color: #17a2b8; margin-left: 10px; }
+        #run-test-btn:disabled, #run-all-btn:disabled { background-color: #ccc; border-color: #ccc; cursor: not-allowed; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="radio"]:disabled + span { color: #999; }
+    </style>
+</head>
+<body>
+    <h1>DOCX Recreation Test Matrix</h1>
+    <p>Upload a .docx file, select a "Reader" and a "Writer" library, and then click "Run Test" to see how well the combination recreates the original file.</p>
+
+    <div class="container">
+        <h2>1. Upload File</h2>
+        <input type="file" id="docx-file-input" accept=".docx">
+    </div>
+
+    <div class="container">
+        <h2>2. Select Libraries and Format</h2>
+        <div class="matrix-selection">
+            <div class="selection-group" id="readers">
+                <h3>Readers</h3>
+                <label><input type="radio" name="reader" value="docx-preview" checked> <span>docx-preview</span></label>
+                <label><input type="radio" name="reader" value="mammoth"> <span>mammoth.js</span></label>
+                <label><input type="radio" name="reader" value="docx4js"> <span>docx4js</span></label>
+            </div>
+            <div class="selection-group" id="writers">
+                <h3>Writers</h3>
+                <label><input type="radio" name="writer" value="html-docx-js" checked> <span>html-docx-js</span></label>
+                <label><input type="radio" name="writer" value="docxjs"> <span>docx.js</span></label>
+                <label><input type="radio" name="writer" value="docxtemplater"> <span>docxtemplater</span></label>
+                <label><input type="radio" name="writer" value="docx4js"> <span>docx4js</span></label>
+            </div>
+            <div class="selection-group" id="output-format">
+                <h3>Output Format</h3>
+                <label><input type="radio" name="format" value="docx" checked> <span>DOCX</span></label>
+                <label><input type="radio" name="format" value="pdf"> <span>PDF</span></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>3. Run Test</h2>
+        <button id="run-test-btn" disabled>Run Test</button>
+        <button id="run-all-btn" disabled>Run All Permutations</button>
+    </div>
+
+    <div class="container">
+        <h2>Intermediate HTML Output</h2>
+        <div id="html-output" style="height: 200px; overflow-y: scroll; border: 1px solid #eee; padding: 10px; background: #f8f8f8;">
+            <!-- Intermediate HTML will be shown here -->
+        </div>
+    </div>
+
+
+    <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.1.13/dist/docx-preview.min.js"></script>
+    <script>
+      // Rename the global `docx` object from docx-preview to avoid conflicts
+      window.docxPreview = window.docx;
+    </script>
+    <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@9.5.1/dist/index.iife.js"></script>
+
+    <!-- New libraries will be added here -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.10.0/mammoth.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx4js@3.1.1/dist/docx4js.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.31.2/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.getElementById('docx-file-input');
+            const runTestBtn = document.getElementById('run-test-btn');
+            const runAllBtn = document.getElementById('run-all-btn');
+            const htmlOutput = document.getElementById('html-output');
+            const readers = document.querySelectorAll('input[name="reader"]');
+            const writers = document.querySelectorAll('input[name="writer"]');
+
+            let docxFile = null;
+
+            function updateWriterStates() {
+                const selectedReader = document.querySelector('input[name="reader"]:checked').value;
+                const docx4jsWriterRadio = document.querySelector('input[name="writer"][value="docx4js"]');
+
+                if (selectedReader !== 'docx4js') {
+                    docx4jsWriterRadio.disabled = true;
+                    docx4jsWriterRadio.parentElement.style.textDecoration = 'line-through';
+                    if (docx4jsWriterRadio.checked) {
+                        document.querySelector('input[name="writer"][value="html-docx-js"]').checked = true;
+                    }
+                } else {
+                    docx4jsWriterRadio.disabled = false;
+                    docx4jsWriterRadio.parentElement.style.textDecoration = 'none';
+                }
+            }
+
+            readers.forEach(reader => reader.addEventListener('change', updateWriterStates));
+
+            fileInput.addEventListener('change', function (event) {
+                docxFile = event.target.files[0];
+                runTestBtn.disabled = !docxFile;
+                runAllBtn.disabled = !docxFile;
+            });
+
+            async function runSingleTest(reader, writer, format, arrayBuffer) {
+                console.log(`Running test with Reader: ${reader}, Writer: ${writer}, Format: ${format}`);
+                try {
+                    const intermediate = await runReader(reader, arrayBuffer);
+                    if (typeof intermediate === 'string') {
+                        htmlOutput.innerHTML = intermediate;
+                    } else {
+                        htmlOutput.textContent = 'Intermediate format is an object, not HTML.';
+                    }
+                    const fileName = `recreated-${reader}-${writer}.${format}`;
+                    if (format === 'pdf') {
+                        if (typeof intermediate !== 'string') {
+                            throw new Error('PDF generation requires an HTML string from the reader.');
+                        }
+                        await runPdfWriter(intermediate, fileName);
+                    } else {
+                        await runWriter(writer, intermediate, fileName);
+                    }
+                } catch (err) {
+                    console.error(`Error in ${reader}-${writer} combination:`, err);
+                    alert(`An error occurred with the ${reader}-${writer} combination: ${err.message}`);
+                }
+            }
+
+            runTestBtn.addEventListener('click', function () {
+                if (!docxFile) {
+                    alert('Please select a .docx file first.');
+                    return;
+                }
+                const reader = document.querySelector('input[name="reader"]:checked').value;
+                const writer = document.querySelector('input[name="writer"]:checked').value;
+                const format = document.querySelector('input[name="format"]:checked').value;
+                const fileReader = new FileReader();
+                fileReader.onload = (e) => runSingleTest(reader, writer, format, e.target.result);
+                fileReader.readAsArrayBuffer(docxFile);
+            });
+
+            runAllBtn.addEventListener('click', async function() {
+                if (!docxFile) {
+                    alert('Please select a .docx file first.');
+                    return;
+                }
+                runAllBtn.disabled = true;
+                const format = document.querySelector('input[name="format"]:checked').value;
+                const fileReader = new FileReader();
+                fileReader.onload = async (e) => {
+                    const arrayBuffer = e.target.result;
+                    for (const readerRadio of readers) {
+                        const readerValue = readerRadio.value;
+                        if (format === 'pdf' && readerValue === 'docx4js') continue;
+
+                        for (const writerRadio of writers) {
+                            const writerValue = writerRadio.value;
+                            if (readerValue !== 'docx4js' && writerValue === 'docx4js') {
+                                continue;
+                            }
+                            await runSingleTest(readerValue, writerValue, format, arrayBuffer);
+                            await new Promise(resolve => setTimeout(resolve, 1000)); // Delay between tests
+                        }
+                    }
+                    runAllBtn.disabled = false;
+                    alert('All permutations complete!');
+                };
+                fileReader.readAsArrayBuffer(docxFile);
+            });
+
+            function runReader(reader, arrayBuffer) {
+                const htmlOutputContainer = document.createElement('div');
+                switch (reader) {
+                    case 'docx-preview':
+                        return docxPreview.renderAsync(arrayBuffer, htmlOutputContainer)
+                            .then(() => htmlOutputContainer.innerHTML);
+                    case 'mammoth':
+                        return mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+                            .then(result => result.value);
+                    case 'docx4js':
+                        return docx4js.load(arrayBuffer); // Return the docx object directly
+                    default:
+                        return Promise.reject(new Error(`Reader not implemented: ${reader}`));
+                }
+            }
+
+            function runPdfWriter(html, fileName) {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                const container = document.createElement('div');
+                container.innerHTML = html;
+                document.body.appendChild(container); // Must be in the DOM for html2canvas
+
+                return html2canvas(container, { useCORS: true }).then(canvas => {
+                    document.body.removeChild(container);
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save(fileName);
+                });
+            }
+
+            function runWriter(writer, intermediate, fileName) {
+                switch (writer) {
+                    case 'docx4js':
+                        if (typeof intermediate.save !== 'function') {
+                            return Promise.reject(new Error('docx4js writer requires a docx4js object from the reader.'));
+                        }
+                        return intermediate.save().then(blob => {
+                            saveAs(blob, fileName);
+                        });
+                    case 'docxtemplater':
+                        if (typeof intermediate !== 'string') {
+                            return Promise.reject(new Error('docxtemplater writer requires an HTML string from the reader.'));
+                        }
+                        const templateDoc = new docx.Document({
+                            sections: [{
+                                children: [new docx.Paragraph({
+                                    children: [new docx.TextRun("{content}")]
+                                })],
+                            }],
+                        });
+
+                        return docx.Packer.toBlob(templateDoc).then(templateBlob => {
+                            const reader = new FileReader();
+                            reader.readAsArrayBuffer(templateBlob);
+                            return new Promise(resolve => {
+                                reader.onload = function(e) {
+                                    const arrayBuffer = e.target.result;
+                                    const zip = new PizZip(arrayBuffer);
+                                    const doc = new window.docxtemplater();
+                                    doc.loadZip(zip);
+                                    doc.setData({ content: intermediate });
+                                    try {
+                                        doc.render();
+                                    } catch (error) {
+                                        return Promise.reject(error);
+                                    }
+                                    const out = doc.getZip().generate({ type: 'blob' });
+                                    saveAs(out, fileName);
+                                    resolve();
+                                };
+                            });
+                        });
+                    case 'html-docx-js':
+                        if (typeof intermediate !== 'string') {
+                            return Promise.reject(new Error('html-docx-js writer requires an HTML string from the reader.'));
+                        }
+                        var converted = window.htmlDocx.asBlob(intermediate);
+                        saveAs(converted, fileName);
+                        return Promise.resolve();
+                    case 'docxjs':
+                        if (typeof intermediate !== 'string') {
+                            return Promise.reject(new Error('docxjs writer requires an HTML string from the reader.'));
+                        }
+                        const parser = new DOMParser();
+                        const htmlDoc = parser.parseFromString(intermediate, 'text/html');
+                        const paragraphs = Array.from(htmlDoc.querySelectorAll('p')).map(p => {
+                            return new docx.Paragraph({
+                                children: [new docx.TextRun(p.textContent)],
+                            });
+                        });
+                        const newDoc = new docx.Document({
+                            sections: [{ children: paragraphs }],
+                        });
+                        return docx.Packer.toBlob(newDoc).then(blob => {
+                            saveAs(blob, fileName);
+                        });
+                    default:
+                        return Promise.reject(new Error(`Writer not implemented: ${writer}`));
+                }
+            }
+            // Initial state update
+            updateWriterStates();
+        });
+    </script>
+</body>
+</html>
