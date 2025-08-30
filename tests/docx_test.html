@@ -14,7 +14,7 @@
         h3 { margin-top: 0; }
         button { font-size: 1em; padding: 10px 15px; border-radius: 5px; cursor: pointer; border: 1px solid #999; margin-top: 10px;}
         .run-btn { background-color: #28a745; color: white; border-color: #28a745; }
-        .run-btn:disabled { background-color: #ccc; border-color: #ccc; cursor: not-allowed; }
+        #load-file-btn { background-color: #007bff; color: white; border-color: #007bff; margin-left: 10px; }
         label { display: block; margin-bottom: 5px; }
         #file-status { margin-top: 10px; font-style: italic; color: #555; }
         footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #777; }
@@ -22,11 +22,12 @@
 </head>
 <body>
     <h1>DOCX Recreation Test Matrix</h1>
-    <p>Select a .docx file, then choose a method below to test different recreation strategies.</p>
+    <p>Select a .docx file, click "Load Selected File", then choose a method below to test different recreation strategies.</p>
 
     <div class="container">
         <h2>1. Select File</h2>
         <input type="file" id="docx-file-input" accept=".docx">
+        <button id="load-file-btn">Load Selected File</button>
         <div id="file-status">No file selected.</div>
     </div>
 
@@ -77,7 +78,7 @@
     </div>
 
     <footer>
-        Test Page Version: v1.0.0
+        Test Page Version: v1.0.1
     </footer>
 
     <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
@@ -99,6 +100,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('docx-file-input');
+            const loadFileBtn = document.getElementById('load-file-btn');
             const fileStatus = document.getElementById('file-status');
             const runHtmlTestBtn = document.getElementById('run-html-test-btn');
             const runDocx4jsPassthroughBtn = document.getElementById('run-docx4js-passthrough-btn');
@@ -107,11 +109,10 @@
 
             let fileArrayBuffer = null;
 
-            fileInput.addEventListener('change', function (event) {
-                const file = event.target.files[0];
+            loadFileBtn.addEventListener('click', function() {
+                const file = fileInput.files[0];
                 if (!file) {
-                    fileArrayBuffer = null;
-                    fileStatus.textContent = "No file selected.";
+                    alert("Please select a file first.");
                     return;
                 }
                 const reader = new FileReader();
@@ -129,8 +130,8 @@
 
             const getFileAsArrayBuffer = () => {
                 if (!fileArrayBuffer) {
-                    alert("Please select a file first.");
-                    return Promise.reject(new Error("No file selected"));
+                    alert("Please select a file and click 'Load Selected File'.");
+                    return Promise.reject(new Error("No file loaded"));
                 }
                 return Promise.resolve(fileArrayBuffer);
             };
@@ -155,7 +156,7 @@
                     }
                 } catch (err) {
                     console.error("HTML Conversion Test Error:", err);
-                    if (err.message !== "No file selected") {
+                    if (err.message !== "No file loaded") {
                         alert(`An error occurred: ${err.message}`);
                     }
                 }
@@ -171,7 +172,7 @@
                     window.saveAs(blob, 'recreated-passthrough-docx4js.docx');
                 } catch (err) {
                     console.error("Pass-through Test Error:", err);
-                    if (err.message !== "No file selected") {
+                    if (err.message !== "No file loaded") {
                         alert(`An error occurred: ${err.message}`);
                     }
                 }
@@ -190,7 +191,7 @@
                     window.saveAs(blob, 'recreated-passthrough-docxjs.docx');
                 } catch (err) {
                     console.error("Pass-through Test Error:", err);
-                    if (err.message !== "No file selected") {
+                    if (err.message !== "No file loaded") {
                         alert(`An error occurred: ${err.message}`);
                     }
                 }
