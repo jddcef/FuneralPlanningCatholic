@@ -18,7 +18,7 @@
         #file-status { margin-top: 10px; font-style: italic; color: #555; }
         footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #777; }
         #page-console { background-color: #333; color: #0f0; font-family: monospace; height: 200px; overflow-y: scroll; padding: 10px; border: 1px solid #555; white-space: pre-wrap; margin-top: 20px;}
-        .disabled-feature { color: #999; text-decoration: line-through; }
+        .disabled-feature, .warning-note { color: #999; font-size: 0.8em; }
     </style>
 </head>
 <body>
@@ -48,7 +48,7 @@
                     <h4>Writers</h4>
                     <label><input type="radio" name="html-writer" value="html-docx-js" checked> html-docx-js</label>
                     <label><input type="radio" name="html-writer" value="docxjs"> docx.js</label>
-                    <label><input type="radio" name="html-writer" value="docxtemplater"> docxtemplater</label>
+                    <label><input type="radio" name="html-writer" value="docxtemplater"> docxtemplater <span class="warning-note">(No HTML support)</span></label>
                 </div>
                 <div class="selection-group">
                     <h4>Output Format</h4>
@@ -83,7 +83,7 @@
     </div>
 
     <footer>
-        Test Page Version: v1.0.7
+        Test Page Version: v1.0.8
     </footer>
 
     <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
@@ -262,21 +262,30 @@
                 switch (writer) {
                     case 'docxtemplater':
                         const templateDoc = new docx.Document({
-                            sections: [{ children: [new docx.Paragraph({children: [new docx.TextRun("{content}")]}) ] }],
+                            sections: [{ children: [new docx.Paragraph({children: [new docx.TextRun("{content}")
+                            ]})] }],
                         });
                         return docx.Packer.toBlob(templateDoc).then(templateBlob => {
                             return new Promise((resolve, reject) => {
                                 const fr = new FileReader();
                                 fr.onload = () => {
-                                    const zip = new PizZip(fr.result);
-                                    const doc = new docxtemplater(zip);
-                                    doc.render({ content: html });
-                                    const out = doc.getZip().generate({ type: 'blob' });
-                                    saveAs(out, fileName);
-                                    log("docxtemplater finished.");
-                                    resolve();
+                                    try {
+                                        const zip = new PizZip(fr.result);
+                                        const doc = new docxtemplater(zip);
+                                        doc.render({ content: html });
+                                        const out = doc.getZip().generate({ type: 'blob' });
+                                        saveAs(out, fileName);
+                                        log("docxtemplater finished.");
+                                        resolve();
+                                    } catch (error) {
+                                        log(`docxtemplater error: ${error.message}`);
+                                        reject(error);
+                                    }
                                 };
-                                fr.onerror = reject;
+                                fr.onerror = (e) => {
+                                    log(`FileReader error for docxtemplater template: ${e}`);
+                                    reject(e);
+                                }
                                 fr.readAsArrayBuffer(templateBlob);
                             });
                         });
