@@ -20,6 +20,8 @@
         footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #777; }
         #page-console { background-color: #333; color: #0f0; font-family: monospace; height: 200px; overflow-y: scroll; padding: 10px; border: 1px solid #555; white-space: pre-wrap; margin-top: 20px;}
         .disabled-feature { color: #999; text-decoration: line-through; }
+        .preview-container { display: flex; gap: 20px; }
+        .preview-box { flex: 1; border: 1px solid #eee; padding: 10px; height: 300px; overflow-y: scroll; }
     </style>
 </head>
 <body>
@@ -30,6 +32,20 @@
         <h2>1. Select File</h2>
         <input type="file" id="docx-file-input" accept=".docx">
         <div id="file-status">No file selected.</div>
+    </div>
+
+    <div class="container">
+        <h2>Document Previews</h2>
+        <div class="preview-container">
+            <div class="preview-box">
+                <h4>Preview (from docx-preview.js)</h4>
+                <div id="docx-preview-output"></div>
+            </div>
+            <div class="preview-box">
+                <h4>Preview (from mammoth.js)</h4>
+                <div id="mammoth-output"></div>
+            </div>
+        </div>
     </div>
 
     <div id="methods" class="container">
@@ -89,19 +105,12 @@
     </div>
 
     <div class="container">
-        <h2>Intermediate HTML Output</h2>
-        <div id="html-output" style="height: 200px; overflow-y: scroll; border: 1px solid #eee; padding: 10px; background: #f8f8f8;">
-            <!-- Intermediate HTML will be shown here -->
-        </div>
-    </div>
-
-    <div class="container">
         <h2>Debug Console</h2>
         <div id="page-console"></div>
     </div>
 
     <footer>
-        Test Page Version: v1.0.9
+        Test Page Version: v1.1.0
     </footer>
 
     <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
@@ -128,7 +137,8 @@
             const runReplaceTestBtn = document.getElementById('run-replace-test-btn');
             const findTextInput = document.getElementById('find-text');
             const replaceTextInput = document.getElementById('replace-text');
-            const htmlOutput = document.getElementById('html-output');
+            const docxPreviewOutput = document.getElementById('docx-preview-output');
+            const mammothOutput = document.getElementById('mammoth-output');
 
             let fileDataURL = null;
 
@@ -140,7 +150,7 @@
 
             log("Page loaded and script initialized.");
 
-            fileInput.addEventListener('change', function (event) {
+            fileInput.addEventListener('change', async function (event) {
                 log("File input 'change' event fired.");
                 const file = event.target.files[0];
                 if (!file) {
@@ -151,10 +161,29 @@
                 }
                 log(`File object found: ${file.name}. Reading file...`);
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = async (e) => {
                     fileDataURL = e.target.result;
                     fileStatus.textContent = `File loaded: ${file.name}`;
                     log("File successfully read into memory as Data URL.");
+
+                    // Render previews automatically
+                    log("Rendering previews...");
+                    const arrayBuffer = dataURLtoArrayBuffer(fileDataURL);
+                    try {
+                        const mammothHtml = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer.slice(0) });
+                        mammothOutput.innerHTML = mammothHtml.value;
+                        log("Mammoth.js preview rendered.");
+                    } catch (err) {
+                        log(`Mammoth.js preview failed: ${err.message}`);
+                        mammothOutput.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+                    }
+                    try {
+                        await docxPreview.renderAsync(arrayBuffer.slice(0), docxPreviewOutput);
+                        log("docx-preview finished.");
+                    } catch (err) {
+                        log(`docx-preview failed: ${err.message}`);
+                        docxPreviewOutput.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+                    }
                 };
                 reader.onerror = () => {
                     fileDataURL = null;
@@ -197,8 +226,7 @@
                     const arrayBuffer = await getFileAsArrayBuffer();
                     log(`Running HTML test with Reader: ${reader}, Writer: ${writer}, Format: ${format}`);
                     const html = await runHtmlReader(reader, arrayBuffer);
-                    htmlOutput.innerHTML = html;
-                    log("Intermediate HTML rendered.");
+                    log("Intermediate HTML generated for test.");
                     const fileName = `recreated-html-${reader}-${writer}.${format}`;
                     if (format === 'pdf') {
                         await runPdfWriter(html, fileName);
@@ -219,7 +247,6 @@
                 try {
                     const arrayBuffer = await getFileAsArrayBuffer();
                     log("Running docx.js pass-through test.");
-                    htmlOutput.textContent = 'Pass-through test does not generate HTML.';
                     const blob = await docx.patchDocument({
                         outputType: "blob",
                         data: arrayBuffer,
@@ -248,7 +275,6 @@
 
                     const arrayBuffer = await getFileAsArrayBuffer();
                     log(`Running docx.js find & replace test. Finding: "${findText}", Replacing with: "${replaceText}"`);
-                    htmlOutput.textContent = 'Find & Replace test does not generate HTML.';
 
                     const patches = {
                         [findText]: {
