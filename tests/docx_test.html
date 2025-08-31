@@ -15,10 +15,11 @@
         button { font-size: 1em; padding: 10px 15px; border-radius: 5px; cursor: pointer; border: 1px solid #999; margin-top: 10px;}
         .run-btn { background-color: #28a745; color: white; border-color: #28a745; }
         label { display: block; margin-bottom: 5px; }
+        input[type="text"] { padding: 5px; width: 200px; }
         #file-status { margin-top: 10px; font-style: italic; color: #555; }
         footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #777; }
         #page-console { background-color: #333; color: #0f0; font-family: monospace; height: 200px; overflow-y: scroll; padding: 10px; border: 1px solid #555; white-space: pre-wrap; margin-top: 20px;}
-        .disabled-feature, .warning-note { color: #999; font-size: 0.8em; }
+        .disabled-feature { color: #999; text-decoration: line-through; }
     </style>
 </head>
 <body>
@@ -68,6 +69,23 @@
             <button id="run-docxjs-passthrough-btn" class="run-btn">Run docx.js Pass-Through</button>
             <span class="disabled-feature">(docx4js is unavailable due to browser compatibility issues)</span>
         </div>
+
+        <hr>
+
+        <!-- Method 3: Pass-Through with Modification -->
+        <div class="method-container">
+            <h3>Method 3: Pass-Through with Placeholder Replace</h3>
+            <p>This method uses the <code>docx.js</code> library to find and replace placeholders in the document.</p>
+            <div>
+                <label for="find-text">Placeholder to Find (e.g., <code>my_placeholder</code> for <code>{{my_placeholder}}</code>):</label>
+                <input type="text" id="find-text" value="the">
+            </div>
+            <div style="margin-top: 10px;">
+                <label for="replace-text">Replacement Text:</label>
+                <input type="text" id="replace-text" value="zzz">
+            </div>
+            <button id="run-replace-test-btn" class="run-btn">Run docx.js Find &amp; Replace</button>
+        </div>
     </div>
 
     <div class="container">
@@ -83,7 +101,7 @@
     </div>
 
     <footer>
-        Test Page Version: v1.0.8
+        Test Page Version: v1.0.9
     </footer>
 
     <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
@@ -107,6 +125,9 @@
             const pageConsole = document.getElementById('page-console');
             const runHtmlTestBtn = document.getElementById('run-html-test-btn');
             const runDocxjsPassthroughBtn = document.getElementById('run-docxjs-passthrough-btn');
+            const runReplaceTestBtn = document.getElementById('run-replace-test-btn');
+            const findTextInput = document.getElementById('find-text');
+            const replaceTextInput = document.getElementById('replace-text');
             const htmlOutput = document.getElementById('html-output');
 
             let fileDataURL = null;
@@ -209,6 +230,43 @@
                     log("Test complete.");
                 } catch (err) {
                     log(`Error in docx.js Pass-through Test: ${err.message}`);
+                    if (err.message !== "No file loaded") {
+                        alert(`An error occurred: ${err.message}`);
+                    }
+                }
+            });
+
+            runReplaceTestBtn.addEventListener('click', async () => {
+                log("'Run docx.js Find & Replace' button clicked.");
+                try {
+                    const findText = findTextInput.value;
+                    const replaceText = replaceTextInput.value;
+                    if (!findText) {
+                        alert("Please enter text to find.");
+                        return;
+                    }
+
+                    const arrayBuffer = await getFileAsArrayBuffer();
+                    log(`Running docx.js find & replace test. Finding: "${findText}", Replacing with: "${replaceText}"`);
+                    htmlOutput.textContent = 'Find & Replace test does not generate HTML.';
+
+                    const patches = {
+                        [findText]: {
+                            type: docx.PatchType.PARAGRAPH,
+                            children: [new docx.TextRun(replaceText)],
+                        },
+                    };
+
+                    const blob = await docx.patchDocument({
+                        outputType: "blob",
+                        data: arrayBuffer,
+                        patches: patches,
+                    });
+                    log("docx.js patch complete. Triggering download.");
+                    saveAs(blob, `recreated-replace-${findText}.docx`);
+                    log("Test complete.");
+                } catch (err) {
+                    log(`Error in docx.js Find & Replace Test: ${err.message}`);
                     if (err.message !== "No file loaded") {
                         alert(`An error occurred: ${err.message}`);
                     }
