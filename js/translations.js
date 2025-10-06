@@ -168,6 +168,7 @@ window.translations = {
 
     // PDF & DOCX Generation
     "funeral_planning_booklet": "Funeral Planning Booklet",
+    "comprehensive_guide": "A Comprehensive Guide",
     "full_planning_booklet_generated": "Full planning booklet generated.",
     "pdf_generated": "PDF Generated",
     "docx_generation_not_available": "DOCX generation is not available. Please try again in a few moments.",
@@ -443,6 +444,9 @@ window.translations = {
     "download_docx_booklet": "📝 Aflaai DOCX Boekie",
     "reset_app": "Herstel/Begin Oor",
     
+    "funeral_planning_booklet": "Begrafnisbeplanningsboekie",
+    "comprehensive_guide": "'n Omvattende Gids",
+
     // Downloads
     "downloads_title": "Aflaaie",
     "downloads_last_conversations_deck_title": "Laaste Gesprekke Dek",
@@ -779,6 +783,9 @@ window.translations = {
     "download_pdf_booklet": "📄 Khuphela i-PDF yeNcwadana",
     "download_docx_booklet": "📝 Khuphela i-DOCX yeNcwadana",
     "reset_app": "Buyisela/Qala Kwakhona",
+
+    "funeral_planning_booklet": "Incwadana Yokucwangcisa Umngcwabo",
+    "comprehensive_guide": "Isikhokelo Esibanzi",
     
     // Downloads
     "downloads_title": "Izinto Ezikhutshelwayo",
