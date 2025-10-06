@@ -662,7 +662,7 @@ function generateFullPlanningBooklet(outputType = 'save') {
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
-  doc.text(t('order_of_service'), 15, y);
+  doc.text(t('order_of_service_title'), 15, y);
   y += 12;
 
   // Funeral Mass Order
@@ -1094,7 +1094,7 @@ function generateFullPlanningBookletDOCX() {
   docChildren.push(new Paragraph({ children: [new TextRun({ text: '', break: 1 })] })); // Page break
 
   // --- Order of Service ---
-  docChildren.push(createSectionTitle(t('order_of_service'), CATHOLIC_PURPLE));
+  docChildren.push(createSectionTitle(t('order_of_service_title'), CATHOLIC_PURPLE));
   const createServiceList = (title, items) => {
     docChildren.push(new Paragraph({ text: title, heading: HeadingLevel.HEADING_2, spacing: { before: 200, after: 100 } }));
     items.forEach(item => {
