@@ -7,6 +7,7 @@ window.translations = {
     "nav_home": "Home",
     "nav_understanding": "Understanding",
     "nav_planning_tools": "Planning Tools",
+    "nav_musical_inspiration": "Musical Inspiration",
     "nav_order_of_service": "Order of Service",
     "nav_background": "Background",
     "nav_downloads": "Downloads",
@@ -60,6 +61,11 @@ window.translations = {
     "download_pdf_booklet": "📄 Download PDF Booklet",
     "download_docx_booklet": "📝 Download DOCX Booklet",
     "reset_app": "Reset/Start Over",
+
+    // Musical Inspiration
+    "musical_inspiration_title": "Musical Inspiration",
+    "musical_inspiration_description": "For additional musical inspiration, you can listen to this playlist of popular Catholic funeral hymns. This can help you get a feel for the different styles and moods of music available.",
+    "listen_on_youtube": "Listen on YouTube",
     
     // Downloads
     "downloads_title": "Downloads",
@@ -375,6 +381,7 @@ window.translations = {
     "nav_home": "Tuis",
     "nav_understanding": "Begrip",
     "nav_planning_tools": "Beplanningsgereedskap",
+    "nav_musical_inspiration": "Musik Inspirasie",
     "nav_order_of_service": "Orde van Diens",
     "nav_background": "Agtergrond",
     "nav_downloads": "Aflaaie",
@@ -442,6 +449,11 @@ window.translations = {
     "download_pdf_booklet": "📄 Aflaai PDF Boekie",
     "download_docx_booklet": "📝 Aflaai DOCX Boekie",
     "reset_app": "Herstel/Begin Oor",
+
+    // Musical Inspiration
+    "musical_inspiration_title": "Musik Inspirasie",
+    "musical_inspiration_description": "Vir bykomende musikale inspirasie, kan jy na hierdie snitlys van gewilde Katolieke begrafnisliedere luister. Dit kan jou help om 'n gevoel te kry vir die verskillende style en stemmings van musiek wat beskikbaar is.",
+    "listen_on_youtube": "Luister op YouTube",
     
     // Downloads
     "downloads_title": "Aflaaie",
@@ -712,6 +724,7 @@ window.translations = {
     "nav_home": "Ekhaya",
     "nav_understanding": "UkuQonda",
     "nav_planning_tools": "Amathuluzi Okucwangcisa",
+    "nav_musical_inspiration": "Inspirasi Yomculo",
     "nav_order_of_service": "I-Order yoNkonzo",
     "nav_background": "Inkcukacha Ngemva",
     "nav_downloads": "Ukukhuphela",
@@ -779,6 +792,11 @@ window.translations = {
     "download_pdf_booklet": "📄 Khuphela i-PDF yeNcwadana",
     "download_docx_booklet": "📝 Khuphela i-DOCX yeNcwadana",
     "reset_app": "Buyisela/Qala Kwakhona",
+
+    // Musical Inspiration
+    "musical_inspiration_title": "Inspirasi Yomculo",
+    "musical_inspiration_description": "Ukuze ufumane inkuthazo engakumbi yomculo, ungamamela olu luhlu lweengoma ezidumileyo zomngcwabo wamaKatolika. Oku kungakunceda ufumane umbono weendlela ezahlukeneyo kunye neemvakalelo zomculo ezikhoyo.",
+    "listen_on_youtube": "Mamela kuYouTube",
     
     // Downloads
     "downloads_title": "Izinto Ezikhutshelwayo",
