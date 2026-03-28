@@ -51,9 +51,8 @@ window.hymns = [
   },
   {
     title: "Nearer My God to Thee",
-    youtube: "https://www.youtube.com/watch?v=6_5Vz8fqQqY",
+    youtube: "https://www.youtube.com/watch?v=P9pZm5j7_HI",
     description: "A hymn of drawing closer to God in times of need.",
-    theme: ["closeness", "comfort", "faith"],
     lyrics: "Nearer my God to thee, nearer to thee! E'en though it be a cross that raiseth me..."
   }
 ];

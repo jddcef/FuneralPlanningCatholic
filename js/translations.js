@@ -223,9 +223,7 @@ window.translations = {
     "reception_of_body": "Reception of the Body",
     "opening_prayer": "Opening Prayer",
     "liturgy_of_the_word": "Liturgy of the Word",
-    "first_reading": "First Reading",
     "responsorial_psalm": "Responsorial Psalm",
-    "second_reading": "Second Reading",
     "gospel_acclamation": "Gospel Acclamation",
     "gospel_reading": "Gospel Reading",
     "homily": "Homily",
@@ -254,18 +252,13 @@ window.translations = {
     "flow_step1_time": "Evening before",
     "flow_step2": "Funeral Service",
     "flow_step2_time": "Main ceremony",
-    "flow_step3": "Burial / Interment",
+    "flow_step3": "Burial / Committal",
     "flow_step3_time": "Final resting place",
 
     // Footer
     "footer_text": "Catholic Funeral Planning Guide",
     "footer_powered_by": "Powered by",
-    "flow_step1_time": "Evening before",
-    "flow_step2": "Funeral Service",
-    "flow_step2_time": "Main ceremony",
-    "flow_step3": "Burial / Committal",
-    "flow_step3_time": "Final resting place",
-    
+
     // Reading Types
     "first_reading": "First Reading",
     "psalm": "Psalm",
@@ -367,7 +360,13 @@ window.translations = {
     "vigil_note_sharing": "Allow time for personal sharing",
     "vigil_note_tissues": "Provide tissues and comfortable seating",
     "vigil_note_refreshments": "Consider having refreshments available after",
-    "vigil_note_traditions": "Respect cultural and family traditions"
+    "vigil_note_traditions": "Respect cultural and family traditions",
+
+    // Download / PDF labels
+    "readings_title": "Scripture Readings",
+    "vigil_title_download": "Vigil Prayer Service",
+    "generated_on": "Generated on",
+    "no_readings_selected": "No readings selected"
   },
   
   "af": {
