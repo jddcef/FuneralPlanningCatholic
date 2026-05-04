@@ -4,6 +4,58 @@ if (window.pdfjsLib) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 }
 
+function showStatus(message, isError = false) {
+  const $status = $('#pdf-status');
+  if (!$status.length) {
+    if (isError) {
+      console.error(message);
+    } else {
+      console.log(message);
+    }
+    return;
+  }
+
+  $status
+    .stop(true, true)
+    .text(message)
+    .removeClass('text-red-600 text-green-600')
+    .addClass(isError ? 'text-red-600' : 'text-green-600')
+    .fadeIn();
+
+  setTimeout(() => {
+    $status.fadeOut();
+  }, isError ? 5000 : 3000);
+}
+
+function getStoredObject(key, fallback = {}) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (error) {
+    console.warn(`Could not parse localStorage key: ${key}`, error);
+    return fallback;
+  }
+}
+
+function setStoredObject(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    console.warn(`Could not save localStorage key: ${key}`, error);
+    showStatus(t('storage_error'), true);
+    return false;
+  }
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isValidPhone(phone) {
+  return /^[+0-9()\-\s]{6,}$/.test(phone);
+}
+
 // Utility: Group readings by type
 function groupReadings(readings) {
   const groups = {};
@@ -19,18 +71,26 @@ const LS_KEY = "funeral-planner-v1";
 function saveSelections(selections) {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(selections));
-  } catch (e) {}
+  } catch (error) {
+    console.warn('Failed to save selections', error);
+    showStatus(t('storage_error'), true);
+  }
 }
 function loadSelections() {
   try {
     const d = localStorage.getItem(LS_KEY);
     return d ? JSON.parse(d) : null;
-  } catch (e) { return null; }
+  } catch (error) {
+    console.warn('Failed to load selections', error);
+    return null;
+  }
 }
 function clearSelections() {
   try {
     localStorage.removeItem(LS_KEY);
-  } catch (e) {}
+  } catch (error) {
+    console.warn('Failed to clear selections', error);
+  }
 }
 
 // Semantic theme analysis using compromise.js
@@ -331,6 +391,11 @@ function attachDocumentListeners() {
 
 // Generate beautiful PDF for specific documents with rich formatting
 function generateDocumentPDF(title, content, type) {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    showStatus(t('preview_error'), true);
+    return;
+  }
+
   const doc = new window.jspdf.jsPDF();
   let y = 20;
 
@@ -491,14 +556,16 @@ function generateDocumentPDF(title, content, type) {
 
   // Show success message
   $('#document-modal').addClass('hidden');
-  $('#pdf-status').text(t('pdf_generated')).fadeIn();
-  setTimeout(() => {
-    $('#pdf-status').fadeOut();
-  }, 3000);
+  showStatus(t('pdf_generated'));
 }
 
 // Generate full planning booklet with cover page
 function generateFullPlanningBooklet(outputType = 'save') {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    showStatus(t('preview_error'), true);
+    return null;
+  }
+
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || t('church_name');
   const coverImage = window.coverImageData;
@@ -560,7 +627,7 @@ function generateFullPlanningBooklet(outputType = 'save') {
   doc.text(t('comprehensive_guide'), 105, 110, { align: "center" });
 
   // Contact Information on cover page
-  const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+  const contactInfo = getStoredObject('contact-info', {});
   y = 140;
   if (contactInfo.phone || contactInfo.email || contactInfo.address || contactInfo.hours) {
     doc.setFillColor(124, 58, 237); // Catholic purple
@@ -835,10 +902,7 @@ function generateFullPlanningBooklet(outputType = 'save') {
 
   if (outputType === 'save') {
     doc.save(`${churchName.replace(/\s+/g, '-')}-funeral-planning-booklet.pdf`);
-    $('#pdf-status').text(t('full_planning_booklet_generated')).fadeIn();
-    setTimeout(() => {
-      $('#pdf-status').fadeOut();
-    }, 3000);
+    showStatus(t('full_planning_booklet_generated'));
   } else if (outputType === 'arraybuffer') {
     return doc.output('arraybuffer');
   } else {
@@ -929,12 +993,22 @@ function attachChurchCustomizationListeners() {
   
   // Save church name to localStorage
   $('#church-name').on('input', function() {
-    localStorage.setItem('church-name', $(this).val());
+    try {
+      localStorage.setItem('church-name', $(this).val());
+    } catch (error) {
+      console.warn('Failed to save church name', error);
+      showStatus(t('storage_error'), true);
+    }
     displayDefaultBooklet();
   });
   
   // Load saved church name
-  const savedChurchName = localStorage.getItem('church-name');
+  let savedChurchName = null;
+  try {
+    savedChurchName = localStorage.getItem('church-name');
+  } catch (error) {
+    console.warn('Failed to load church name', error);
+  }
   if (savedChurchName) {
     $('#church-name').val(savedChurchName);
   }
@@ -944,7 +1018,11 @@ function attachChurchCustomizationListeners() {
   const urlChurchName = urlParams.get('church_name');
   if (urlChurchName) {
     $('#church-name').val(urlChurchName);
-    localStorage.setItem('church-name', urlChurchName);
+    try {
+      localStorage.setItem('church-name', urlChurchName);
+    } catch (error) {
+      console.warn('Failed to persist church name from URL', error);
+    }
   }
 }
 
@@ -968,16 +1046,31 @@ function attachContactCustomizationListeners() {
   
   // Save contact info
   $('#save-contact-info').on('click', function() {
+    const email = $('#contact-email-input').val().trim();
+    const phone = $('#contact-phone-input').val().trim();
+
+    if (email && !isValidEmail(email)) {
+      showStatus(t('invalid_contact_email'), true);
+      return;
+    }
+
+    if (phone && !isValidPhone(phone)) {
+      showStatus(t('invalid_contact_phone'), true);
+      return;
+    }
+
     const contactInfo = {
-      description: $('#contact-description-input').val(),
-      phone: $('#contact-phone-input').val(),
-      email: $('#contact-email-input').val(),
-      address: $('#contact-address-input').val(),
-      hours: $('#contact-hours-input').val()
+      description: $('#contact-description-input').val().trim(),
+      phone,
+      email,
+      address: $('#contact-address-input').val().trim(),
+      hours: $('#contact-hours-input').val().trim()
     };
     
     // Save to localStorage
-    localStorage.setItem('contact-info', JSON.stringify(contactInfo));
+    if (!setStoredObject('contact-info', contactInfo)) {
+      return;
+    }
     
     // Update view mode
     updateContactDisplay(contactInfo);
@@ -988,10 +1081,7 @@ function attachContactCustomizationListeners() {
     $('#toggle-contact-edit').text(t('customize'));
     
     // Show success message
-    $('#pdf-status').text(t('contact_updated')).fadeIn();
-    setTimeout(() => {
-      $('#pdf-status').fadeOut();
-    }, 2000);
+    showStatus(t('contact_updated'));
     displayDefaultBooklet();
   });
 }
@@ -999,8 +1089,8 @@ function attachContactCustomizationListeners() {
 // Generate DOCX for individual documents
 function generateDocumentDOCX(type, title, content) {
   // Check if docx library is available
-  if (!window.docx) {
-    alert('DOCX generation is not available. Please try again in a few moments.');
+  if (!window.docx || !window.saveAs) {
+    showStatus(t('docx_generation_not_available'), true);
     return;
   }
 
@@ -1034,20 +1124,26 @@ function generateDocumentDOCX(type, title, content) {
   });
   
   // Generate and save the document
-  window.docx.Packer.toBlob(doc).then(blob => {
-    const fileName = `${type}_document.docx`;
-    saveAs(blob, fileName);
-  });
+  window.docx.Packer.toBlob(doc)
+    .then(blob => {
+      const fileName = `${type}_document.docx`;
+      saveAs(blob, fileName);
+      showStatus(t('docx_generated'));
+    })
+    .catch((error) => {
+      console.error('DOCX generation failed', error);
+      showStatus(t('docx_generation_failed'), true);
+    });
 }
 
 // Generate DOCX for full planning booklet
 function generateFullPlanningBookletDOCX() {
   const { hymns, readings } = getSelections();
   const churchName = $('#church-name').val() || t('church_name');
-  const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+  const contactInfo = getStoredObject('contact-info', {});
 
-  if (!window.docx) {
-    alert(t('docx_generation_not_available'));
+  if (!window.docx || !window.saveAs) {
+    showStatus(t('docx_generation_not_available'), true);
     return;
   }
 
@@ -1167,16 +1263,20 @@ function generateFullPlanningBookletDOCX() {
     }],
   });
 
-  Packer.toBlob(doc).then(blob => {
-    saveAs(blob, `funeral-booklet-${churchName.replace(/\s+/g, '-')}.docx`);
-    $('#pdf-status').text(t('docx_generated')).fadeIn();
-    setTimeout(() => { $('#pdf-status').fadeOut(); }, 3000);
-  });
+  Packer.toBlob(doc)
+    .then(blob => {
+      saveAs(blob, `funeral-booklet-${churchName.replace(/\s+/g, '-')}.docx`);
+      showStatus(t('docx_generated'));
+    })
+    .catch((error) => {
+      console.error('Full DOCX generation failed', error);
+      showStatus(t('docx_generation_failed'), true);
+    });
 }
 
 // Load contact information from localStorage or URL parameters
 function loadContactInfo() {
-  let contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+  let contactInfo = getStoredObject('contact-info', {});
   
   // Check URL parameters for contact info
   const urlParams = new URLSearchParams(window.location.search);
@@ -1398,7 +1498,7 @@ $(document).ready(function() {
   });
 
   urlGenButton.on('click', function() {
-    const contactInfo = JSON.parse(localStorage.getItem('contact-info') || '{}');
+    const contactInfo = getStoredObject('contact-info', {});
     const churchName = $('#church-name').val();
 
     let customUrl = window.location.origin + window.location.pathname;
@@ -1422,10 +1522,7 @@ $(document).ready(function() {
 
     // Copy to clipboard
     navigator.clipboard.writeText(customUrl).then(() => {
-      $('#pdf-status').text(t('url_copied')).fadeIn();
-      setTimeout(() => {
-        $('#pdf-status').fadeOut();
-      }, 3000);
+      showStatus(t('url_copied'));
     }).catch(() => {
       // Fallback: show URL in alert
       alert('Custom URL:\n' + customUrl);
