@@ -67,16 +67,32 @@ function groupReadings(readings) {
 }
 
 // LocalStorage helpers
-const LS_KEY = "funeral-planner-v1";
+const LS_KEY = window.PlannerStorage ? window.PlannerStorage.STORAGE_KEY : "funeral-planner-v1";
 function saveSelections(selections) {
+  if (window.PlannerStorage) {
+    const saved = window.PlannerStorage.saveSelections(selections);
+    if (!saved) {
+      console.warn('Failed to save selections');
+      showStatus(t('storage_error'), true);
+    }
+    return saved;
+  }
+
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(selections));
+    return true;
   } catch (error) {
     console.warn('Failed to save selections', error);
     showStatus(t('storage_error'), true);
+    return false;
   }
 }
 function loadSelections() {
+  if (window.PlannerStorage) {
+    const state = window.PlannerStorage.loadSelections();
+    return state && state.data ? state.data : null;
+  }
+
   try {
     const d = localStorage.getItem(LS_KEY);
     return d ? JSON.parse(d) : null;
@@ -86,10 +102,16 @@ function loadSelections() {
   }
 }
 function clearSelections() {
+  if (window.PlannerStorage) {
+    return window.PlannerStorage.clearSelections();
+  }
+
   try {
     localStorage.removeItem(LS_KEY);
+    return true;
   } catch (error) {
     console.warn('Failed to clear selections', error);
+    return false;
   }
 }
 

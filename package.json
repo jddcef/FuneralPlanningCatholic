@@ -1,0 +1,7 @@
+{
+  "name": "funeral-planning-catholic",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  }
+}
