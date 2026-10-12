@@ -20,8 +20,9 @@ test('selecting a hymn and reading persists to localStorage', async ({ page }) =
 
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('funeral-planner-v1')));
   expect(stored).toBeTruthy();
-  expect(stored.hymns.length).toBeGreaterThan(0);
-  expect(Object.keys(stored.readings).length).toBeGreaterThan(0);
+  expect(stored.schemaVersion).toBe(2);
+  expect(stored.data.hymns.length).toBeGreaterThan(0);
+  expect(Object.keys(stored.data.readings).length).toBeGreaterThan(0);
 });
 
 test('theme filter narrows visible readings', async ({ page }) => {
