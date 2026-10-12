@@ -49,21 +49,23 @@ function setStoredObject(key, value) {
 }
 
 function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  return window.PlannerLogic ? window.PlannerLogic.isValidEmail(email) : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function isValidPhone(phone) {
-  return /^[+0-9()\-\s]{6,}$/.test(phone);
+  return window.PlannerLogic ? window.PlannerLogic.isValidPhone(phone) : /^[+0-9()\-\s]{6,}$/.test(phone);
 }
 
 // Utility: Group readings by type
 function groupReadings(readings) {
-  const groups = {};
-  readings.forEach(r => {
-    if (!groups[r.type]) groups[r.type] = [];
-    groups[r.type].push(r);
-  });
-  return groups;
+  return window.PlannerLogic ? window.PlannerLogic.groupReadings(readings) : (() => {
+    const groups = {};
+    (Array.isArray(readings) ? readings : []).forEach(r => {
+      if (!groups[r.type]) groups[r.type] = [];
+      groups[r.type].push(r);
+    });
+    return groups;
+  })();
 }
 
 // LocalStorage helpers
@@ -117,37 +119,39 @@ function clearSelections() {
 
 // Semantic theme analysis using compromise.js
 function analyzeThemes(text) {
-  if (!window.nlp) return [];
-  
-  const doc = window.nlp(text);
-  const nouns = doc.nouns().out('array');
-  const verbs = doc.verbs().out('array');
-  const adjectives = doc.adjectives().out('array');
-  
-  // Extract key themes based on common funeral-related terms
-  const themes = [];
-  const textLower = text.toLowerCase();
-  
-  if (textLower.includes('hope') || textLower.includes('resurrection') || textLower.includes('eternal')) {
-    themes.push('hope');
-  }
-  if (textLower.includes('comfort') || textLower.includes('peace') || textLower.includes('consolation')) {
-    themes.push('comfort');
-  }
-  if (textLower.includes('trust') || textLower.includes('faith') || textLower.includes('belief')) {
-    themes.push('trust');
-  }
-  if (textLower.includes('light') || textLower.includes('salvation') || textLower.includes('deliverance')) {
-    themes.push('light');
-  }
-  if (textLower.includes('blessed') || textLower.includes('kingdom') || textLower.includes('heaven')) {
-    themes.push('blessedness');
-  }
-  if (textLower.includes('baptism') || textLower.includes('buried') || textLower.includes('risen')) {
-    themes.push('resurrection');
-  }
-  
-  return themes.length > 0 ? themes : ['general'];
+  return window.PlannerLogic ? window.PlannerLogic.analyzeThemes(text) : (() => {
+    if (!window.nlp) return [];
+
+    const doc = window.nlp(text);
+    const nouns = doc.nouns().out('array');
+    const verbs = doc.verbs().out('array');
+    const adjectives = doc.adjectives().out('array');
+    void nouns; void verbs; void adjectives;
+
+    const themes = [];
+    const textLower = text.toLowerCase();
+
+    if (textLower.includes('hope') || textLower.includes('resurrection') || textLower.includes('eternal')) {
+      themes.push('hope');
+    }
+    if (textLower.includes('comfort') || textLower.includes('peace') || textLower.includes('consolation')) {
+      themes.push('comfort');
+    }
+    if (textLower.includes('trust') || textLower.includes('faith') || textLower.includes('belief')) {
+      themes.push('trust');
+    }
+    if (textLower.includes('light') || textLower.includes('salvation') || textLower.includes('deliverance')) {
+      themes.push('light');
+    }
+    if (textLower.includes('blessed') || textLower.includes('kingdom') || textLower.includes('heaven')) {
+      themes.push('blessedness');
+    }
+    if (textLower.includes('baptism') || textLower.includes('buried') || textLower.includes('risen')) {
+      themes.push('resurrection');
+    }
+
+    return themes.length > 0 ? themes : ['general'];
+  })();
 }
 
 // Populate hymn list with checkboxes and video preview
@@ -182,13 +186,15 @@ function renderHymns(saved) {
 
 // Get all unique themes from readings
 function getAllThemes() {
-  const set = new Set();
-  window.readings.forEach(r => {
-    if (r.theme && Array.isArray(r.theme)) {
-      r.theme.forEach(t => set.add(t));
-    }
-  });
-  return Array.from(set).sort();
+  return window.PlannerLogic ? window.PlannerLogic.getAllThemes(window.readings) : (() => {
+    const set = new Set();
+    window.readings.forEach(r => {
+      if (r.theme && Array.isArray(r.theme)) {
+        r.theme.forEach(t => set.add(t));
+      }
+    });
+    return Array.from(set).sort();
+  })();
 }
 
 // Render reading selection, grouped by type, with radio buttons
