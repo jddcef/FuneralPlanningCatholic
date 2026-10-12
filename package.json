@@ -3,5 +3,8 @@
   "private": true,
   "scripts": {
     "test": "node --test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
   }
 }
