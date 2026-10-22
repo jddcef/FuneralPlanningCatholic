@@ -13,17 +13,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'catholic-blue': '#1e3a8a',
-            'catholic-gold': '#d97706',
-            'catholic-red': '#dc2626',
-            'catholic-purple': '#7c3aed'
+    window.tailwind = window.tailwind || {};
+    if (window.tailwind) {
+      window.tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'catholic-blue': '#1e3a8a',
+              'catholic-gold': '#d97706',
+              'catholic-red': '#dc2626',
+              'catholic-purple': '#7c3aed'
+            }
           }
         }
-      }
+      };
     }
   </script>
 </head>
@@ -1012,6 +1015,8 @@
     </div>
   </footer>
 
+  <script src="js/planner-storage.js"></script>
+  <script src="js/planner-logic.js"></script>
   <script src="js/translations.js"></script>
   <script src="js/hymns.js"></script>
   <script src="js/readings.js"></script>

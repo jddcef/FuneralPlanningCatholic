@@ -1,0 +1,12 @@
+{
+  "name": "funeral-planning-catholic",
+  "private": true,
+  "scripts": {
+    "test": "node --test && npx playwright test tests/app-smoke.spec.js --reporter=line",
+    "test:unit": "node --test",
+    "test:e2e": "npx playwright test tests/app-smoke.spec.js --reporter=line"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
+  }
+}
