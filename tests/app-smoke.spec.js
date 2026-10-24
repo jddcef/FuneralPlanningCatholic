@@ -37,3 +37,61 @@ test('theme filter narrows visible readings', async ({ page }) => {
   const texts = await visibleReadings.allTextContents();
   expect(texts.some(text => text.toLowerCase().includes('hope') || text.toLowerCase().includes('wisdom') || text.toLowerCase().includes('job'))).toBeTruthy();
 });
+
+test('contact view shows translated defaults instead of blank labels', async ({ page }) => {
+  await page.goto('/');
+
+  for (const id of ['#contact-phone', '#contact-email', '#contact-address', '#contact-hours']) {
+    await expect(page.locator(id)).not.toBeEmpty();
+  }
+  await expect(page.locator('#contact-phone')).toContainText('Phone');
+
+  // Xhosa has no contact_view_* translations, so English must be used
+  await page.locator('#language-selector').selectOption('xh');
+  await expect(page.locator('#contact-phone')).toContainText('Phone');
+
+  await page.locator('#language-selector').selectOption('af');
+  await expect(page.locator('#contact-phone')).toContainText('Telefoon');
+});
+
+test('missing translations fall back to English, then existing content, then a placeholder', async ({ page }) => {
+  await page.goto('/');
+
+  const result = await page.evaluate(() => {
+    window.translations.en.test_only_key = 'English value';
+    window.translations.xh.test_only_key = '   ';
+    $('body').append('<span id="t-fallback" data-translate="test_only_key"></span>');
+    $('body').append('<span id="t-keep" data-translate="test_missing_key">Existing text</span>');
+    $('body').append('<span id="t-empty" data-translate="test_missing_key"></span>');
+    changeLanguage('xh');
+    return {
+      fallback: $('#t-fallback').text(),
+      keep: $('#t-keep').text(),
+      empty: $('#t-empty').text(),
+    };
+  });
+
+  expect(result).toEqual({ fallback: 'English value', keep: 'Existing text', empty: '—' });
+});
+
+test('saved contact details are not overwritten when switching language', async ({ page }) => {
+  await page.goto('/?contact_phone=0123456789');
+
+  await expect(page.locator('#contact-phone')).toContainText('0123456789');
+  await page.locator('#language-selector').selectOption('af');
+  await expect(page.locator('#contact-phone')).toContainText('0123456789');
+});
+
+test('contact details from URL parameters are rendered as text, not HTML', async ({ page }) => {
+  const payload = '<img src=x onerror="window.__xss=1">';
+  const qs = ['contact_phone', 'contact_email', 'contact_address', 'contact_hours']
+    .map(k => `${k}=${encodeURIComponent(payload)}`).join('&');
+  await page.goto(`/?${qs}`);
+
+  for (const id of ['#contact-phone', '#contact-email', '#contact-address', '#contact-hours']) {
+    await expect(page.locator(id)).toContainText(payload);
+    await expect(page.locator(`${id} img`)).toHaveCount(0);
+  }
+  expect(await page.evaluate(() => window.__xss)).toBeUndefined();
+  await expect(page.locator('#contact-phone a')).toHaveAttribute('href', `tel:${payload}`);
+});
