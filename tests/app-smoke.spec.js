@@ -81,3 +81,17 @@ test('saved contact details are not overwritten when switching language', async 
   await page.locator('#language-selector').selectOption('af');
   await expect(page.locator('#contact-phone')).toContainText('0123456789');
 });
+
+test('contact details from URL parameters are rendered as text, not HTML', async ({ page }) => {
+  const payload = '<img src=x onerror="window.__xss=1">';
+  const qs = ['contact_phone', 'contact_email', 'contact_address', 'contact_hours']
+    .map(k => `${k}=${encodeURIComponent(payload)}`).join('&');
+  await page.goto(`/?${qs}`);
+
+  for (const id of ['#contact-phone', '#contact-email', '#contact-address', '#contact-hours']) {
+    await expect(page.locator(id)).toContainText(payload);
+    await expect(page.locator(`${id} img`)).toHaveCount(0);
+  }
+  expect(await page.evaluate(() => window.__xss)).toBeUndefined();
+  await expect(page.locator('#contact-phone a')).toHaveAttribute('href', `tel:${payload}`);
+});

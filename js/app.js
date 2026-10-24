@@ -1331,25 +1331,31 @@ function updateContactDisplay(contactInfo) {
   $('#contact-description').text(contactInfo.description || 'For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.');
   
   if (contactInfo.phone) {
-    $('#contact-phone').removeAttr('data-translate').html(`📞 <a href="tel:${contactInfo.phone}" class="hover:text-blue-800">${contactInfo.phone}</a>`);
+    $('#contact-phone').removeAttr('data-translate').empty().append(
+      document.createTextNode('📞 '),
+      $('<a class="hover:text-blue-800"></a>').attr('href', `tel:${contactInfo.phone}`).text(contactInfo.phone)
+    );
   } else {
     $('#contact-phone').attr('data-translate', 'contact_view_phone').html(t('contact_view_phone'));
   }
   
   if (contactInfo.email) {
-    $('#contact-email').removeAttr('data-translate').html(`✉️ <a href="mailto:${contactInfo.email}" class="hover:text-blue-800">${contactInfo.email}</a>`);
+    $('#contact-email').removeAttr('data-translate').empty().append(
+      document.createTextNode('✉️ '),
+      $('<a class="hover:text-blue-800"></a>').attr('href', `mailto:${contactInfo.email}`).text(contactInfo.email)
+    );
   } else {
     $('#contact-email').attr('data-translate', 'contact_view_email').html(t('contact_view_email'));
   }
   
   if (contactInfo.address) {
-    $('#contact-address').removeAttr('data-translate').html(`📍 ${contactInfo.address}`);
+    $('#contact-address').removeAttr('data-translate').text(`📍 ${contactInfo.address}`);
   } else {
     $('#contact-address').attr('data-translate', 'contact_view_address').html(t('contact_view_address'));
   }
   
   if (contactInfo.hours) {
-    $('#contact-hours').removeAttr('data-translate').html(`🕒 ${contactInfo.hours}`);
+    $('#contact-hours').removeAttr('data-translate').text(`🕒 ${contactInfo.hours}`);
   } else {
     $('#contact-hours').attr('data-translate', 'contact_view_hours').html(t('contact_view_hours'));
   }
