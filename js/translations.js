@@ -133,10 +133,10 @@ window.translations = {
     "contact_title": "Contact & Parish Information",
     "contact_description_text": "For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.",
     "contact_customize_button": "✏️ Customize",
-    "contact_view_phone": "",
-    "contact_view_email": "",
-    "contact_view_address": "",
-    "contact_view_hours": "",
+    "contact_view_phone": "📞 Phone: please contact your parish office",
+    "contact_view_email": "✉️ Email: please contact your parish office",
+    "contact_view_address": "📍 Address: please contact your parish office",
+    "contact_view_hours": "🕒 Office hours: please contact your parish office",
     "contact_edit_description_label": "Contact Description",
     "contact_edit_description_input": "For specific guidance on Catholic funeral planning, please contact your local parish priest or funeral coordinator.",
     "contact_edit_phone_label": "Phone Number",
@@ -538,10 +538,10 @@ window.translations = {
     "contact_title": "Kontak- & Gemeente-inligting",
     "contact_description_text": "Vir spesifieke leiding oor Katolieke begrafnisbeplanning, kontak asseblief jou plaaslike gemeentepriester of begrafniskoördineerder.",
     "contact_customize_button": "✏️ Pas Aan",
-    "contact_view_phone": "",
-    "contact_view_email": "",
-    "contact_view_address": "",
-    "contact_view_hours": "",
+    "contact_view_phone": "📞 Telefoon: kontak asseblief jou gemeentekantoor",
+    "contact_view_email": "✉️ E-pos: kontak asseblief jou gemeentekantoor",
+    "contact_view_address": "📍 Adres: kontak asseblief jou gemeentekantoor",
+    "contact_view_hours": "🕒 Kantoorure: kontak asseblief jou gemeentekantoor",
     "contact_edit_description_label": "Kontakbeskrywing",
     "contact_edit_description_input": "Vir spesifieke leiding oor Katolieke begrafnisbeplanning, kontak asseblief jou plaaslike gemeentepriester of begrafniskoördineerder.",
     "contact_edit_phone_label": "Telefoonnommer",
@@ -1091,18 +1091,46 @@ function changeLanguage(lang) {
   }
 }
 
+// Returns true when a translation value is usable (non-empty string)
+function hasTranslationValue(value) {
+  return typeof value === 'string' && value.trim() !== '';
+}
+
+// Look up a key in the selected language, falling back to English.
+// Returns null when neither language has a non-empty value.
+function getTranslation(key) {
+  const current = (window.translations[window.currentLanguage] || {})[key];
+  if (hasTranslationValue(current)) return current;
+  const fallback = (window.translations['en'] || {})[key];
+  if (hasTranslationValue(fallback)) return fallback;
+  return null;
+}
+
 // Function to get translated text
 function t(key) {
-  return window.translations[window.currentLanguage][key] || window.translations['en'][key] || key;
+  const value = getTranslation(key);
+  return value !== null ? value : key;
 }
 
 // Function to update all text on the page
 function updatePageLanguage() {
   // Update all elements with a data-translate attribute
   $('[data-translate]').each(function() {
-    const key = $(this).data('translate');
-    // Use .html() instead of .text() to render HTML tags in translations
-    $(this).html(t(key));
+    const $el = $(this);
+    const key = $el.attr('data-translate');
+    const value = getTranslation(key);
+    // Form fields: translate the placeholder rather than the element's content
+    if ($el.is('input') || ($el.is('textarea') && $el.is('[placeholder]'))) {
+      if (value !== null) $el.attr('placeholder', value);
+      return;
+    }
+    if (value !== null) {
+      // Use .html() instead of .text() to render HTML tags in translations
+      $el.html(value);
+    } else if ($el.html().trim() === '') {
+      // Keep any existing content; only use a placeholder for empty elements
+      $el.text('—');
+    }
   });
   
   // Update the language selector value
